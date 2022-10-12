@@ -18,6 +18,7 @@ def pull(request):
         if client_ip_address in ip_network(valid_ip):
             break
     else:
+        print('Permission denied.')
         return HttpResponseForbidden('Permission denied.')
     print('pull from github')
     comm = 'cd /home/AbdElwahapBak/main_project \ngit pull '

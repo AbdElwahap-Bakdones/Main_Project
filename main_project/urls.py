@@ -18,6 +18,6 @@ from django.urls import path
 from webhooks.views import pull
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path(r"^api/pull/$", pull, name='pull'),
+    path(r"pull/", pull, name='pull'),
 
 ]
