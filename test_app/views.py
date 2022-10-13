@@ -5,3 +5,7 @@ from django.shortcuts import render
 
 def hello():
     print('hii')
+
+
+def sayHi():
+    print('sayhi')
