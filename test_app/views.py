@@ -3,10 +3,6 @@ from django.http import HttpResponse
 # Create your views here.
 
 
-def hello():
-    print('hii')
-
-
 def sayHi(request):
     print('sayhi')
-    return HttpResponse({'final project with \tGhaith - Zaher - Riad - AbdElwahap'})
+    return HttpResponse({'\t\t\tfinal project with\n \tGhaith - Zaher - Riad - AbdElwahap'})
