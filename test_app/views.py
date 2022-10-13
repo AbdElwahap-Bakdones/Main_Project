@@ -5,4 +5,4 @@ from django.http import HttpResponse
 
 def sayHi(request):
     print('sayhi')
-    return HttpResponse({' \n \tGhaith - Zaher - Riad - AbdElwahap'})
+    return HttpResponse({'final project \n \tGhaith - Zaher - Riad - AbdElwahap'})
