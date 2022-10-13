@@ -5,7 +5,3 @@ from django.shortcuts import render
 
 def hello():
     print('hii')
-
-
-def ok():
-    pass
