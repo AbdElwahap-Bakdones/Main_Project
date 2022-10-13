@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from subprocess import call
 
 import requests
 from ipaddress import ip_address, ip_network
