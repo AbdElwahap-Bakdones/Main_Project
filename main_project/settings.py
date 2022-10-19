@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-from Schema.Schema import schema
+#from .Schema.Schema import schema
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,8 +35,8 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
-    "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "test_app",
@@ -140,5 +140,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.User"
 
 GRAPHENE = {
-    "SCHEMA": schema
+    "SCHEMA": 'Schema.Schema.schema'
 }
