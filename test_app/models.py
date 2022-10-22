@@ -19,3 +19,13 @@ class Cars(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PetModel(models.Model):
+    kind = models.CharField(
+        max_length=100,
+        choices=(("cat", "Cat"), ("dog", "Dog"))
+    )
+
+    def __str__(self):
+        return self.name
