@@ -51,7 +51,7 @@ class SignUp(APIView):
 
 
 class posts(APIView):
-    def get(self,request, pk):
+    def get(self,request, pk=0):
         try:
             #data = request.data
             #token = check_token(data['token'])
@@ -103,12 +103,23 @@ class posts(APIView):
             return Response({'message': 'the id not found'},status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
-def getAllPost(request,pk,index):
+def getAllPost(request):
+    try:
+        posts=Post.objects.filter(
+            deleted=False, id__gte=index)[:10]
+        print(posts)
+        return Response(PostSerializer(posts, many=True).data, status=status.HTTP_200_OK)
+    except e:
+        return Response({'message': 'some things wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def getMyPosts(request, pk, index):
     try:
         #data = request.data
         #token = check_token(data['token'])
-        posts=Post.objects.filter(
-            user=pk,deleted=False, id__gte=index)[:10]
+        posts = Post.objects.filter(
+            user=pk, deleted=False, id__gte=index)[:10]
         print(posts)
         return Response(PostSerializer(posts, many=True).data, status=status.HTTP_200_OK)
     except e:
