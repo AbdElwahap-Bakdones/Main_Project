@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "core",
     "webhooks",
     "graphene_django",
+    "postApp",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
