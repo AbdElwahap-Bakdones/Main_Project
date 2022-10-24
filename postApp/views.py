@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -53,14 +52,14 @@ class SignUp(APIView):
 class posts(APIView):
     def get(self,request, pk=0):
         try:
-            #data = request.data
-            #token = check_token(data['token'])
             posts = Post.objects.filter(
-                user=pk, deleted=False, id=pk)
+                deleted=False, id__gte=pk)[:10]
+            print(posts)
             return Response(PostSerializer(posts, many=True).data, status=status.HTTP_200_OK)
-        except e:
-            return Response({'message': 'npt found'}, status=status.HTTP_404_NOT_FOUND)
-    def post(self, request,pk):
+        except Exception as e:
+            return Response({'message': 'some things wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, pk=0):
         try:
             data=request.data
             token=check_token(data['token'])
@@ -69,49 +68,55 @@ class posts(APIView):
                     title=data['title'], user=user)
             add_post.save()
             indexImge=0
-            for i in data['images']:
+            for i in list(data['images']):
                 path = insertImage(str(add_post.pk)+'_'+str(indexImge), i, 'post')
                 PostImage(post=add_post,image=path).save()
                 indexImge+=1
             return Response(PostSerializer(add_post).data,status=status.HTTP_201_CREATED)
-        except e:
+        except Exception as e:
             return Response({'message': 'some thing wrong'}, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, pk):
         #check_token(request.DELETE['token'])
         try:
-            Post.objects.filter(pk=pk).update(deleted=True)
-            return Response({'message':'post has deleted'},status=status.HTTP_200_OK)
-        except e:
+            post_oj=Post.objects.filter(pk=pk)
+            print(pk)
+            if post_oj.exists():
+                post_oj.update(deleted=True)
+                return Response({'message':'post has deleted'},status=status.HTTP_200_OK)
+            return Response({'message': 'the id not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
             return Response({'message':'the id not found'},status=status.HTTP_404_NOT_FOUND)
-    def put(self,request,pk):
+    def put(self,request,pk=0):
         try:
+            print(pk)
             data = request.data
             token = check_token(data['token'])
-            pust_update=Post.objects.filter(pk=pk).update(content=data['content'],title=data['title'])
-            indexImge = 0
-            print('000000000')
-            if data['image_updated']:
-                PostImage.objects.filter(post=pk).delete()
-                for i in data['images']:
-                    print(i)
-                    print('3123131')
-                    path = insertImage(str(pk)+'_'+str(indexImge), i, 'post')
-                    PostImage(post=Post.objects.get(pk=pk), image=path).save()
-                    indexImge+=1
-            return Response({'message':'updated'},status=status.HTTP_200_OK)
-        except e:
+            post_update=Post.objects.filter(pk=pk,user=token['id'])
+            if post_update.exists():
+                post_update.update(content=data['content'], title=data['title'])
+                indexImge = 0
+                if data['image_updated']:
+                    PostImage.objects.filter(post= post_update.get()).delete()
+                    for i in data['images']:
+                        path = insertImage(str(pk)+'_'+str(indexImge), i, 'post')
+                        PostImage(post=post_update.get(), image=path).save()
+                        indexImge+=1
+                return Response({'message':'updated'},status=status.HTTP_200_OK)
             return Response({'message': 'the id not found'},status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+        except Exception as e:
+            return Response({'message': 'the id not found'},status=status.HTTP_404_NOT_FOUND)
+
+'''@api_view(['GET'])
 def getAllPost(request):
     try:
         posts=Post.objects.filter(
             deleted=False, id__gte=index)[:10]
         print(posts)
         return Response(PostSerializer(posts, many=True).data, status=status.HTTP_200_OK)
-    except e:
+    except Exception as e:
         return Response({'message': 'some things wrong'}, status=status.HTTP_400_BAD_REQUEST)
-
+'''
 
 @api_view(['GET'])
 def getMyPosts(request, pk, index):
@@ -122,17 +127,18 @@ def getMyPosts(request, pk, index):
             user=pk, deleted=False, id__gte=index)[:10]
         print(posts)
         return Response(PostSerializer(posts, many=True).data, status=status.HTTP_200_OK)
-    except e:
+    except Exception as e:
         return Response({'message': 'some things wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login(request):
+    print(request.data)
     try:
         user=User.objects.filter(email=request.data['email'])
         if user.exists():
             print('dasasd')
             return Response({'token':encoder_token(user.get().pk, user.get().email)},status=status.HTTP_200_OK)
         return Response({'message':'email not found'},status=status.HTTP_401_UNAUTHORIZED)
-    except e:
+    except Exception as e:
         return Response({'message': 'some things wrong'}, status=status.HTTP_400_BAD_REQUEST)
 ######

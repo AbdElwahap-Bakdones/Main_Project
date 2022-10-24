@@ -15,6 +15,7 @@ def getImage(path: str) -> str:
 
 def insertImage(id: int, image: str, type: str) -> str:
     try:
+        print('in insert image')
         print(id)
         path = 'static/'+'image/'+type+'/'+str(id)+'.txt'
         f = open(path, 'w')
