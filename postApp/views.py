@@ -46,6 +46,7 @@ class SignUp(APIView):
         addUser = UserSerializer(data=request.data)
         addUser.is_valid(raise_exception=True)
         addUser.save()
+        
         return Response(addUser.data, status=status.HTTP_201_CREATED)
 
 

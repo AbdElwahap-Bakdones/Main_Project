@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import PostImage, User, Post
+import json
 
 
 def getImage(path: str) -> str:
@@ -31,12 +32,17 @@ class UserSerializer(serializers.Serializer):
     # id = serializers.IntegerField()
     first_name = serializers.CharField(max_length=55)
     last_name = serializers.CharField(max_length=55)
-    email = serializers.CharField(max_length=150)
+    email = serializers.CharField(max_length=150, required=True)
     image = serializers.SerializerMethodField(method_name='get_image')
 
     def get_image(self, id):
         print(id.image)
         return getImage(str(id.image))
+
+    def validate_email(self, attrs):
+
+        if User.objects.filter(email=attrs).exists():
+            raise serializers.ValidationError('email already exists!')
 
     def create(self, validated_data):
         user = User(**validated_data)
