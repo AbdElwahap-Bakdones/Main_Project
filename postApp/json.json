@@ -1,8 +1,9 @@
-{"first_name":"Abd",
-"last_name":"Bak","email":"email.com","image":"image"}
-{"email":"email6.com"}
-    {"content":"my first post",
-    "title":" title for the post",
+{"":{"first_name":"Abd",
+"last_name":"Bak","email":"email.com","image":"image"},
+"":{"email":"email6.com"}
+    ,"":{"content":"my first post",
+    "title":"title for the post",
     "images":["image1","image2","image3","image4"],
     "image_updated":true,
     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJlbWFpbDYuY29tIn0.ETZ-R2zP5U345rk8QeBCN0Pf7iwCWC9m1Fyw6_Xn-0M"}
+}
