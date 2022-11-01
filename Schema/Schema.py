@@ -37,12 +37,34 @@ class CarsCategory(DjangoObjectType):
 class Pet(DjangoObjectType):
     class Meta:
         model = PetModel
-        fields = ('id', 'kind')
+        fields = ('id', 'kind', 'name')
+
+    # @classmethod
+    # def get_queryset(cls, queryset, info):
+    #     # Filter out recipes that have no title
+    #     return queryset.exclude(id__exact=1)
+
+
+class PetModelMutation(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+        id = graphene.ID()
+    print('00000000000')
+    pet_filed = graphene.Field(Pet)
 
     @classmethod
-    def get_queryset(cls, queryset, info):
-        # Filter out recipes that have no title
-        return queryset.exclude(id__exact=2)
+    def mutate(cls, root, info, name, id):
+        print(name, id)
+        pet = PetModel.objects.filter(pk=id)
+        print(pet.values_list())
+        pet.update(name=name)
+
+        return PetModelMutation(pet_filed=pet.get())
+
+
+class Mutation(graphene.ObjectType):
+    print('mutation')
+    pet = PetModelMutation.Field()
 
 
 class Query(graphene.ObjectType):
@@ -74,4 +96,4 @@ class Query(graphene.ObjectType):
     #     return PetModel.objects.all()
 
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)
