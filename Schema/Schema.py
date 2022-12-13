@@ -151,7 +151,7 @@ class CreatePet(graphene.Mutation):
         name = graphene.String(required=True)
 
     @classmethod
-    @login_required
+    # @login_required
     def mutate(self, root, info, **kwargs):
         user = User(info.context.user)
         print(user.is_authenticated)
