@@ -22,11 +22,7 @@ class Cars(models.Model):
 
 
 class PetModel(models.Model):
-    kind = models.CharField(
-        max_length=100,
-        choices=(("cat", "Cat"), ("dog", "Dog"))
-    )
     name = models.CharField(max_length=55, default='popy')
 
     def __str__(self):
-        return self.kind
+        return self.name

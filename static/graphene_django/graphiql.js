@@ -10,6 +10,14 @@
   history,
   location,
 ) {
+  // Parse the cookie value for a CSRF token
+  var csrftoken;
+  var cookies = ("; " + document.cookie).split("; csrftoken=");
+  if (cookies.length == 2) {
+    csrftoken = cookies.pop().split(";").shift();
+  } else {
+    csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+  }
 
   // Collect the URL parameters
   var parameters = {};
@@ -60,19 +68,9 @@
     var headers = opts.headers || {};
     headers['Accept'] = headers['Accept'] || 'application/json';
     headers['Content-Type'] = headers['Content-Type'] || 'application/json';
-
-    // Parse the cookie value for a CSRF token
-    var csrftoken;
-    var cookies = ("; " + document.cookie).split("; csrftoken=");
-    if (cookies.length == 2) {
-      csrftoken = cookies.pop().split(";").shift();
-    } else {
-      csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-    }
     if (csrftoken) {
       headers['X-CSRFToken'] = csrftoken
     }
-
     return fetch(fetchURL, {
       method: "post",
       headers: headers,
@@ -125,8 +123,8 @@
     if (operationType === "subscription") {
       return {
         subscribe: function (observer) {
+          subscriptionClient.request(graphQLParams).subscribe(observer);
           activeSubscription = subscriptionClient;
-          return subscriptionClient.request(graphQLParams, opts).subscribe(observer);
         },
       };
     } else {
@@ -178,7 +176,6 @@
     onEditVariables: onEditVariables,
     onEditOperationName: onEditOperationName,
     headerEditorEnabled: GRAPHENE_SETTINGS.graphiqlHeaderEditorEnabled,
-    shouldPersistHeaders: GRAPHENE_SETTINGS.graphiqlShouldPersistHeaders,
     query: parameters.query,
   };
   if (parameters.variables) {

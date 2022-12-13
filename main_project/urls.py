@@ -19,12 +19,15 @@ from webhooks.views import pull
 from test_app import urls as test_app_urls
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(r"pull/", pull, name='pull'),
     path("", include(test_app_urls), name=""),
-    path(r"graphql", GraphQLView.as_view(graphiql=True)),
+    path(r"graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    # path('pgraphql', PrivateGraphQLView.as_view(graphiql=True, schema=Schema)),
     path(r"socialmedia/", include("postApp.urls")),
+    path("core/", include("core.urls")),
 
 
 ]
