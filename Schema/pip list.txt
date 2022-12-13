@@ -1,57 +1,59 @@
-aiohttp==3.8.3
-aiosignal==1.3.1
-aniso8601==7.0.0
-asgiref==3.5.2
-async-timeout==4.0.2
-attrs==22.1.0
-autobahn==22.7.1
-Automat==22.10.0
-certifi==2022.9.24
-cffi==1.15.1
-channels==3.0.0
-charset-normalizer==2.1.1
-compatibility==1.0.1
-constantly==15.1.0
-cryptography==38.0.3
-daphne==3.0.2
-Django==4.1.2
-django-filter==22.1
-djangorestframework==3.14.0
-frozenlist==1.3.3
-graphene==2.1.9
-graphene-django==2.15.0
-graphene-subscriptions==1.0.2
-graphql-core==2.3.2
-graphql-relay==2.0.1
-hyperlink==21.0.0
-idna==3.4
-incremental==22.10.0
-ipaddress==1.0.23
-Markdown==3.4.1
-msgpack==1.0.4
-multidict==6.0.2
-mysqlclient==2.1.1
-Pillow==9.2.0
-promise==2.3
-pyasn1==0.4.8
-pyasn1-modules==0.2.8
-pycparser==2.21
-PyJWT==2.6.0
-pyOpenSSL==22.1.0
-python-dateutil==2.8.2
-pytz==2022.5
-requests==2.28.1
-Rx==1.6.1
-service-identity==21.1.0
-singledispatch==3.7.0
-six==1.16.0
-sqlparse==0.4.3
-text-unidecode==1.3
-Twisted==22.10.0
-twisted-iocpsupport==1.0.2
-txaio==22.2.1
-typing_extensions==4.4.0
-tzdata==2022.4
-urllib3==1.26.12
-yarl==1.8.1
-zope.interface==5.5.1
+pip install aiohttp==3.8.3
+pip install aiosignal==1.3.1
+pip install aniso8601==7.0.0
+pip install asgiref==3.5.2
+pip install async-timeout==4.0.2
+pip install attrs==22.1.0
+pip install autobahn==22.7.1
+pip install Automat==22.10.0
+pip install certifi==2022.9.24
+pip install cffi==1.15.1
+pip install channels==3.0.0
+pip install charset-normalizer==2.1.1
+pip install compatibility==1.0.1
+pip install constantly==15.1.0
+pip install cryptography==38.0.3
+pip install daphne==3.0.2
+pip install Django==3.0
+pip install django-filter==2.3.0
+pip install django-graphql-auth==0.3.16
+pip install django-graphql-jwt==0.3.0
+pip install djangorestframework==3.14.0
+pip install frozenlist==1.3.3
+pip install graphene==2.1.9
+pip install graphene-django==2.15.0
+pip install graphene-subscriptions==1.0.2
+pip install graphql-core==2.3.2
+pip install graphql-relay==2.0.1
+pip install hyperlink==21.0.0
+pip install idna==3.4
+pip install incremental==22.10.0
+pip install ipaddress==1.0.23
+pip install Markdown==3.4.1
+pip install msgpack==1.0.4
+pip install multidict==6.0.2
+pip install mysqlclient==2.1.1
+pip install Pillow==9.2.0
+pip install promise==2.3
+pip install pyasn1==0.4.8
+pip install pyasn1-modules==0.2.8
+pip install pycparser==2.21
+pip install PyJWT==1.7.1
+pip install pyOpenSSL==22.1.0
+pip install python-dateutil==2.8.2
+pip install pytz==2022.5
+pip install requests==2.28.1
+pip install Rx==1.6.1
+pip install service-identity==21.1.0
+pip install singledispatch==3.7.0
+pip install six==1.16.0
+pip install sqlparse==0.4.3
+pip install text-unidecode==1.3
+pip install Twisted==22.10.0
+pip install twisted-iocpsupport==1.0.2
+pip install txaio==22.2.1
+pip install typing_extensions==4.4.0
+pip install tzdata==2022.4
+pip install urllib3==1.26.12
+pip install yarl==1.8.1
+pip install zope.interface==5.5.1
