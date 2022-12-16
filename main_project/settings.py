@@ -157,6 +157,8 @@ GRAPHENE = {
     "SCHEMA": 'Schema.Schema.schema',
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
+        'middleware.auth.AuthorizationMiddleware',
+
     ],
 }
 
@@ -186,9 +188,9 @@ AUTHENTICATION_BACKENDS = [
     # "graphql_jwt.backends.JSONWebTokenBackend",
 
     # add this
-    "django.contrib.auth.backends.ModelBackend",
 
     "graphql_auth.backends.GraphQLAuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
 
     # ...
 ]

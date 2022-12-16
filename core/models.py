@@ -3,24 +3,23 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 
+class Rule(models.Model):
+    name = models.CharField(max_length=255)
+
+
 class User(AbstractUser):
     location = models.CharField(max_length=255)
     phone = models.IntegerField(default=930075476)
-    # picture = models.ImageField()
 
-    # rule_id = models.ForeignKey(Rule, on_delete=models.CASCADE)
+    rule_id = models.ForeignKey(Rule, on_delete=models.CASCADE, default=1)
+    # picture = models.ImageField()
     # USERNAME_FIELD = "username"   # e.g: "username", "email"
     # EMAIL_FIELD = "email"         # e.g: "email", "primary_email"
-'''
-class Rule(models.Model):
-    name = models.CharField(max_length=255)
 
 
 class permission(models.Model):
     name = models.CharField(max_length=255)
     rule_id = models.ForeignKey(Rule, on_delete=models.CASCADE)
-
-
 
 
 class RateType(models.Model):
@@ -140,4 +139,3 @@ class Notification(models.Model):
     team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     sender_kind = models.CharField(max_length=255)
     content = models.CharField(max_length=255)
-'''

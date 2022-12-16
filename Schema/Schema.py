@@ -1,3 +1,4 @@
+from time import time as timer
 import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
@@ -12,6 +13,8 @@ from core.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import login_required
+from http import HTTPStatus
+import jwt
 
 
 class PrivateGraphQLView(LoginRequiredMixin, GraphQLView):
@@ -114,8 +117,17 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     #all_Pet = DjangoListField(Pet)
     all_Pet = relay.ConnectionField(PetRelay)
 
+    def resolve_hello(root, info, **kwargs):
+        print(dict(info.context.META))
+        print(info.context.user.is_authenticated)
+        if info.context.user.is_authenticated:
+            return 'abd'
+        print('nooo')
+        return 'ghaith'
+
     def resolve_all_Compani(root, info, **kwargs):
         try:
+
             return Compani.objects.all()
         except:
             return Compani.DoesNotExist()
@@ -145,18 +157,19 @@ class CreatePet(graphene.Mutation):
     pet = graphene.Field(PetType)
     message = testappSerializer.ObjectField()
     status = graphene.Int()
+    verify_token = mutations.VerifyToken.Field()
 
     class Arguments:
 
         name = graphene.String(required=True)
 
     @classmethod
-    @login_required
     def mutate(self, root, info, **kwargs):
         user = User(info.context.user)
-        print(user.is_authenticated)
-        print(user.username)
-        print('00000000000')
+        print('enddddddddd')
+        print(info.context.user.is_authenticated)
+
+        # print(dict(info.context.META))
         serializer = testappSerializer.PetSerSerializer(data=kwargs)
         if serializer.is_valid():
             obj = serializer.save()
@@ -166,7 +179,7 @@ class CreatePet(graphene.Mutation):
             msg = 'serializer.errors'
             obj = None
 
-        return self(pet=obj, message=msg, status=200)
+        return self(pet=obj, message=msg, status=HTTPStatus.CREATED)
 
 
 class UpdataPet(graphene.Mutation):
@@ -208,10 +221,17 @@ class DeletePet(graphene.Mutation):
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
-    print('mutation')
+    # print('mutation')
     create_pet = CreatePet.Field()
     update_pet = UpdataPet.Field()
     deltee_pet = DeletePet.Field()
+
+    # @mutation.field("replyUpdate")
+    # def reply_update(_obj, info, reply):
+    #     """Resolver for reply update."""
+
+    #     request: ASGIRequest = info.context["request"]
+    #     print('12312313123')
 
 
 class Subscription(graphene.ObjectType):
@@ -219,6 +239,7 @@ class Subscription(graphene.ObjectType):
 
     def resolve_hello(root, info):
         print('ssssssssssssssssssssssss')
+
         return Observable.interval(3000).map(lambda i: i)
 
     def resolve_cars_created(root, info):
@@ -229,6 +250,33 @@ class Subscription(graphene.ObjectType):
                 event.operation == CREATED and
                 isinstance(event.instance, Cars)
         ).map(lambda event: event.instance)
+
+
+def check_token(token: str) -> map:
+    try:
+        m = jwt.decode(token, 'Abd', algorithms=['HS256'])
+        id = m['id']
+        email = m['email']
+        user_obj = User.objects.filter(email=email)
+        if user_obj.exists():
+            return {'state': True, 'id': id, 'email': email, 'user_obj': user_obj}
+        raise Exception('Invalid token')
+    except Exception as e:
+        print('Error checkToken functions')
+        print(e)
+        return {'state': False}
+
+
+# class AuthorizationMiddleware(object):
+#     def resolve(self, next, root, info, **args):
+#         # print(dict(info.context.META))
+#         print('0000000000')
+#         print(info.context.user)
+#         if info.operation.operation == 'mutation':
+#             print('mutation')
+#         if info.operation.operation == 'query':
+#             print('query')
+#         return next(root, info, **args)
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation,
