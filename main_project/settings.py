@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     "postApp",
     "graphql_auth",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
-    "graphene_gis",
 
     # 'django_filters'
 
