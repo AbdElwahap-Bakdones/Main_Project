@@ -16,12 +16,8 @@ class PetSerSerializer(serializers.Serializer):
         model: PetModel()
 
     def create(self, validated_data):
-        print(validated_data)
-        print('creatttttttttttttttttttttttttt')
         pet = PetModel(**validated_data)
         pet.save()
-        print(pet)
-        print('seeerrriririr')
         return pet
 
     def update(self, instance, validated_data):

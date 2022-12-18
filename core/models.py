@@ -8,13 +8,18 @@ class Rule(models.Model):
 
 
 class User(AbstractUser):
-    location = models.CharField(max_length=255)
-    phone = models.IntegerField(default=930075476)
-
+    location = models.CharField(max_length=255, blank=False)
+    phone = models.IntegerField(default=930075476, blank=False)
+    first_name = models.CharField(('first name'), max_length=150, blank=False)
+    last_name = models.CharField(('last name'), max_length=150, blank=False)
+    email = models.EmailField(('email address'), blank=False, unique=True)
     rule_id = models.ForeignKey(Rule, on_delete=models.CASCADE, default=1)
     # picture = models.ImageField()
     # USERNAME_FIELD = "username"   # e.g: "username", "email"
     # EMAIL_FIELD = "email"         # e.g: "email", "primary_email"
+
+    def __str__(self):
+        return str(self.pk)
 
 
 class permission(models.Model):

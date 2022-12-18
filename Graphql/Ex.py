@@ -103,3 +103,6 @@ class Query(graphene.ObjectType):
 
     def resolve_subjects(self, info, **kwargs):
         return Subject.objects.all()
+ #########################################
+
+ #########################################

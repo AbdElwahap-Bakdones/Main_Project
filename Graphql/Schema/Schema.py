@@ -8,38 +8,18 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 from test_app import serializer as testappSerializer
 from rx import Observable
 from graphql_auth.schema import UserQuery, MeQuery
-from graphql_auth import mutations
 from core.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import login_required
 from http import HTTPStatus
+from ..Auth.graphql_auth import AuthMutation
+from ..Mutation.SignUp import signup_player
 import jwt
 
 
 class PrivateGraphQLView(LoginRequiredMixin, GraphQLView):
     pass
-
-
-class AuthMutation(graphene.ObjectType):
-    register = mutations.Register.Field()
-    verify_account = mutations.VerifyAccount.Field()
-    resend_activation_email = mutations.ResendActivationEmail.Field()
-    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
-    password_reset = mutations.PasswordReset.Field()
-    password_set = mutations.PasswordSet.Field()  # For passwordless registration
-    password_change = mutations.PasswordChange.Field()
-    update_account = mutations.UpdateAccount.Field()
-    archive_account = mutations.ArchiveAccount.Field()
-    delete_account = mutations.DeleteAccount.Field()
-    send_secondary_email_activation = mutations.SendSecondaryEmailActivation.Field()
-    verify_secondary_email = mutations.VerifySecondaryEmail.Field()
-    swap_emails = mutations.SwapEmails.Field()
-    remove_secondary_email = mutations.RemoveSecondaryEmail.Field()
-    # django-graphql-jwt inheritances
-    token_auth = mutations.ObtainJSONWebToken.Field()
-    verify_token = mutations.VerifyToken.Field()
-    revoke_token = mutations.RevokeToken.Field()
 
 
 class CompaniCategory(DjangoObjectType):
@@ -106,7 +86,7 @@ class CarsCategory(DjangoObjectType):
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
-    token_auth = mutations.ObtainJSONWebToken.Field()
+    # token_auth = mutations.ObtainJSONWebToken.Field()
 
     hello = graphene.String(default_value='Hi!')
     all_Compani = relay.ConnectionField(
@@ -157,7 +137,7 @@ class CreatePet(graphene.Mutation):
     pet = graphene.Field(PetType)
     message = testappSerializer.ObjectField()
     status = graphene.Int()
-    verify_token = mutations.VerifyToken.Field()
+    # verify_token = mutations.VerifyToken.Field()
 
     class Arguments:
 
@@ -221,11 +201,10 @@ class DeletePet(graphene.Mutation):
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
-    # print('mutation')
     create_pet = CreatePet.Field()
     update_pet = UpdataPet.Field()
     deltee_pet = DeletePet.Field()
-
+    SignUpPlyer = signup_player.SignUpPlayer.Field()
     # @mutation.field("replyUpdate")
     # def reply_update(_obj, info, reply):
     #     """Resolver for reply update."""

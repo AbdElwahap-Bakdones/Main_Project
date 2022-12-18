@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "postApp",
     "graphql_auth",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
+    "graphene_gis",
+
     # 'django_filters'
 
 
@@ -154,7 +156,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.User"
 
 GRAPHENE = {
-    "SCHEMA": 'Schema.Schema.schema',
+    "SCHEMA": 'Graphql.Schema.Schema.schema',
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
         'middleware.auth.AuthorizationMiddleware',
