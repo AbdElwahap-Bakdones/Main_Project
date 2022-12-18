@@ -98,8 +98,8 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     all_Pet = relay.ConnectionField(PetRelay)
 
     def resolve_hello(root, info, **kwargs):
-        print(dict(info.context.META))
-        print(info.context.user.is_authenticated)
+        # print(dict(info.context.META))
+        # print(info.context.user.is_authenticated)
         if info.context.user.is_authenticated:
             return 'abd'
         print('nooo')
