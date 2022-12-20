@@ -58,6 +58,8 @@ class SignUpPlayer(graphene.Mutation):
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return self(user=user, player=player, message=msg, status=status)
 
+#                    ###
+
 
 class SignUpManager(graphene.Mutation):
     user = graphene.Field(UserModel)
