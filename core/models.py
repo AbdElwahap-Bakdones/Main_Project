@@ -8,7 +8,6 @@ class Rule(models.Model):
 
 
 class User(AbstractUser):
-    location = models.CharField(max_length=255, blank=False)
     phone = models.IntegerField(default=930075476, blank=False)
     first_name = models.CharField(('first name'), max_length=150, blank=False)
     last_name = models.CharField(('last name'), max_length=150, blank=False)
@@ -44,6 +43,8 @@ class Manager(models.Model):
 
 class Player(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+    location_lat = models.CharField(max_length=255)
+    location_long = models.CharField(max_length=255)
 
 
 class SubManager(models.Model):

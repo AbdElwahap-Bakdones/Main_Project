@@ -14,7 +14,7 @@ from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import login_required
 from http import HTTPStatus
 from ..Auth.graphql_auth import AuthMutation
-from ..Mutation.SignUp import signup_player
+from ..Mutation.SignUp import signup
 import jwt
 
 
@@ -204,7 +204,8 @@ class Mutation (AuthMutation, graphene.ObjectType):
     create_pet = CreatePet.Field()
     update_pet = UpdataPet.Field()
     deltee_pet = DeletePet.Field()
-    SignUpPlyer = signup_player.SignUpPlayer.Field()
+    SignUpPlyer = signup.SignUpPlayer.Field()
+    SignUpManager = signup.SignUpManager.Field()
     # @mutation.field("replyUpdate")
     # def reply_update(_obj, info, reply):
     #     """Resolver for reply update."""
