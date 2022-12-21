@@ -9,6 +9,7 @@ class SignUpPlayer(graphene.Mutation):
     player = graphene.Field(PlayerModel)
     message = graphene.String()
     status = graphene.Int()
+    #
 
     class Arguments:
         user_data = UserInput()
