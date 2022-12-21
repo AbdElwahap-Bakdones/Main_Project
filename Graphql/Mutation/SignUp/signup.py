@@ -27,7 +27,7 @@ class SignUpPlayer(graphene.Mutation):
             player_data = kargs['player_data']  # extract data
             player_data['user_id'] = 1  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
-                user_data['last_name']  # define username as first_name$last_name
+                user_data['last_name']  # define username as first_name@last_name
 
             # add User via serializer   &  add player via serializer
             seria_user = serializer.UserSerializer(data=user_data)
@@ -57,8 +57,6 @@ class SignUpPlayer(graphene.Mutation):
             msg = e
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return self(user=user, player=player, message=msg, status=status)
-
-#                    ###
 
 
 class SignUpManager(graphene.Mutation):
