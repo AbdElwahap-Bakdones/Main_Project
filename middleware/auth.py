@@ -1,6 +1,7 @@
 
 import jwt
 
+
 class AuthorizationMiddleware(object):
     def resolve(self, next, root, info, **args):
         # print(dict(info.context.META))

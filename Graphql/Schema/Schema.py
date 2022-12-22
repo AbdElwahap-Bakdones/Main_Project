@@ -206,6 +206,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     deltee_pet = DeletePet.Field()
     SignUpPlyer = signup.SignUpPlayer.Field()
     SignUpManager = signup.SignUpManager.Field()
+    SignUbSubManager = signup.SignUpSubManager.Field()
     # @mutation.field("replyUpdate")
     # def reply_update(_obj, info, reply):
     #     """Resolver for reply update."""

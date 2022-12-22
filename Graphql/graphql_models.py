@@ -37,3 +37,13 @@ class ManagerModel(DjangoObjectType):
 
 class ManagerInput(graphene.InputObjectType):
     field = graphene.String(requierd=False)
+
+
+class SubManagerModel(DjangoObjectType):
+    class Meta:
+        model = models.SubManager
+        fields = ['user_id']
+
+
+class SubManagerInput(graphene.InputObjectType):
+    field = graphene.String(requierd=False)

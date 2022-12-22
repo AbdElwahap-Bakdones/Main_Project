@@ -43,3 +43,11 @@ class ManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Manager
         fields = ['user_id']
+
+
+class SubManagerSerializer(serializers.ModelSerializer):
+    user_id = UserSerializer
+
+    class Meta:
+        model = models.SubManager
+        fields = ['user_id']
