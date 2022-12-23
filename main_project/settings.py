@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-
+import datetime
 #from .Schema.Schema import schema
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -182,6 +182,8 @@ GRAPHQL_JWT = {
         "graphql_auth.mutations.VerifySecondaryEmail", ],
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -196,3 +198,4 @@ AUTHENTICATION_BACKENDS = [
     # ...
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+FunctionDonotNeedAuth = ['tokenAuth', 'SignUpPlyer']

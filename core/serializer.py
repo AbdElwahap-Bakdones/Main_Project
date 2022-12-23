@@ -51,3 +51,76 @@ class SubManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SubManager
         fields = ['user_id']
+
+
+class ClubSerializer(serializers.ModelSerializer):
+    manager_id = ManagerSerializer
+
+    class Meta:
+        model = models.Club
+        fields = ["id", "manager_id", "number_stad", "name",
+                  "location", "is_available"]
+
+    def create(self, validated_data):
+        club = models.Club(**validated_data)
+        club.save()
+        return club
+    # class UserSerializer:
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    sub_manager_id = SubManagerSerializer
+    club_id = ClubSerializer
+
+    class Meta:
+        model = models.Section
+        fields = ["id", "name", "sub_manager_id", "club_id", "is_available"]
+
+    def create(self, validated_data):
+        section = models.Section(**validated_data)
+        section.save()
+        return section
+
+
+class StadiumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Stadium
+        fields = "__all__"
+
+    def create(self, validated_data):
+        Stadium = models.Stadium(**validated_data)
+        Stadium.save()
+        return Stadium
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Service
+        fields = "__all__"
+
+    def create(self, validated_data):
+        Service = models.Service(**validated_data)
+        Service.save()
+        return Service
+
+
+class StadiumServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.StadiumService
+        fields = "__all__"
+
+    def create(self, validated_data):
+        StadiumService = models.StadiumService(**validated_data)
+        StadiumService.save()
+        return StadiumService
+
+
+class DurationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Duration
+        fields = "__all__"
+
+    def create(self, validated_data):
+        Duration = models.Duration(**validated_data)
+        Duration.save()
+        return Duration

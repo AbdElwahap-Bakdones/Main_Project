@@ -15,7 +15,15 @@ from graphql_jwt.decorators import login_required
 from http import HTTPStatus
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
+from ..Mutation.club import AddClub, UpdateClub
+from ..Mutation.section import AddSection
 import jwt
+
+
+def checkPermission(permission: str, info: object):
+    if permission in User.objects.get(username=info.context.META["username"]).get_all_permissions():
+        return next
+    raise Exception("You do not have permission to complete the process")
 
 
 class PrivateGraphQLView(LoginRequiredMixin, GraphQLView):
@@ -207,6 +215,9 @@ class Mutation (AuthMutation, graphene.ObjectType):
     SignUpPlyer = signup.SignUpPlayer.Field()
     SignUpManager = signup.SignUpManager.Field()
     SignUbSubManager = signup.SignUpSubManager.Field()
+    addclub = AddClub.Field()
+    updateclub = UpdateClub.Field()
+    addsection = AddSection.Field()
     # @mutation.field("replyUpdate")
     # def reply_update(_obj, info, reply):
     #     """Resolver for reply update."""

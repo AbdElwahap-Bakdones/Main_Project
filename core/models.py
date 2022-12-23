@@ -64,7 +64,7 @@ class Club(models.Model):
 
 
 class Section(models.Model):
-    subManager_id = models.ForeignKey(SubManager, on_delete=models.CASCADE)
+    sub_manager_id = models.ForeignKey(SubManager, on_delete=models.CASCADE)
     club_id = models.ForeignKey(Club, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
