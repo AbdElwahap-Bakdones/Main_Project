@@ -198,4 +198,4 @@ AUTHENTICATION_BACKENDS = [
     # ...
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-FunctionDonotNeedAuth = ['tokenAuth', 'SignUpPlyer']
+FunctionDonotNeedAuth = ['tokenAuth', 'SignUpPlyer', '__schema']

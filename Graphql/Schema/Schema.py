@@ -20,6 +20,7 @@ from ..Mutation.section import AddSection, UpdatSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
+# from ..Mutation.section import AddSection
 import jwt
 
 
@@ -99,7 +100,7 @@ class CarsCategory(DjangoObjectType):
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     # token_auth = mutations.ObtainJSONWebToken.Field()
 
-    hello = graphene.String(default_value='Hi!')
+    hello = graphene.String()
     all_Compani = relay.ConnectionField(
         QuestionConnection)  # graphene.List(CompaniCategory)
     Cars_by_nam = graphene.List(CarsCategory)
@@ -109,12 +110,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     all_Pet = relay.ConnectionField(PetRelay)
 
     def resolve_hello(root, info, **kwargs):
-        # print(dict(info.context.META))
-        # print(info.context.user.is_authenticated)
-        if info.context.user.is_authenticated:
-            return 'abd'
-        print('nooo')
-        return 'ghaith'
+        return "hello (;"
 
     def resolve_all_Compani(root, info, **kwargs):
         try:
@@ -267,18 +263,6 @@ def check_token(token: str) -> map:
         print('Error checkToken functions')
         print(e)
         return {'state': False}
-
-
-# class AuthorizationMiddleware(object):
-#     def resolve(self, next, root, info, **args):
-#         # print(dict(info.context.META))
-#         print('0000000000')
-#         print(info.context.user)
-#         if info.operation.operation == 'mutation':
-#             print('mutation')
-#         if info.operation.operation == 'query':
-#             print('query')
-#         return next(root, info, **args)
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation,

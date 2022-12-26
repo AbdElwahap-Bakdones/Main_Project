@@ -2,11 +2,11 @@ from ..TypingObject import typeobject
 import graphene
 from core import models, serializer
 from ..Auth.permission import checkPermission
+from rest_framework import status as status_code
 
 
 class ClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
-    number_stad = graphene.Int(required=True)
     location = graphene.String(required=True)
     is_available = graphene.Boolean(required=True)
 
@@ -21,20 +21,22 @@ class AddClub(graphene.Mutation):
 
     @classmethod
     def mutate(self, root, info, **kwargs):
-        checkPermission("core.add_club", info)
-        kwargs["ClubData"].update({"manager_id": models.Manager.objects.get(
-            user_id=info.context.META["user"]).pk})
-        seria = serializer.ClubSerializer(
-            data=kwargs["ClubData"])
+        user = info.context.META["user"]
+        if not checkPermission("core.add_club", user):
+            return self(club=None, message='You do not have permission to complete the process', status=status_code.HTTP_401_UNAUTHORIZED)
+        manager_id = models.Manager.objects.get(user_id=user).pk
+        print(kwargs)
+        kwargs["ClubData"].update({"manager_id": manager_id})
+        seria = serializer.ClubSerializer(data=kwargs["ClubData"])
         if seria.is_valid():
             seria.validated_data
             msg = seria.errors
-            status = 200
+            status = status_code.HTTP_201_CREATED
             club = seria.save()
         else:
             msg = seria.errors
             club = None
-            status = 400
+            status = status_code.HTTP_406_NOT_ACCEPTABLE
         return self(club=club, message=msg, status=status)
 
 
