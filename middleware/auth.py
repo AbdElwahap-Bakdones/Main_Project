@@ -24,7 +24,7 @@ class AuthorizationMiddleware(object):
     def checkToken(self, next, root, info, args):
         try:
             if not 'HTTP_TOKEN' in info.context.META:
-                return GraphQLError('message')
+                return None
             token = info.context.META['HTTP_TOKEN']
             info.context.META.update(decode_token(token))
             self.authorized = True
@@ -35,7 +35,7 @@ class AuthorizationMiddleware(object):
             return None
 
     def resolve(self, next, root, info, **args):
-        return next(root, info, **args)
+        # return next(root, info, **args)
 
         operation = info.operation.selection_set.selections[0].name.value
         if not operation in FunctionDonotNeedAuth:
