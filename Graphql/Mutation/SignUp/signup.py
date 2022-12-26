@@ -1,6 +1,7 @@
 import graphene
 from ...graphql_models import UserInput, UserModel, PlayerInput, PlayerModel, ManagerModel, ManagerInput, SubManagerInput, SubManagerModel
 from core import serializer
+from ...TypingObject import typeobject
 from rest_framework import status as status_code
 
 
@@ -125,7 +126,7 @@ class SignUpManager(graphene.Mutation):
 
 
 class SignUpSubManager(graphene.Mutation):
-    user = graphene.Field(UserModel)
+    user = graphene.Field(typeobject.UserObjectType)
     subManager = graphene.Field(SubManagerModel)
     message = graphene.String()
     status = graphene.Int()
@@ -158,6 +159,7 @@ class SignUpSubManager(graphene.Mutation):
             if is_valid:
                 seria_user.validated_data
                 user = seria_user.save()
+                user.groups
                 # Set a correct user_id value
                 subManager_data['user_id'] = user.pk
                 seria_subManager = serializer.SubManagerSerializer(

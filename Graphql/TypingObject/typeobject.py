@@ -7,13 +7,8 @@ from graphene import relay
 class UserObjectType(DjangoObjectType):
     class Meta:
         model = models.User
-        fields = ('id', 'username', 'firstName', 'lastname',
-                  'password1', 'password2', 'phone')
+        fields = ('pk', 'username', 'firstName', 'lastname', 'phone')
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class PlayerObjectType(DjangoObjectType):
@@ -21,10 +16,6 @@ class PlayerObjectType(DjangoObjectType):
         model = models.Player
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class ManagerObjectType(DjangoObjectType):
@@ -38,10 +29,6 @@ class SubManagerObjectType(DjangoObjectType):
         model = models.SubManager
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class ClubObjectType(DjangoObjectType):
@@ -49,10 +36,6 @@ class ClubObjectType(DjangoObjectType):
         model = models.Club
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class SectionObjectType(DjangoObjectType):
@@ -60,10 +43,6 @@ class SectionObjectType(DjangoObjectType):
         model = models.Section
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class StadiumObjectType(DjangoObjectType):
@@ -71,10 +50,6 @@ class StadiumObjectType(DjangoObjectType):
         model = models.Stadium
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class StadiumServiceObjectType(DjangoObjectType):
@@ -82,10 +57,6 @@ class StadiumServiceObjectType(DjangoObjectType):
         model = models.StadiumService
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class ServiceObjectType(DjangoObjectType):
@@ -93,10 +64,6 @@ class ServiceObjectType(DjangoObjectType):
         model = models.Service
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class DurationObjectType(DjangoObjectType):
@@ -104,10 +71,6 @@ class DurationObjectType(DjangoObjectType):
         model = models.Duration
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class ReservationObjectType(DjangoObjectType):
@@ -115,10 +78,6 @@ class ReservationObjectType(DjangoObjectType):
         model = models.Reservation
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class Player_reservationObjectType(DjangoObjectType):
@@ -126,10 +85,6 @@ class Player_reservationObjectType(DjangoObjectType):
         model = models.Player_reservation
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class Player_reservationObjectType(DjangoObjectType):
@@ -137,10 +92,6 @@ class Player_reservationObjectType(DjangoObjectType):
         model = models.Player_reservation
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class TeamObjectType(DjangoObjectType):
@@ -148,10 +99,6 @@ class TeamObjectType(DjangoObjectType):
         model = models.Team
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class Team_resevationObjectType(DjangoObjectType):
@@ -159,10 +106,6 @@ class Team_resevationObjectType(DjangoObjectType):
         model = models.Team_resevation
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class Team_membersObjectType(DjangoObjectType):
@@ -170,10 +113,6 @@ class Team_membersObjectType(DjangoObjectType):
         model = models.Team_members
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class PostionObjectType(DjangoObjectType):
@@ -181,10 +120,6 @@ class PostionObjectType(DjangoObjectType):
         model = models.Postion
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class TypeObjectType(DjangoObjectType):
@@ -192,10 +127,6 @@ class TypeObjectType(DjangoObjectType):
         model = models.Type
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class StadiumRateObjectType(DjangoObjectType):
@@ -203,10 +134,6 @@ class StadiumRateObjectType(DjangoObjectType):
         model = models.StadiumRate
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class UserRateObjectType(DjangoObjectType):
@@ -214,10 +141,6 @@ class UserRateObjectType(DjangoObjectType):
         model = models.UserType
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class RateTypeObjectType(DjangoObjectType):
@@ -225,10 +148,6 @@ class RateTypeObjectType(DjangoObjectType):
         model = models.RateType
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
 
 
 class NotificationObjectType(DjangoObjectType):
@@ -236,7 +155,3 @@ class NotificationObjectType(DjangoObjectType):
         model = models.Notification
         fields = "__all__"
         interfaces = (relay.Node,)
-    extra_field = graphene.String()
-
-    def resolve_extra_field(self, info):
-        return self.id
