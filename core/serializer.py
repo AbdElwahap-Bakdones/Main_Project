@@ -82,37 +82,55 @@ class SectionSerializer(serializers.ModelSerializer):
         return section
 
 
-class StadiumSerializer(serializers.ModelSerializer):
+class TypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Stadium
+        model = models.Type
         fields = "__all__"
 
     def create(self, validated_data):
-        Stadium = models.Stadium(**validated_data)
-        Stadium.save()
-        return Stadium
+        types = models.Type(**validated_data)
+        types.save()
+        return types
+
+
+class StadiumSerializer(serializers.ModelSerializer):
+    section_id = SectionSerializer
+    type_id = TypeSerializer
+
+    class Meta:
+        model = models.Stadium
+        fields = ["id", "name", "section_id",
+                  "type_id", "size", "is_available"]
+
+    def create(self, validated_data):
+        stadium = models.Stadium(**validated_data)
+        stadium.save()
+        return stadium
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Service
-        fields = "__all__"
+        fields = ["id", "name"]
 
     def create(self, validated_data):
-        Service = models.Service(**validated_data)
-        Service.save()
-        return Service
+        service = models.Service(**validated_data)
+        service.save()
+        return service
 
 
 class StadiumServiceSerializer(serializers.ModelSerializer):
+    stad_id = StadiumSerializer
+    service_id = ServiceSerializer
+
     class Meta:
         model = models.StadiumService
-        fields = "__all__"
+        fields = ["id", "stad_id", "service_id", "is_available"]
 
     def create(self, validated_data):
-        StadiumService = models.StadiumService(**validated_data)
-        StadiumService.save()
-        return StadiumService
+        stadiumService = models.StadiumService(**validated_data)
+        stadiumService.save()
+        return stadiumService
 
 
 class DurationSerializer(serializers.ModelSerializer):

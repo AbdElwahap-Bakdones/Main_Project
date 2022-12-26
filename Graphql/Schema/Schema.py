@@ -16,6 +16,10 @@ from http import HTTPStatus
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub
+from ..Mutation.section import AddSection, UpdatSection
+from ..Mutation.stadium import AddStadium, UpdateStadium
+from ..Mutation.service import AddService, UpdateService
+from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 # from ..Mutation.section import AddSection
 import jwt
 
@@ -212,7 +216,14 @@ class Mutation (AuthMutation, graphene.ObjectType):
     SignUbSubManager = signup.SignUpSubManager.Field()
     addclub = AddClub.Field()
     updateclub = UpdateClub.Field()
-    # addsection = AddSection.Field()
+    addsection = AddSection.Field()
+    updatesection = UpdatSection.Field()
+    addstadium = AddStadium.Field()
+    updatestadium = UpdateStadium.Field()
+    addservice = AddService.Field()
+    updateservice = UpdateService.Field()
+    addservicesforstadiums = AddServicesForStadiums.Field()
+    modificationstostadiumservices = ModificationsToStadiumServices.Field()
     # @mutation.field("replyUpdate")
     # def reply_update(_obj, info, reply):
     #     """Resolver for reply update."""

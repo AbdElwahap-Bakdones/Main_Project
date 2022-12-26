@@ -52,16 +52,16 @@ class StadiumObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class StadiumServiceObjectType(DjangoObjectType):
+class ServiceObjectType(DjangoObjectType):
     class Meta:
-        model = models.StadiumService
+        model = models.Service
         fields = "__all__"
         interfaces = (relay.Node,)
 
 
-class ServiceObjectType(DjangoObjectType):
+class StadiumServiceObjectType(DjangoObjectType):
     class Meta:
-        model = models.Service
+        model = models.StadiumService
         fields = "__all__"
         interfaces = (relay.Node,)
 
