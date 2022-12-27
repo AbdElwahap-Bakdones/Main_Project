@@ -3,28 +3,36 @@ import graphene
 from core import models, serializer
 from ..Auth.permission import checkPermission
 from rest_framework import status as status_code
+from abc import ABC, abstractmethod, abstractclassmethod
+from django.http import HttpResponse
+from .. import QueryStructure
 
 
-class ClubInput(graphene.InputObjectType):
+class AddClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     location = graphene.String(required=True)
     is_available = graphene.Boolean(required=True)
 
 
-class AddClub(graphene.Mutation):
-    club = graphene.Field(typeobject.ClubObjectType)
-    message = graphene.String()
-    status = graphene.Int()
+class InputUpdateClub(graphene.InputObjectType):
+    id = graphene.Int()
+    name = graphene.String(required=True)
+    is_available = graphene.Boolean(required=True)
+
+
+class AddClub  (graphene.Mutation, QueryStructure.Attributes):
+
+    data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        ClubData = ClubInput()
+        ClubData = AddClubInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
         try:
             user = info.context.META["user"]
             if not checkPermission("core.add_club", user):
-                return self(club=None, message='You do not have permission to complete the process', status=status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
             # get manager_id
             manager_id = models.Manager.objects.get(user_id=user).pk
             # add manager_id to data
@@ -39,11 +47,11 @@ class AddClub(graphene.Mutation):
                 msg = seria.errors
                 club = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
-            return self(club=club, message=msg, status=status)
+            return QueryStructure.MyReturn(self, club, msg, status)
         except Exception as e:
             print('Error in AddClub :')
             print(e)
-            return self(club=None, message='Some thing wrong', status=status_code.HTTP_500_INTERNAL_SERVER_ERROR)
+            return QueryStructure.MyReturn(self, None, 'Some thing wrong1', status_code.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UpdateClub(graphene.Mutation):
@@ -52,16 +60,14 @@ class UpdateClub(graphene.Mutation):
     status = graphene.Int()
 
     class Arguments:
-        id = graphene.ID(required=True)
-        name = graphene.String()
-        is_available = graphene.Boolean()
+        ClubData = InputUpdateClub()
 
     @classmethod
     def mutate(self, root, info, id, **kwargs):
         try:
             user = info.context.META["user"]
             if not checkPermission("core.change_club", user):
-                return self(club=None, message='You do not have permission to complete the process', status=status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
             sub = models.Club.objects.get(id=id)
             seria = serializer.ClubSerializer(sub,
                                               data=kwargs, partial=True)
@@ -74,8 +80,8 @@ class UpdateClub(graphene.Mutation):
                 msg = seria.errors
                 club = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
-            return self(club=club, message=msg, status=status)
+            return QueryStructure.MyReturn(self, club, msg, status)
         except Exception as e:
             print('Error in UpdateClub')
             print(e)
-            return self(club=None, message='Some thing wrong', status=status_code.HTTP_500_INTERNAL_SERVER_ERROR)
+            return QueryStructure.MyReturn(self, None, 'Some thing wrong1', status_code.HTTP_500_INTERNAL_SERVER_ERROR)
