@@ -5,6 +5,8 @@ import graphene
 from graphql import GraphQLError
 from graphql.execution.base import ResolveInfo
 from graphql.language.ast import*
+import json
+from django.http import JsonResponse
 
 
 def decode_token(token: str) -> User:
@@ -21,27 +23,10 @@ class AuthorizationMiddleware(object):
     def __init__(self):
         self.authorized = False
 
-    def checkToken(self, next, root, info, args):
-        try:
-            if not 'HTTP_TOKEN' in info.context.META:
-                return None
-            token = info.context.META['HTTP_TOKEN']
-            info.context.META.update(decode_token(token))
-            self.authorized = True
-            return next(root, info, **args)
-
-        except jwt.DecodeError or jwt.InvalidTokenError as e:
-            print(e)
-            return None
-
     def resolve(self, next, root, info, **args):
-        # return next(root, info, **args)
 
-        operation = info.operation.selection_set.selections[0].name.value
-        if not operation in FunctionDonotNeedAuth:
-            return self.checkToken(next=next, root=root, info=info, args=args)
-        if self.authorized or operation in FunctionDonotNeedAuth:
-            return next(root, info, **args)
+        return next(root, info, **args)
+
 
 # m= jwt.decode(info.context.META['HTTP_TOKEN'],'django-insecure-z@mx14w10q5&76myvh@5v+#bzz@eabj0mgnz6q3^9^iypw53l7',algorithms=['HS256'])
     # print(m)
