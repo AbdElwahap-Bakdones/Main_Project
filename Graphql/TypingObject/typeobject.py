@@ -117,7 +117,7 @@ class Team_membersObjectType(DjangoObjectType):
 
 class PostionObjectType(DjangoObjectType):
     class Meta:
-        model = models.Postion
+        model = models.Position
         fields = "__all__"
         interfaces = (relay.Node,)
 
@@ -138,7 +138,7 @@ class StadiumRateObjectType(DjangoObjectType):
 
 class UserRateObjectType(DjangoObjectType):
     class Meta:
-        model = models.UserType
+        model = models.UserRate
         fields = "__all__"
         interfaces = (relay.Node,)
 
