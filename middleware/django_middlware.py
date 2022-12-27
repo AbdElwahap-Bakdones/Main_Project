@@ -18,16 +18,16 @@ class auth:
     def __call__(self, request):
         # notNeed is return (notNeed >= 1) if the request not need an auth
         print('ok')
+        print(request.path)
         notNeed = sum(
             map(lambda item: request.body.find(item), FunctionDonotNeedAuth))
-        if notNeed > 0 or request.body == b'':
+        if not (request.path == '/graphql/') or notNeed > 0 or request.body == b'':
             print('no need auth')
             return self.get_response(request)
         # extract data from header
         regex = re.compile('^HTTP_')
         header = dict((regex.sub('', header), value) for (header, value)
                       in request.META.items() if header.startswith('HTTP_'))
-        print(header)
         if not 'TOKEN' in header:
             return self.__return(status_code.HTTP_400_BAD_REQUEST, 'there is no token')
         return self.checkToken(header['TOKEN'], request=request)
