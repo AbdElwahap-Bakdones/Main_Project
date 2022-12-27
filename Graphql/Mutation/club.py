@@ -1,4 +1,4 @@
-from ..TypingObject import typeobject
+from ..ModelsGraphQL import typeobject, inputtype
 import graphene
 from core import models, serializer
 from ..Auth.permission import checkPermission
@@ -8,24 +8,12 @@ from django.http import HttpResponse
 from .. import QueryStructure
 
 
-class AddClubInput(graphene.InputObjectType):
-    name = graphene.String(required=True)
-    location = graphene.String(required=True)
-    is_available = graphene.Boolean(required=True)
-
-
-class InputUpdateClub(graphene.InputObjectType):
-    id = graphene.Int()
-    name = graphene.String(required=True)
-    is_available = graphene.Boolean(required=True)
-
-
 class AddClub  (graphene.Mutation, QueryStructure.Attributes):
 
     data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        ClubData = AddClubInput()
+        ClubData = inputtype.AddClubInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -47,11 +35,13 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
                 msg = seria.errors
                 club = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
-            return QueryStructure.MyReturn(self, club, msg, status)
         except Exception as e:
             print('Error in AddClub :')
             print(e)
-            return QueryStructure.MyReturn(self, None, 'Some thing wrong1', status_code.HTTP_500_INTERNAL_SERVER_ERROR)
+            msg = e
+            club = None
+            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
+        return QueryStructure.MyReturn(instanse=self, data=club, message=msg, code=status)
 
 
 class UpdateClub(graphene.Mutation):
@@ -60,7 +50,7 @@ class UpdateClub(graphene.Mutation):
     status = graphene.Int()
 
     class Arguments:
-        ClubData = InputUpdateClub()
+        ClubData = inputtype.InputUpdateClub()
 
     @classmethod
     def mutate(self, root, info, id, **kwargs):
@@ -80,8 +70,10 @@ class UpdateClub(graphene.Mutation):
                 msg = seria.errors
                 club = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
-            return QueryStructure.MyReturn(self, club, msg, status)
         except Exception as e:
             print('Error in UpdateClub')
             print(e)
-            return QueryStructure.MyReturn(self, None, 'Some thing wrong1', status_code.HTTP_500_INTERNAL_SERVER_ERROR)
+            msg = e
+            club = None
+            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
+        return QueryStructure.MyReturn(instanse=self, data=club, message=msg, code=status)
