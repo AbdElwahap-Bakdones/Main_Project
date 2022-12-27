@@ -3,6 +3,7 @@ from ...graphql_models import UserInput, UserModel, PlayerInput, PlayerModel, Ma
 from core import serializer
 from ...TypingObject import typeobject
 from rest_framework import status as status_code
+from django.contrib.auth.models import Group
 
 
 class SignUpPlayer(graphene.Mutation):
@@ -44,6 +45,8 @@ class SignUpPlayer(graphene.Mutation):
                 seria_player.is_valid(
                     raise_exception='internal servre Error')
                 player = seria_player.save()
+                groups = Group.objects.get(id=1)
+                groups.user_set.add(user)
                 status = status_code.HTTP_201_CREATED
                 msg = 'ok'
             else:
@@ -102,6 +105,8 @@ class SignUpManager(graphene.Mutation):
                     raise_exception='internal servre Error')
                 manager = seria_manager.save()
                 # cheack if manager is subManager
+                groups = Group.objects.get(id=2)
+                groups.user_set.add(user)
                 self.create_subManager(kargs['is_submanager'], manager_data)
                 status = 200
                 msg = 'ok'
@@ -167,6 +172,8 @@ class SignUpSubManager(graphene.Mutation):
                 seria_subManager.is_valid(
                     raise_exception='internal servre Error')
                 subManager = seria_subManager.save()
+                groups = Group.objects.get(id=3)
+                groups.user_set.add(user)
                 status = status_code.HTTP_201_CREATED
                 msg = 'ok'
             else:
