@@ -65,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "middleware.django_middlware.auth",
 ]
 
 ROOT_URLCONF = "main_project.urls"
@@ -198,4 +199,4 @@ AUTHENTICATION_BACKENDS = [
     # ...
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-FunctionDonotNeedAuth = ['tokenAuth', 'SignUpPlyer', '__schema']
+FunctionDonotNeedAuth = [b'tokenAuth', b'SignUpPlyer', b'__schema']

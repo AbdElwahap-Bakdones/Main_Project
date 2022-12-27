@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Rule(models.Model):
     name = models.CharField(max_length=255)
+    auth = models.TextField(blank=True)
 
 
 class User(AbstractUser):
@@ -31,7 +32,7 @@ class RateType(models.Model):
     value = models.FloatField()
 
 
-class UserType(models.Model):
+class UserRate(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     rateType_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
     percent = models.FloatField()
@@ -47,10 +48,6 @@ class Player(models.Model):
     location_long = models.CharField(max_length=255)
 
 
-class SubManager(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
-
-
 class Type(models.Model):
     name = models.CharField(max_length=255)
 
@@ -58,9 +55,15 @@ class Type(models.Model):
 class Club(models.Model):
     manager_id = models.ForeignKey(Manager, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    number_stad = models.IntegerField()
+    number_stad = models.IntegerField(default=0)
     location = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+
+class SubManager(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+    club_id = models.ForeignKey(Club, on_delete=models.CASCADE)
 
 
 class Section(models.Model):
@@ -68,6 +71,7 @@ class Section(models.Model):
     club_id = models.ForeignKey(Club, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
 
 
 class Stadium(models.Model):
@@ -75,6 +79,7 @@ class Stadium(models.Model):
     type_id = models.ForeignKey(Type, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
     has_legua = models.BooleanField(default=False)
     size = models.FloatField()
 
@@ -88,6 +93,8 @@ class StadiumRate(models.Model):
 class Duration(models.Model):
     stad_id = models.ForeignKey(Stadium, on_delete=models.CASCADE)
     time = models.TimeField()
+    is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
 
 
 class Service(models.Model):
@@ -105,6 +112,7 @@ class Reservation(models.Model):
     kind = models.CharField(max_length=255)
     count = models.IntegerField()
     time = models.DateField()
+    caneled = models.BooleanField(default=False)
 
 
 class Player_reservation(models.Model):
@@ -126,15 +134,19 @@ class Team_resevation(models.Model):
     reservation_id = models.ForeignKey(Reservation, on_delete=models.CASCADE)
 
 
-class Postion(models.Model):
+class Position(models.Model):
+
     name = models.CharField(max_length=255)
     key = models.CharField(max_length=255)
+    type_id = models.ForeignKey(Type, on_delete=models.CASCADE)
 
 
 class Team_members(models.Model):
     player_id = models.ForeignKey(Player, on_delete=models.CASCADE)
-    position_id = models.ForeignKey(Postion, on_delete=models.CASCADE)
+    position_id = models.ForeignKey(Position, on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     is_captin = models.BooleanField(default=True)
+    is_leave = models.BooleanField(default=False)
 
 
 class Notification(models.Model):
