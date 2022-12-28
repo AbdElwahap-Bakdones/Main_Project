@@ -5,14 +5,17 @@ import graphene
 class AddClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     location = graphene.String(required=True)
+    number_stad = graphene.Int(required=True)
     is_available = graphene.Boolean(required=True)
 
 
 class InputUpdateClub(graphene.InputObjectType):
     id = graphene.ID(required=True)
-    name = graphene.String(required=True)
-    is_available = graphene.Boolean(required=True)
-    is_deleted = graphene.Boolean(required=True)
+    name = graphene.String()
+    number_stad = graphene.Int()
+    location = graphene.String()
+    is_available = graphene.Boolean()
+    is_deleted = graphene.Boolean()
 
 
 class UserInput(graphene.InputObjectType):
@@ -42,12 +45,6 @@ class SubManagerInput(graphene.InputObjectType):
 class AddClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     location = graphene.String(required=True)
-    is_available = graphene.Boolean(required=True)
-
-
-class InputUpdateClub(graphene.InputObjectType):
-    id = graphene.Int()
-    name = graphene.String(required=True)
     is_available = graphene.Boolean(required=True)
 
 
@@ -85,8 +82,8 @@ class AddDurationInput(graphene.InputObjectType):
 
 
 class AddReservationInput(graphene.InputObjectType):
-    time = graphene.Date(required=True)
+    # time = graphene.Date(required=True)
     duration_id = graphene.ID(required=True)
     kind = graphene.String(required=True)
     count = graphene.Int(required=True)
-    caneled = graphene.Boolean(required=True)
+    canceled = graphene.Boolean(required=True)

@@ -59,7 +59,7 @@ class ClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Club
         fields = ["pk", "manager_id", "number_stad", "name",
-                  "location", "is_available"]
+                  "location", "is_available", "is_deleted"]
 
     def create(self, validated_data):
         club = models.Club(**validated_data)
@@ -72,6 +72,13 @@ class ClubSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.is_available = validated_data.get(
             'is_available', instance.is_available)
+        instance.number_stad = validated_data.get(
+            'number_stad', instance.number_stad)
+        instance.is_deleted = validated_data.get(
+            'is_deleted', instance.is_deleted)
+        instance.location = validated_data.get(
+            'location', instance.location)
+
         instance.save()
         print(instance.name)
         return instance
@@ -160,7 +167,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Reservation
-        fields = ["id", "duration_id", "kind", "count", "time", "caneled"]
+        fields = ["id", "duration_id", "kind", "count", "canceled"]
 
     def create(self, validated_data):
         reservation = models.Reservation(**validated_data)

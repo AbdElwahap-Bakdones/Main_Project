@@ -27,7 +27,8 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
             manager_id = models.Manager.objects.get(user_id=user).pk
             # add manager_id to data
 
-            kwargs["ClubData"].update({"manager_id": manager_id})
+            kwargs["ClubData"].update(
+                {"manager_id": manager_id, "is_deleted": False})
             seria = serializer.ClubSerializer(data=kwargs["ClubData"])
             if seria.is_valid():
                 seria.validated_data
@@ -39,13 +40,8 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
                 data = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
         except Exception as e:
-            msg = e
-            data = None
-            print('Error in AddClub :')
-            print(e)
             msg = str(e)
             data = None
-
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
 
@@ -54,7 +50,7 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        data = inputtype.InputUpdateClub()
+        ClubData = inputtype.InputUpdateClub()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -62,34 +58,25 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
             user = models.User(info.context.META["user"])
             if not checkPermission("core.change_club", user.pk):
                 return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
-            sub = models.Club.objects.get(id=id)
-            seria = serializer.ClubSerializer(sub,
-                                              data=kwargs["ClubData"], partial=True)
-            data = kwargs['data']
-            club_object = models.Club.objects.filter(
-                pk=data['id'], is_deleted=False)
-            if not club_object.exists():
-                msg = 'there is no club with id='+data['id']
-                club = None
+            sub = models.Club.objects.filter(id=kwargs["ClubData"]["id"])
+            if not sub.exists():
+                msg = 'there is no club with id='+kwargs["ClubData"]["id"]
+                data = None
                 status = status_code.HTTP_404_NOT_FOUND
-                return QueryStructure.MyReturn(self, None, msg, status)
-
-            seria = serializer.ClubSerializer(
-                club_object.get(), data=data, partial=True)
+                return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            seria = serializer.ClubSerializer(sub.first(),
+                                              data=kwargs["ClubData"], partial=True)
             if seria.is_valid():
                 seria.validated_data
                 msg = 'updated!'
                 status = status_code.HTTP_200_OK
-                club = seria.save()
+                data = seria.save()
             else:
                 msg = seria.errors
-                club = None
+                data = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
         except Exception as e:
-            msg = e
-            print('Error in UpdateClub')
-            print(e)
             msg = str(e)
-            club = None
+            data = None
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=club, message=msg, code=status)
+        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
