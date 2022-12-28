@@ -34,7 +34,7 @@ class RateType(models.Model):
 
 class UserRate(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    rateType_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
+    rate_type_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
     percent = models.FloatField()
 
 
