@@ -2,6 +2,30 @@
 import graphene
 
 
+class UserInput(graphene.InputObjectType):
+    first_name = graphene.String(requierd=True)
+    last_name = graphene.String(requierd=True)
+    email = graphene.String(requierd=True)
+    phone = graphene.Int(requierd=True)
+    password = graphene.String(requierd=True)
+
+
+class ManagerInput(graphene.InputObjectType):
+    user = graphene.Field(UserInput)
+    field = graphene.String(requierd=False)
+
+
+class PlayerInput(graphene.InputObjectType):
+    user = graphene.Field(UserInput)
+    location_lat = graphene.String(requierd=True)
+    location_long = graphene.String(requierd=True)
+
+
+class SubManagerInput(graphene.InputObjectType):
+    user = graphene.Field(UserInput)
+    field = graphene.String(requierd=False)
+
+
 class AddClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     location = graphene.String(required=True)
@@ -40,25 +64,16 @@ class AddStadiumServiceInput(graphene.InputObjectType):
     is_available = graphene.Boolean(required=True)
 
 
-class UserInput(graphene.InputObjectType):
-    first_name = graphene.String(requierd=True)
-    last_name = graphene.String(requierd=True)
-    email = graphene.String(requierd=True)
-    phone = graphene.Int(requierd=True)
-    password = graphene.String(requierd=True)
+class AddDurationInput(graphene.InputObjectType):
+    time = graphene.Time(required=True)
+    stad_id = graphene.ID(required=True)
+    is_available = graphene.Boolean(required=True)
+    is_deleted = graphene.Boolean(required=True)
 
 
-class ManagerInput(graphene.InputObjectType):
-    user = graphene.Field(UserInput)
-    field = graphene.String(requierd=False)
-
-
-class PlayerInput(graphene.InputObjectType):
-    user = graphene.Field(UserInput)
-    location_lat = graphene.String(requierd=True)
-    location_long = graphene.String(requierd=True)
-
-
-class SubManagerInput(graphene.InputObjectType):
-    user = graphene.Field(UserInput)
-    field = graphene.String(requierd=False)
+class AddReservationInput(graphene.InputObjectType):
+    time = graphene.Date(required=True)
+    duration_id = graphene.ID(required=True)
+    kind = graphene.String(required=True)
+    count = graphene.Int(required=True)
+    caneled = graphene.Boolean(required=True)

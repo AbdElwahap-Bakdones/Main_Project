@@ -6,22 +6,22 @@ from rest_framework import status as status_code
 from .. import QueryStructure
 
 
-class AddService(graphene.Mutation, QueryStructure.Attributes):
-    data = graphene.Field(typeobject.ServiceObjectType)
+class AddReservation(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.ReservationObjectType)
 
     class Arguments:
-        ServiceData = inputtype.AddServiceInput()
+        ReservationData = inputtype.AddReservationInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
 
         try:
             user = info.context.META["user"]
-            if not checkPermission("core.add_service", user):
+            if not checkPermission("core.add_reservation", user):
                 return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
 
-            seria = serializer.ServiceSerializer(
-                data=kwargs["ServiceData"])
+            seria = serializer.ReservationSerializer(
+                data=kwargs["ReservationData"])
             if seria.is_valid():
                 seria.validated_data
                 msg = seria.errors
@@ -38,8 +38,8 @@ class AddService(graphene.Mutation, QueryStructure.Attributes):
         return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
 
 
-class UpdateService(graphene.Mutation):
-    service = graphene.Field(typeobject.ServiceObjectType)
+class UpdateReservation(graphene.Mutation):
+    Reservation = graphene.Field(typeobject.ReservationObjectType)
     message = graphene.String()
     status = graphene.Int()
 
@@ -49,17 +49,17 @@ class UpdateService(graphene.Mutation):
 
     @classmethod
     def mutate(self, root, info, id, **kwargs):
-        checkPermission("core.change_service", info)
-        sub = models.Service.objects.get(id=id)
-        seria = serializer.ServiceSerializer(sub,
-                                             data=kwargs, partial=True)
+        checkPermission("core.change_Reservation", info)
+        sub = models.Reservation.objects.get(id=id)
+        seria = serializer.ReservationSerializer(sub,
+                                                 data=kwargs, partial=True)
         if seria.is_valid():
             seria.validated_data
             msg = seria.errors
             status = 200
-            service = seria.save()
+            Reservation = seria.save()
         else:
             msg = seria.errors
-            service = None
+            Reservation = None
             status = 400
-        return self(service=service, message=msg, status=status)
+        return self(Reservation=Reservation, message=msg, status=status)

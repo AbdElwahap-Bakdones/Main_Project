@@ -134,11 +134,66 @@ class StadiumServiceSerializer(serializers.ModelSerializer):
 
 
 class DurationSerializer(serializers.ModelSerializer):
+    stad_id = StadiumSerializer
+
     class Meta:
         model = models.Duration
-        fields = "__all__"
+        fields = ["id", "stad_id", "is_available", "is_deleted", "time"]
 
     def create(self, validated_data):
         Duration = models.Duration(**validated_data)
         Duration.save()
         return Duration
+
+
+class ReservationSerializer(serializers.ModelSerializer):
+    duration_id = DurationSerializer
+
+    class Meta:
+        model = models.Reservation
+        fields = ["id", "duration_id", "kind", "count", "time", "caneled"]
+
+    def create(self, validated_data):
+        reservation = models.Reservation(**validated_data)
+        reservation.save()
+        return reservation
+
+
+class RateTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.RateType
+        fields = ["id", "name", "value"]
+
+    def create(self, validated_data):
+        rateType = models.RateType(**validated_data)
+        rateType.save()
+        return rateType
+
+
+class UserRateSerializer(serializers.ModelSerializer):
+    user_id = UserSerializer
+    rateType_id = RateTypeSerializer
+
+    class Meta:
+        model = models.UserRate
+        fields = ["id", "user_id", "rateType_id", "percent"]
+
+    def create(self, validated_data):
+        userRate = models.UserRate(**validated_data)
+        userRate.save()
+        return userRate
+
+
+class StadiumRateRateSerializer(serializers.ModelSerializer):
+    stad_id = StadiumSerializer
+    rate_type_id = RateTypeSerializer
+
+    class Meta:
+        model = models.StadiumRate
+        fields = ["id", "stad_id", "rate_type_id", "value"]
+
+    def create(self, validated_data):
+        stadiumRate = models.StadiumRate(**validated_data)
+        stadiumRate.save()
+        return stadiumRate
