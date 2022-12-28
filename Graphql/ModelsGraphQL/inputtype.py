@@ -9,9 +9,10 @@ class AddClubInput(graphene.InputObjectType):
 
 
 class InputUpdateClub(graphene.InputObjectType):
-    id = graphene.Int()
+    id = graphene.ID(required=True)
     name = graphene.String(required=True)
     is_available = graphene.Boolean(required=True)
+    is_deleted = graphene.Boolean(required=True)
 
 
 class UserInput(graphene.InputObjectType):
