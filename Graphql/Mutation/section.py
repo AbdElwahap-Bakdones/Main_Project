@@ -1,8 +1,9 @@
-from ..ModelsGraphQL import typeobject
+from ..ModelsGraphQL import typeobject, inputtype
 import graphene
 from core import models, serializer
 from ..Auth.permission import checkPermission
-
+from rest_framework import status as status_code
+from .. import QueryStructure
 
 # def checkmyclub(idClub: id, self: object, info: object):
 #     myclub = models.Club.objects.filter(manager_id=models.Manager.objects.get(
@@ -11,38 +12,34 @@ from ..Auth.permission import checkPermission
 #         return self(Section=None, message="this not your club", status=401)
 
 
-class SectionInput(graphene.InputObjectType):
-    name = graphene.String(required=True)
-    club_id = graphene.ID(required=True)
-    is_available = graphene.Boolean(required=True)
-
-
-class AddSection(graphene.Mutation):
-    section = graphene.Field(typeobject.SectionObjectType)
-    message = graphene.String()
-    status = graphene.Int()
+class AddSection(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = SectionInput()
+        SectionData = inputtype.AddSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
-        checkPermission("core.add_section", info)
-        # checkmyclub(kwargs["SectionData"]["club_id"], self, info)
-        kwargs["SectionData"].update({"sub_manager_id": models.SubManager.objects.get(
-            user_id=info.context.META["user"]).pk})
-        seria = serializer.SectionSerializer(
-            data=kwargs["SectionData"])
-        if seria.is_valid():
-            seria.validated_data
-            msg = seria.errors
-            status = 200
-            section = seria.save()
-        else:
-            msg = seria.errors
-            section = None
-            status = 400
-        return self(section=section, message=msg, status=status)
+        try:
+            user = info.context.META["user"]
+            if not checkPermission("core.add_section", user):
+                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+            seria = serializer.SectionSerializer(
+                data=kwargs["SectionData"])
+            if seria.is_valid():
+                seria.validated_data
+                msg = seria.errors
+                status = status_code.HTTP_201_CREATED
+                data = seria.save()
+            else:
+                msg = seria.errors
+                data = None
+                status = status_code.HTTP_406_NOT_ACCEPTABLE
+        except Exception as e:
+            msg = e
+            data = None
+            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
+        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
 
 
 class UpdatSection(graphene.Mutation):

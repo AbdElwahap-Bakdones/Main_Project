@@ -14,6 +14,32 @@ class InputUpdateClub(graphene.InputObjectType):
     is_available = graphene.Boolean(required=True)
 
 
+class AddSectionInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    club_id = graphene.ID(required=True)
+    sub_manager_id = graphene.ID(required=True)
+    is_available = graphene.Boolean(required=True)
+
+
+class AddStadiumInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    section_id = graphene.ID(required=True)
+    type_id = graphene.ID(required=True)
+    size = graphene.Float(required=True)
+    is_available = graphene.Boolean(required=True)
+    has_legua = graphene.Boolean(required=True)
+
+
+class AddServiceInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+
+
+class AddStadiumServiceInput(graphene.InputObjectType):
+    stad_id = graphene.ID(required=True)
+    service_id = graphene.ID(required=True)
+    is_available = graphene.Boolean(required=True)
+
+
 class UserInput(graphene.InputObjectType):
     first_name = graphene.String(requierd=True)
     last_name = graphene.String(requierd=True)
