@@ -1,4 +1,4 @@
-from ..TypingObject import typeobject
+from ..ModelsGraphQL import typeobject
 import graphene
 from core import models, serializer
 from ..Auth.permission import checkPermission

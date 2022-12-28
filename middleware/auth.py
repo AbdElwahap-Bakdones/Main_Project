@@ -1,22 +1,3 @@
-import jwt
-from core.models import User, Rule
-from main_project.settings import SECRET_KEY, FunctionDonotNeedAuth
-import graphene
-from graphql import GraphQLError
-from graphql.execution.base import ResolveInfo
-from graphql.language.ast import*
-import json
-from django.http import JsonResponse
-
-
-def decode_token(token: str) -> User:
-    username = jwt.decode(
-        token, SECRET_KEY, algorithms=['HS256'])
-    user = User.objects.filter(username=username["username"])
-    if user.exists():
-        return {"user": user.first()}
-    else:
-        raise Exception(jwt.InvalidTokenError)
 
 
 class AuthorizationMiddleware(object):

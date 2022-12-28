@@ -19,7 +19,7 @@ class User(AbstractUser):
     # EMAIL_FIELD = "email"         # e.g: "email", "primary_email"
 
     def __str__(self):
-        return str(self.pk)
+        return str(self.username)
 
 
 class permission(models.Model):
@@ -41,11 +41,17 @@ class UserRate(models.Model):
 class Manager(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.user_id.username
+
 
 class Player(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE)
     location_lat = models.CharField(max_length=255)
     location_long = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.user_id.username
 
 
 class Type(models.Model):
@@ -64,6 +70,9 @@ class Club(models.Model):
 class SubManager(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE)
     club_id = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_id.username
 
 
 class Section(models.Model):

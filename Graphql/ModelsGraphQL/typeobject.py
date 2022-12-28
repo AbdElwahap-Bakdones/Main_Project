@@ -7,27 +7,30 @@ from graphene import relay
 class UserObjectType(DjangoObjectType):
     class Meta:
         model = models.User
-        fields = ('pk', 'username', 'firstName', 'lastname', 'phone')
+        fields = ['pk', 'first_name', 'last_name',
+                  'email', 'phone', 'username']
         interfaces = (relay.Node,)
 
 
-class PlayerObjectType(DjangoObjectType):
+class PlayerModel(DjangoObjectType):
     class Meta:
         model = models.Player
-        fields = "__all__"
+        fields = ['location_lat', 'location_long', 'user_id']
         interfaces = (relay.Node,)
 
 
 class ManagerObjectType(DjangoObjectType):
     class Meta:
         model = models.Manager
-        fields = "__all__"
+        interfaces = (relay.Node,)
+        fields = ['user_id']
+        interfaces = (relay.Node,)
 
 
 class SubManagerObjectType(DjangoObjectType):
     class Meta:
         model = models.SubManager
-        fields = "__all__"
+        fields = ['user_id']
         interfaces = (relay.Node,)
 
 
