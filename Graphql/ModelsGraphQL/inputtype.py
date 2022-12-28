@@ -2,6 +2,19 @@
 import graphene
 
 
+class AddClubInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    location = graphene.String(required=True)
+    is_available = graphene.Boolean(required=True)
+
+
+class InputUpdateClub(graphene.InputObjectType):
+    id = graphene.ID(required=True)
+    name = graphene.String(required=True)
+    is_available = graphene.Boolean(required=True)
+    is_deleted = graphene.Boolean(required=True)
+
+
 class UserInput(graphene.InputObjectType):
     first_name = graphene.String(requierd=True)
     last_name = graphene.String(requierd=True)

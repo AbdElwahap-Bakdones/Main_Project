@@ -1,3 +1,4 @@
+from graphene_django.rest_framework.mutation import SerializerMutation
 from ..ModelsGraphQL import typeobject, inputtype
 import graphene
 from core import models, serializer
@@ -40,30 +41,44 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
         except Exception as e:
             msg = e
             data = None
+            print('Error in AddClub :')
+            print(e)
+            msg = str(e)
+            data = None
+
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
 
 
-class UpdateClub(graphene.Mutation):
-    club = graphene.Field(typeobject.ClubObjectType)
-    message = graphene.String()
-    status = graphene.Int()
+class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        ClubData = inputtype.InputUpdateClub()
+        data = inputtype.InputUpdateClub()
 
     @classmethod
-    def mutate(self, root, info, id, **kwargs):
+    def mutate(self, root, info, **kwargs):
         try:
-            user = info.context.META["user"]
-            if not checkPermission("core.change_club", user):
+            user = models.User(info.context.META["user"])
+            if not checkPermission("core.change_club", user.pk):
                 return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
             sub = models.Club.objects.get(id=id)
             seria = serializer.ClubSerializer(sub,
                                               data=kwargs["ClubData"], partial=True)
+            data = kwargs['data']
+            club_object = models.Club.objects.filter(
+                pk=data['id'], is_deleted=False)
+            if not club_object.exists():
+                msg = 'there is no club with id='+data['id']
+                club = None
+                status = status_code.HTTP_404_NOT_FOUND
+                return QueryStructure.MyReturn(self, None, msg, status)
+
+            seria = serializer.ClubSerializer(
+                club_object.get(), data=data, partial=True)
             if seria.is_valid():
                 seria.validated_data
-                msg = seria.errors
+                msg = 'updated!'
                 status = status_code.HTTP_200_OK
                 club = seria.save()
             else:
@@ -72,6 +87,9 @@ class UpdateClub(graphene.Mutation):
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
         except Exception as e:
             msg = e
+            print('Error in UpdateClub')
+            print(e)
+            msg = str(e)
             club = None
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return QueryStructure.MyReturn(instanse=self, data=club, message=msg, code=status)

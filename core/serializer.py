@@ -58,7 +58,7 @@ class ClubSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Club
-        fields = ["id", "manager_id", "number_stad", "name",
+        fields = ["pk", "manager_id", "number_stad", "name",
                   "location", "is_available"]
 
     def create(self, validated_data):
@@ -66,6 +66,15 @@ class ClubSerializer(serializers.ModelSerializer):
         club.save()
         return club
     # class UserSerializer:
+
+    def update(self, instance, validated_data):
+        print(validated_data.get('name', instance.name))
+        instance.name = validated_data.get('name', instance.name)
+        instance.is_available = validated_data.get(
+            'is_available', instance.is_available)
+        instance.save()
+        print(instance.name)
+        return instance
 
 
 class SectionSerializer(serializers.ModelSerializer):
