@@ -105,13 +105,13 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
                 groups.user_set.add(user)
 
                 # cheack if manager is subManager
-<< << << < HEAD
+
                 groups = Group.objects.get(id=2)
                 groups.user_set.add(user)
                 self.create_subManager(kargs['is_submanager'], manager_data)
-== == == =
+
                 # self.create_subManager(kargs['is_submanager'], manager_data)
->>>>>> > 4884f377df2e7aa3c421c84f42573c6141aa46e5
+
                 status = 200
                 msg = 'ok'
             else:
