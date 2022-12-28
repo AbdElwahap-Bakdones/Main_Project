@@ -120,8 +120,8 @@ class Reservation(models.Model):
     duration_id = models.ForeignKey(Duration, on_delete=models.CASCADE)
     kind = models.CharField(max_length=255)
     count = models.IntegerField()
-    time = models.DateField()
-    caneled = models.BooleanField(default=False)
+    time = models.DateTimeField(auto_now=True)
+    canceled = models.BooleanField(default=False)
 
 
 class Player_reservation(models.Model):
