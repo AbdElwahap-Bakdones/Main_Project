@@ -38,3 +38,8 @@ class PlayerInput(graphene.InputObjectType):
 class SubManagerInput(graphene.InputObjectType):
     user = graphene.Field(UserInput)
     field = graphene.String(requierd=False)
+
+
+class Ghaith(graphene.InputObjectType):
+    user = graphene.Field(UserInput)
+    field = graphene.String(requierd=False)
