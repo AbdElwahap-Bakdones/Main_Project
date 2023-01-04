@@ -1,12 +1,5 @@
 from rest_framework import serializers
-from .models import PetModel
-from graphene.types.scalars import Scalar
-
-
-class ObjectField(Scalar):  # to serialize error message from serializer
-    @staticmethod
-    def serialize(dt):
-        return dt
+from .models import PetModel, Compani
 
 
 class PetSerSerializer(serializers.Serializer):
@@ -24,3 +17,9 @@ class PetSerSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.save()
         return instance
+
+
+class CompSeria(serializers.Serializer):
+    class Meta:
+        model: Compani()
+        fields: ['id']

@@ -101,6 +101,15 @@ DATABASES = {
 
     }
 }
+'''DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sports',
+        'HOST': 'localhost',
+        'USER': 'root',
+        'PASSWORD': 'root'
+    }}
+'''
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -199,5 +208,5 @@ AUTHENTICATION_BACKENDS = [
     # ...
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-FunctionDonotNeedAuth = [b'tokenAuth',
+FunctionDonotNeedAuth = [b'login',
                          b'SignUpPlyer', b'SignUpSubManager', b'SignUpManager', b'__schema']

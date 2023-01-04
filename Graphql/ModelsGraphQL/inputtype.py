@@ -5,7 +5,7 @@ import graphene
 class AddClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     location = graphene.String(required=True)
-    is_available = graphene.Boolean(required=True)
+    is_available = graphene.Boolean(default=True)
 
 
 class InputUpdateClub(graphene.InputObjectType):

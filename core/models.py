@@ -62,7 +62,8 @@ class Club(models.Model):
     manager_id = models.ForeignKey(Manager, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     number_stad = models.IntegerField(default=0)
-    location = models.CharField(max_length=255)
+    location_lat = models.CharField(max_length=255)
+    location_long = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
 
@@ -96,7 +97,7 @@ class Stadium(models.Model):
 class StadiumRate(models.Model):
     stad_id = models.ForeignKey(Stadium, on_delete=models.CASCADE)
     rate_type_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
-    value = models.FloatField()
+    percent = models.FloatField()
 
 
 class Duration(models.Model):
@@ -166,3 +167,13 @@ class Notification(models.Model):
     team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     sender_kind = models.CharField(max_length=255)
     content = models.CharField(max_length=255)
+
+
+class Friend(models.Model):
+    user1 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user11')
+    user2 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user22')
+    art = [('accepted', 'accepted'), ('rejected',
+                                      'rejected'), ('pending', 'pending')]
+    state = models.CharField(choices=art, max_length=30, default='pending')
