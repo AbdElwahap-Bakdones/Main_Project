@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Rule(models.Model):
     name = models.CharField(max_length=255)
+    auth = models.TextField(blank=True)
 
 
 class User(AbstractUser):
@@ -18,7 +19,7 @@ class User(AbstractUser):
     # EMAIL_FIELD = "email"         # e.g: "email", "primary_email"
 
     def __str__(self):
-        return str(self.pk)
+        return str(self.username)
 
 
 class permission(models.Model):
@@ -31,14 +32,17 @@ class RateType(models.Model):
     value = models.FloatField()
 
 
-class UserType(models.Model):
+class UserRate(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    rateType_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
+    rate_type_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
     percent = models.FloatField()
 
 
 class Manager(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_id.username
 
 
 class Player(models.Model):
@@ -46,9 +50,8 @@ class Player(models.Model):
     location_lat = models.CharField(max_length=255)
     location_long = models.CharField(max_length=255)
 
-
-class SubManager(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.user_id.username
 
 
 class Type(models.Model):
@@ -58,9 +61,19 @@ class Type(models.Model):
 class Club(models.Model):
     manager_id = models.ForeignKey(Manager, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    number_stad = models.IntegerField()
-    location = models.CharField(max_length=255)
+    number_stad = models.IntegerField(default=0)
+    location_lat = models.CharField(max_length=255)
+    location_long = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+
+class SubManager(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+    club_id = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user_id.username
 
 
 class Section(models.Model):
@@ -68,6 +81,7 @@ class Section(models.Model):
     club_id = models.ForeignKey(Club, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
 
 
 class Stadium(models.Model):
@@ -75,6 +89,7 @@ class Stadium(models.Model):
     type_id = models.ForeignKey(Type, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
     has_legua = models.BooleanField(default=False)
     size = models.FloatField()
 
@@ -82,12 +97,14 @@ class Stadium(models.Model):
 class StadiumRate(models.Model):
     stad_id = models.ForeignKey(Stadium, on_delete=models.CASCADE)
     rate_type_id = models.ForeignKey(RateType, on_delete=models.CASCADE)
-    value = models.FloatField()
+    percent = models.FloatField()
 
 
 class Duration(models.Model):
     stad_id = models.ForeignKey(Stadium, on_delete=models.CASCADE)
     time = models.TimeField()
+    is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
 
 
 class Service(models.Model):
@@ -104,7 +121,8 @@ class Reservation(models.Model):
     duration_id = models.ForeignKey(Duration, on_delete=models.CASCADE)
     kind = models.CharField(max_length=255)
     count = models.IntegerField()
-    time = models.DateField()
+    time = models.DateTimeField(auto_now=True)
+    canceled = models.BooleanField(default=False)
 
 
 class Player_reservation(models.Model):
@@ -126,15 +144,19 @@ class Team_resevation(models.Model):
     reservation_id = models.ForeignKey(Reservation, on_delete=models.CASCADE)
 
 
-class Postion(models.Model):
+class Position(models.Model):
+
     name = models.CharField(max_length=255)
     key = models.CharField(max_length=255)
+    type_id = models.ForeignKey(Type, on_delete=models.CASCADE)
 
 
 class Team_members(models.Model):
     player_id = models.ForeignKey(Player, on_delete=models.CASCADE)
-    position_id = models.ForeignKey(Postion, on_delete=models.CASCADE)
+    position_id = models.ForeignKey(Position, on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     is_captin = models.BooleanField(default=True)
+    is_leave = models.BooleanField(default=False)
 
 
 class Notification(models.Model):
@@ -145,3 +167,13 @@ class Notification(models.Model):
     team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     sender_kind = models.CharField(max_length=255)
     content = models.CharField(max_length=255)
+
+
+class Friend(models.Model):
+    user1 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user11')
+    user2 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user22')
+    art = [('accepted', 'accepted'), ('rejected',
+                                      'rejected'), ('pending', 'pending')]
+    state = models.CharField(choices=art, max_length=30, default='pending')

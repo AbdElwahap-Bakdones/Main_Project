@@ -1,20 +1,16 @@
 import graphene
-from ...graphql_models import UserInput, UserModel, PlayerInput, PlayerModel, ManagerModel, ManagerInput, SubManagerInput, SubManagerModel
 from core import serializer
-from ...TypingObject import typeobject
+from ...ModelsGraphQL import typeobject, inputtype
 from rest_framework import status as status_code
+from ... import QueryStructure
+from django.contrib.auth.models import Group
 
 
-class SignUpPlayer(graphene.Mutation):
-    user = graphene.Field(UserModel)
-    player = graphene.Field(PlayerModel)
-    message = graphene.String()
-    status = graphene.Int()
-    #
+class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.PlayerModel)
 
     class Arguments:
-        user_data = UserInput()
-        player_data = PlayerInput()
+        player_data = inputtype.PlayerInput()
 
     @classmethod
     def mutate(self, root, info, **kargs):
@@ -25,9 +21,9 @@ class SignUpPlayer(graphene.Mutation):
         user_error = {}
         player_error = {}
         try:
-            user_data = kargs['user_data']  # extract data
+            user_data = kargs['player_data'].pop('user')  # extract data
             player_data = kargs['player_data']  # extract data
-            player_data['user_id'] = 1  # Set an initial user_id vlaue
+            player_data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name@last_name
 
@@ -44,32 +40,32 @@ class SignUpPlayer(graphene.Mutation):
                 seria_player.is_valid(
                     raise_exception='internal servre Error')
                 player = seria_player.save()
+                groups = Group.objects.get(id=1)
+                groups.user_set.add(user)
                 status = status_code.HTTP_201_CREATED
                 msg = 'ok'
             else:
-                print('else')
                 user_error = dict(seria_user.errors)
                 player_error = dict(seria_player.errors)
                 user_error.update(player_error)
                 msg = user_error
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
         except Exception as e:
+            print('Error in SignUpPlayer ')
+            print(e)
             user = None
             player = None
             msg = e
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return self(user=user, player=player, message=msg, status=status)
+        # self(user=user, player=player, message=msg, status=status)
+        return QueryStructure.MyReturn(self, player, msg, status)
 
 
-class SignUpManager(graphene.Mutation):
-    user = graphene.Field(UserModel)
-    manager = graphene.Field(ManagerModel)
-    message = graphene.String()
-    status = graphene.Int()
+class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.ManagerObjectType)
 
     class Arguments:
-        user_data = UserInput()
-        manager_data = ManagerInput()
+        manager_data = inputtype.ManagerInput()
         is_submanager = graphene.Boolean()
 
     @classmethod
@@ -81,9 +77,11 @@ class SignUpManager(graphene.Mutation):
         user_error = {}
         manager_error = {}
         try:
-            user_data = kargs['user_data']  # extract data
+            print(kargs)
+            user_data = kargs['manager_data'].pop('user')  # extract data
+            print(kargs)
             manager_data = kargs['manager_data']  # extract data
-            manager_data['user_id'] = 1  # Set an initial user_id vlaue
+            manager_data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name$last_name
 
@@ -101,12 +99,13 @@ class SignUpManager(graphene.Mutation):
                 seria_manager.is_valid(
                     raise_exception='internal servre Error')
                 manager = seria_manager.save()
+                groups = Group.objects.get(id=3)
+                groups.user_set.add(user)
                 # cheack if manager is subManager
-                self.create_subManager(kargs['is_submanager'], manager_data)
+                # self.create_subManager(kargs['is_submanager'], manager_data)
                 status = 200
                 msg = 'ok'
             else:
-                print('else')
                 user_error = dict(seria_user.errors)
                 manager_error = dict(seria_manager.errors)
                 user_error.update(manager_error)
@@ -117,7 +116,7 @@ class SignUpManager(graphene.Mutation):
             manager = None
             msg = e
             status = 400
-        return self(user=user, manager=manager, message=msg, status=status)
+        return QueryStructure.MyReturn(self, manager, msg, status)
 
     def create_subManager(is_submanager: bool, user_id: int):
         seria_subManager = serializer.SubManagerSerializer(data=user_id)
@@ -125,16 +124,11 @@ class SignUpManager(graphene.Mutation):
             seria_subManager.save()
 
 
-class SignUpSubManager(graphene.Mutation):
-    user = graphene.Field(typeobject.UserObjectType)
-    subManager = graphene.Field(SubManagerModel)
-    message = graphene.String()
-    status = graphene.Int()
-    #
+class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.SubManagerObjectType)
 
     class Arguments:
-        user_data = UserInput()
-        subManager_data = SubManagerInput()
+        subManager_data = inputtype.SubManagerInput()
 
     @classmethod
     def mutate(self, root, info, **kargs):
@@ -145,9 +139,10 @@ class SignUpSubManager(graphene.Mutation):
         user_error = {}
         subManager_error = {}
         try:
-            user_data = kargs['user_data']  # extract data
+            user_data = kargs['subManager_data'].pop(
+                'user')  # extract data
             subManager_data = kargs['subManager_data']  # extract data
-            subManager_data['user_id'] = 1  # Set an initial user_id vlaue
+            subManager_data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name@last_name
 
@@ -181,4 +176,4 @@ class SignUpSubManager(graphene.Mutation):
             subManager = None
             msg = e
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return self(user=user, subManager=subManager, message=msg, status=status)
+        return QueryStructure.MyReturn(self, subManager, msg, status)

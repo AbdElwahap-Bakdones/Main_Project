@@ -65,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "middleware.django_middlware.auth",
 ]
 
 ROOT_URLCONF = "main_project.urls"
@@ -100,6 +101,15 @@ DATABASES = {
 
     }
 }
+'''DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sports',
+        'HOST': 'localhost',
+        'USER': 'root',
+        'PASSWORD': 'root'
+    }}
+'''
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -198,4 +208,5 @@ AUTHENTICATION_BACKENDS = [
     # ...
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-FunctionDonotNeedAuth = ['tokenAuth', 'SignUpPlyer', '__schema']
+FunctionDonotNeedAuth = [b'login',
+                         b'SignUpPlyer', b'SignUpSubManager', b'SignUpManager', b'__schema']
