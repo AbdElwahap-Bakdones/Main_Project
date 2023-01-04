@@ -4,7 +4,8 @@ import graphene
 
 class AddClubInput(graphene.InputObjectType):
     name = graphene.String(required=True)
-    location = graphene.String(required=True)
+    location_lat = graphene.String(required=True)
+    location_long = graphene.String(required=True)
     is_available = graphene.Boolean(default=True)
 
 
