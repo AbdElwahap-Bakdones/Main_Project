@@ -16,8 +16,8 @@ from ..Query.Club import AllClub
 from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
-from ..Mutation.club import AddClub, UpdateClub
-from ..Mutation.section import AddSection, UpdatSection
+from ..Mutation.club import AddClub, UpdateClub, DeleteClub
+from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
@@ -52,8 +52,10 @@ class Mutation (AuthMutation, graphene.ObjectType):
     SignUpSubManager = signup.SignUpSubManager.Field()
     addclub = AddClub.Field()
     updateclub = UpdateClub.Field()
+    deleteclub = DeleteClub.Field()
     addsection = AddSection.Field()
-    updatesection = UpdatSection.Field()
+    updatesection = UpdateSection.Field()
+    deletesection = DeleteSection.Field()
     addstadium = AddStadium.Field()
     updatestadium = UpdateStadium.Field()
     addservice = AddService.Field()
