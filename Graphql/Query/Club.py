@@ -15,11 +15,11 @@ class ManagerModel(DjangoObjectType):
 
 class ClubModel(DjangoObjectType):
     manager_id = graphene.Field(ManagerModel)
+    pk = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = Club
-        fields = ['id', 'name', 'location',
-                  'number_stad', 'is_available', 'manager_id']
+        fields = ['id', 'pk']
         interfaces = (relay.Node,)
 
 
@@ -30,11 +30,12 @@ class ClubConnection(relay.Connection):
 
 
 class AllClub(ObjectType, QueryFields):
-    data = relay.ConnectionField(ClubConnection)
+    data = relay.ConnectionField(ClubConnection, id=graphene.String())
 
     def resolve_data(root, info, **kwargs):
+        print(kwargs)
         user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, '123'):
+        if not QueryFields.is_valide(info, user, 'core.view_clu2b'):
             return QueryFields.rise_error(user)
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
         return Club.objects.all()
