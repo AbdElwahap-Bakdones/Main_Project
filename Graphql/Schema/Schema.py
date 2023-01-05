@@ -19,7 +19,7 @@ from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
-from ..Mutation.service import AddService, UpdateService
+#from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 
 
@@ -58,8 +58,6 @@ class Mutation (AuthMutation, graphene.ObjectType):
     deletesection = DeleteSection.Field()
     addstadium = AddStadium.Field()
     updatestadium = UpdateStadium.Field()
-    addservice = AddService.Field()
-    updateservice = UpdateService.Field()
     addservicesforstadiums = AddServicesForStadiums.Field()
     modificationstostadiumservices = ModificationsToStadiumServices.Field()
 
