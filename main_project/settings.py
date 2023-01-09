@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "core",
     "test_app",
     "rest_framework",
+    "corsheaders",
     "postApp",
     "graphql_auth",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
