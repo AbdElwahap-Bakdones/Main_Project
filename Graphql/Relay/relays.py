@@ -1,4 +1,4 @@
-from TypingObject import typeobject
+from ..ModelsGraphQL import typeobject
 from graphene import relay
 
 

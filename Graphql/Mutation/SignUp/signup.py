@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 
 
 class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
-    data = graphene.Field(typeobject.PlayerModel)
+    data = graphene.Field(typeobject.PlayerObjectType)
 
     class Arguments:
         player_data = inputtype.PlayerInput()
