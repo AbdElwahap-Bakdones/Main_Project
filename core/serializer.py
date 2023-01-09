@@ -61,22 +61,21 @@ class ClubSerializer(serializers.ModelSerializer):
         fields = ["pk", "manager_id", "number_stad", "name",
                   "location_lat", "location_long", "is_available", "is_deleted"]
 
-    def create(self, validated_data):
-        club = models.Club(**validated_data)
-        club.save()
-        return club
-    # class UserSerializer:
+    # def create(self, validated_data):
+    #     club = models.Club(**validated_data)
+    #     club.save()
+    #     return club
 
-    def update(self, instance, validated_data):
-        print(validated_data.get('name', instance.name))
-        instance.name = validated_data.get('name', instance.name)
-        instance.is_available = validated_data.get(
-            'is_available', instance.is_available)
-        instance.is_deleted = validated_data.get(
-            'is_deleted', instance.is_deleted)
-        instance.save()
-        print(instance.name)
-        return instance
+    # def update(self, instance, validated_data):
+    #     print(validated_data.get('name', instance.name))
+    #     instance.name = validated_data.get('name', instance.name)
+    #     instance.is_available = validated_data.get(
+    #         'is_available', instance.is_available)
+    #     instance.is_deleted = validated_data.get(
+    #         'is_deleted', instance.is_deleted)
+    #     instance.save()
+    #     print(instance.name)
+    #     return instance
 
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -87,24 +86,6 @@ class SectionSerializer(serializers.ModelSerializer):
         model = models.Section
         fields = ["id", "name", "sub_manager_id",
                   "club_id", "is_available", "is_deleted"]
-
-    def create(self, validated_data):
-        section = models.Section(**validated_data)
-        section.save()
-        return section
-
-    def update(self, instance, validated_data):
-        print(validated_data.get('name', instance.name))
-        instance.name = validated_data.get('name', instance.name)
-        instance.sub_manager_id = validated_data.get(
-            'sub_manager_id', instance.sub_manager_id)
-        instance.club_id = validated_data.get('club_id', instance.club_id)
-        instance.is_available = validated_data.get(
-            'is_available', instance.is_available)
-        instance.is_deleted = validated_data.get(
-            'is_deleted', instance.is_deleted)
-        instance.save()
-        return instance
 
 
 class TypeSerializer(serializers.ModelSerializer):
@@ -137,11 +118,6 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Service
         fields = ["id", "name"]
-
-    def create(self, validated_data):
-        service = models.Service(**validated_data)
-        service.save()
-        return service
 
 
 class StadiumServiceSerializer(serializers.ModelSerializer):
