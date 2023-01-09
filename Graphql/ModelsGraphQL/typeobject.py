@@ -34,18 +34,22 @@ class SubManagerObjectType(DjangoObjectType):
 
 class ClubObjectType(DjangoObjectType):
     manager_id = graphene.Field(ManagerObjectType)
+    pk = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = models.Club
-        fields = ['id', 'name', 'location',
+        fields = ['id', 'pk', 'name', 'location',
                   'number_stad', 'is_available', 'manager_id']
         interfaces = (relay.Node,)
 
 
 class SectionObjectType(DjangoObjectType):
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.Section
-        fields = "__all__"
+        fields = ['id', 'pk', 'name', 'is_available',
+                  'club_id', 'sub_manager_id']
         interfaces = (relay.Node,)
 
 
