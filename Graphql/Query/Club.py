@@ -1,36 +1,12 @@
-from core.models import Club, Manager
+from core.models import Club
 from graphene import ObjectType, relay
-from graphene_django.types import DjangoObjectType
 from Graphql.QueryStructure import QueryFields
 from rest_framework import status as status_code
-
-import graphene
-
-
-class ManagerModel(DjangoObjectType):
-    class Meta:
-        model = Manager
-        fields = ['id']
-
-
-class ClubModel(DjangoObjectType):
-    manager_id = graphene.Field(ManagerModel)
-
-    class Meta:
-        model = Club
-        fields = ['id', 'name', 'location',
-                  'number_stad', 'is_available', 'manager_id']
-        interfaces = (relay.Node,)
-
-
-class ClubConnection(relay.Connection):
-
-    class Meta:
-        node = ClubModel
+from ..Relay import relays
 
 
 class AllClub(ObjectType, QueryFields):
-    data = relay.ConnectionField(ClubConnection)
+    data = relay.ConnectionField(relays.ClubConnection)
 
     def resolve_data(root, info, **kwargs):
         user = info.context.META['user']

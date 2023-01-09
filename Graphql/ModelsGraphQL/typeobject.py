@@ -12,7 +12,7 @@ class UserObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class PlayerModel(DjangoObjectType):
+class PlayerObjectType(DjangoObjectType):
     class Meta:
         model = models.Player
         fields = ['location_lat', 'location_long', 'user_id']
@@ -22,9 +22,7 @@ class PlayerModel(DjangoObjectType):
 class ManagerObjectType(DjangoObjectType):
     class Meta:
         model = models.Manager
-        interfaces = (relay.Node,)
-        fields = ['user_id']
-        interfaces = (relay.Node,)
+        fields = ['id']
 
 
 class SubManagerObjectType(DjangoObjectType):
@@ -35,9 +33,12 @@ class SubManagerObjectType(DjangoObjectType):
 
 
 class ClubObjectType(DjangoObjectType):
+    manager_id = graphene.Field(ManagerObjectType)
+
     class Meta:
         model = models.Club
-        fields = "__all__"
+        fields = ['id', 'name', 'location',
+                  'number_stad', 'is_available', 'manager_id']
         interfaces = (relay.Node,)
 
 
