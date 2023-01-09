@@ -10,7 +10,3 @@ class AllClub(ObjectType, QueryFields):
 
     def resolve_data(root, info, **kwargs):
         user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, '123'):
-            return QueryFields.rise_error(user)
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
-        return Club.objects.all()
