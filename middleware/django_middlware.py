@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from rest_framework.response import Response
+from django.middleware.csrf import get_token
 from rest_framework import status as status_code
 from main_project.settings import SECRET_KEY, FunctionDonotNeedAuth
 from core.models import User
@@ -28,6 +30,7 @@ class auth:
         regex = re.compile('^HTTP_')
         header = dict((regex.sub('', header), value) for (header, value)
                       in request.META.items() if header.startswith('HTTP_'))
+        print(header)
         if not 'TOKEN' in header:
             return self.__return(status_code.HTTP_400_BAD_REQUEST, 'there is no token')
         return self.checkToken(header['TOKEN'], request=request)
@@ -51,3 +54,16 @@ def decode_token(token: str) -> User:
         return {"user": user.first()}
     else:
         raise Exception(jwt.InvalidTokenError)
+
+
+class CSRF:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        regex = re.compile('^HTTP_')
+        header = dict((regex.sub('', header), value) for (header, value)
+                      in request.META.items() if header.startswith('HTTP_'))
+        print(request.META.items())
+        response = self.get_response(request)
+        return response
