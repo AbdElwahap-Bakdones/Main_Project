@@ -11,11 +11,7 @@ class AllSection(ObjectType, QueryFields):
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_section'):
-            return QueryFields.rise_error(user)
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
-        return Section.objects.all()
+        return QueryFields.queryAll(Section, info, 'core.view_section')
 
 
 class GetSection(ObjectType, QueryFields):
@@ -24,13 +20,4 @@ class GetSection(ObjectType, QueryFields):
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_section'):
-            return QueryFields.rise_error(user)
-        section = Section.objects.filter(id=kwargs["id"])
-        if not section.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
-        return section
+        return QueryFields.queryGet(Section, info, 'core.view_section', kwargs["id"])
