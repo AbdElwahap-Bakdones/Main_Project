@@ -12,7 +12,8 @@ import graphene
 from core import models
 from Graphql.QueryStructure import QueryFields
 from test_app.models import Cars, Compani
-from ..Query.Club import AllClub
+from ..Query.Club import AllClub, GetClub
+from ..Query.Section import AllSection, GetSection
 from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
@@ -40,10 +41,22 @@ class Query(ObjectType):
         print(kwargs)
         return models.User.objects.filter(pk=2)
 
-    AllClub1 = graphene.Field(AllClub)
+    AllClub = graphene.Field(AllClub)
+    GetClub = graphene.Field(GetClub)
+    AllSection = graphene.Field(AllSection)
+    GetSection = graphene.Field(GetSection)
 
-    def resolve_AllClub1(root, info, **kwargs):
+    def resolve_AllClub(root, info, **kwargs):
         return AllClub()
+
+    def resolve_GetClub(root, info, **kwargs):
+        return GetClub()
+
+    def resolve_AllSection(root, info, **kwargs):
+        return AllSection()
+
+    def resolve_GetSection(root, info, **kwargs):
+        return GetSection()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
