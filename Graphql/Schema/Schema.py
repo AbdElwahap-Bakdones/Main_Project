@@ -93,7 +93,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     updatestadium = UpdateStadium.Field()
     addservicesforstadiums = AddServicesForStadiums.Field()
     modificationstostadiumservices = ModificationsToStadiumServices.Field()
-    addFriend = addFriend.AddFrien.Field
+    addFriend = addFriend.AddFrien.Field()
 
 
 class Subscription(graphene.ObjectType):

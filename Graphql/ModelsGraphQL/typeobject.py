@@ -5,6 +5,8 @@ import graphene
 
 
 class UserObjectType(DjangoObjectType):
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.User
         fields = ['pk', 'first_name', 'last_name',
@@ -13,38 +15,55 @@ class UserObjectType(DjangoObjectType):
 
 
 class PlayerObjectType(DjangoObjectType):
+    user_id = graphene.Field(UserObjectType)
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.Player
-        fields = ['location_lat', 'location_long', 'user_id']
+        fields = ['pk', 'location_lat', 'location_long', 'user_id']
         interfaces = (relay.Node,)
 
 
 class ManagerObjectType(DjangoObjectType):
+    user_id = graphene.Field(UserObjectType)
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.Manager
-        fields = ['id']
+        fields = ['id,pk,user_id']
 
 
 class SubManagerObjectType(DjangoObjectType):
+    user_id = graphene.Field(UserObjectType)
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.SubManager
-        fields = ['user_id']
+        fields = ['id', 'pk', 'user_id']
+        interfaces = (relay.Node,)
+
+
+class TypeObjectType(DjangoObjectType):
+    class Meta:
+        model = models.Type
+        fields = "__all__"
         interfaces = (relay.Node,)
 
 
 class ClubObjectType(DjangoObjectType):
-    manager_id = graphene.Field(ManagerObjectType)
+    manager = graphene.Field(ManagerObjectType, source='manager_id')
     pk = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = models.Club
-        fields = ['id', 'pk', 'name', 'location',
+        fields = ['id', 'pk', 'name', 'location_lat', 'location_long',
                   'number_stad', 'is_available', 'manager_id']
         interfaces = (relay.Node,)
 
 
 class SectionObjectType(DjangoObjectType):
     pk = graphene.Field(type=graphene.Int, source='id')
+    sub_manager = graphene.Field(SubManagerObjectType, source='sub_manager_id')
 
     class Meta:
         model = models.Section
@@ -54,6 +73,9 @@ class SectionObjectType(DjangoObjectType):
 
 
 class StadiumObjectType(DjangoObjectType):
+    section = graphene.Field(type=SectionObjectType, source='section_id')
+    type_ = graphene.Field(type=TypeObjectType, source='type_id')
+
     class Meta:
         model = models.Stadium
         fields = "__all__"
@@ -128,13 +150,6 @@ class Team_membersObjectType(DjangoObjectType):
 class PostionObjectType(DjangoObjectType):
     class Meta:
         model = models.Position
-        fields = "__all__"
-        interfaces = (relay.Node,)
-
-
-class TypeObjectType(DjangoObjectType):
-    class Meta:
-        model = models.Type
         fields = "__all__"
         interfaces = (relay.Node,)
 
