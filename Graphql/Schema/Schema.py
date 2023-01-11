@@ -14,6 +14,8 @@ from test_app.models import Cars, Compani
 from ..Query.Club import AllClub, GetClub
 from ..Query.Section import AllSection, GetSection
 from ..Query.Friend import GetFriend, AllFriend
+from ..Query.Userteam import AllTeamMembers
+from ..Query.team import GetTeam
 from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
@@ -48,6 +50,8 @@ class Query(ObjectType):
 
     getFriend = graphene.Field(GetFriend)
     allFriend = graphene.Field(AllFriend)
+    myteam = graphene.Field(AllTeamMembers)
+    getTeam = graphene.Field(GetTeam)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -66,6 +70,12 @@ class Query(ObjectType):
 
     def resolve_allFriend(root, info, **kwargs):
         return AllFriend()
+
+    def resolve_myteam(root, info, **kwargs):
+        return AllTeamMembers()
+
+    def resolve_getTeam(root, info, **kwargs):
+        return GetTeam()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):

@@ -103,9 +103,11 @@ class Player_reservationObjectType(DjangoObjectType):
 
 
 class TeamObjectType(DjangoObjectType):
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.Team
-        fields = "__all__"
+        fields = ['id', 'pk', 'name', 'type_id', 'search_game', 'temp']
         interfaces = (relay.Node,)
 
 
@@ -167,8 +169,10 @@ class NotificationObjectType(DjangoObjectType):
 
 class FriendObjectType(DjangoObjectType):
     pk = graphene.Field(type=graphene.Int, source='id')
+    friends = graphene.Field(type=PlayerObjectType, source='player2')
+    me = graphene.Field(type=graphene.ID, source='player1')
 
     class Meta:
         model = models.Friend
-        fields = ['id', 'pk', 'player1', 'player2', 'state']
+        fields = ['id', 'pk', 'friends', 'me']
         interfaces = (relay.Node,)
