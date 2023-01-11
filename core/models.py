@@ -170,10 +170,10 @@ class Notification(models.Model):
 
 
 class Friend(models.Model):
-    user1 = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='user11')
-    user2 = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='user22')
+    player1 = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name='player11')
+    player2 = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name='player22')
     art = [('accepted', 'accepted'), ('rejected',
                                       'rejected'), ('pending', 'pending')]
     state = models.CharField(choices=art, max_length=30, default='pending')

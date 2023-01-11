@@ -1,7 +1,7 @@
 from core import models
 from graphene_django import DjangoObjectType
-import graphene
 from graphene import relay
+import graphene
 
 
 class UserObjectType(DjangoObjectType):
@@ -170,5 +170,5 @@ class FriendObjectType(DjangoObjectType):
 
     class Meta:
         model = models.Friend
-        fields = ['id', 'pk', 'user1', 'user2', 'state']
+        fields = ['id', 'pk', 'player1', 'player2', 'state']
         interfaces = (relay.Node,)

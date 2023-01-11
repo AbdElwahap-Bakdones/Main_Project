@@ -16,8 +16,8 @@ class AllFriend(ObjectType, QueryFields):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_friend'):
             return QueryFields.rise_error(user)
-        data = Friend.objects.filter(Q(user1__id=user.id) | Q(
-            user2__id=user.id) & Q(state="accepted"))
+        data = Friend.objects.filter(Q(player1__id=user.id) | Q(
+            player2__id=user.id) & Q(state="accepted"))
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')
@@ -35,10 +35,11 @@ class GetFriend(ObjectType, QueryFields):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_friend'):
             return QueryFields.rise_error(user)
-        data = Friend.objects.filter(((Q(user1__id=user.id) & (Q(
-            user2__first_name=kwargs['name']) | Q(
-            user2__last_name=kwargs['name']))) | ((Q(user1__first_name=kwargs['name']) | Q(user1__last_name=kwargs['name'])) & Q(
-                user2__id=user.id))) & Q(state="accepted"))
+        data = Friend.objects.filter(
+            ((Q(player1__id=user.id) &
+              (Q(player2__first_name=kwargs['name']) | Q(player2__last_name=kwargs['name']))) |
+             ((Q(player1__first_name=kwargs['name']) | Q(player1__last_name=kwargs['name'])) & Q(
+                 player2__id=user.id))) & Q(state="accepted"))
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')
