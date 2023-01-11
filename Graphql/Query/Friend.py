@@ -1,10 +1,18 @@
-from core.models import Friend
+from core.models import Friend, Player, User
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
 from rest_framework import status as status_code
 from ..Relay import relays
 from django.db.models import Q
 import graphene
+
+
+def correct_structure(data, user):
+    for i in data:
+        if i.player2.user_id == user:
+            player = i.player2
+            i.player2 = i.player1
+            i.player1 = player
 
 
 class AllFriend(ObjectType, QueryFields):
@@ -16,13 +24,14 @@ class AllFriend(ObjectType, QueryFields):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_friend'):
             return QueryFields.rise_error(user)
-        data = Friend.objects.filter(Q(player1__id=user.id) | Q(
-            player2__id=user.id) & Q(state="accepted"))
+        data = Friend.objects.filter(Q(player1__user_id=user) | Q(
+            player2__user_id=user) & Q(state="accepted"))
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')
             return []
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
+        correct_structure(data, user)
         return data
 
 
@@ -36,13 +45,14 @@ class GetFriend(ObjectType, QueryFields):
         if not QueryFields.is_valide(info, user, 'core.view_friend'):
             return QueryFields.rise_error(user)
         data = Friend.objects.filter(
-            ((Q(player1__id=user.id) &
-              (Q(player2__first_name=kwargs['name']) | Q(player2__last_name=kwargs['name']))) |
-             ((Q(player1__first_name=kwargs['name']) | Q(player1__last_name=kwargs['name'])) & Q(
-                 player2__id=user.id))) & Q(state="accepted"))
+            ((Q(player1__user_id__id=user.id) &
+              (Q(player2__user_id__first_name=kwargs['name']) | Q(player2__user_id__last_name=kwargs['name']))) |
+             ((Q(player1__user_id__first_name=kwargs['name']) | Q(player1__user_id__last_name=kwargs['name'])) & Q(
+                 player2__user_id__id=user.id))) & Q(state="accepted"))
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')
             return []
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
+        correct_structure(data, user)
         return data

@@ -167,8 +167,10 @@ class NotificationObjectType(DjangoObjectType):
 
 class FriendObjectType(DjangoObjectType):
     pk = graphene.Field(type=graphene.Int, source='id')
+    friends = graphene.Field(type=PlayerObjectType, source='player2')
+    me = graphene.Field(type=graphene.ID, source='player1')
 
     class Meta:
         model = models.Friend
-        fields = ['id', 'pk', 'player1', 'player2', 'state']
+        fields = ['id', 'pk', 'friends', 'me']
         interfaces = (relay.Node,)
