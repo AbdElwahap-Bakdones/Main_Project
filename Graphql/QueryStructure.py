@@ -13,8 +13,26 @@ class Attributes():
     # test = graphene.String()
 
 
+def BadRequest(instanse: object, message='Bad Request'):
+    return instanse(
+        data=None, message='Bad Request',
+        status=status_code.HTTP_400_BAD_REQUEST)
+
+
+def NoPermission(instanse: object):
+    return instanse(
+        data=None, message='You do not have permission to complete the process',
+        status=status_code.HTTP_401_UNAUTHORIZED)
+
+
 def MyReturn(instanse: object, data: object, message: str, code: status_code):
     return instanse(data=data, message=message, status=code)
+
+
+def NotFound(instanse: object):
+    return instanse(
+        data=None, message='Not found',
+        status=status_code.HTTP_404_NOT_FOUND)
 
 
 class QueryFields(object):

@@ -24,6 +24,7 @@ from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 #from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
+from ..Mutation import addFriend
 
 
 class User_model(DjangoObjectType):
@@ -92,6 +93,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     updatestadium = UpdateStadium.Field()
     addservicesforstadiums = AddServicesForStadiums.Field()
     modificationstostadiumservices = ModificationsToStadiumServices.Field()
+    addFriend = addFriend.AddFrien.Field
 
 
 class Subscription(graphene.ObjectType):

@@ -106,3 +106,9 @@ class AddUserRateInput(graphene.InputObjectType):
     user_id = graphene.ID(required=True)
     rate_type_id = graphene.ID(required=True)
     percent = graphene.Float(required=True)
+
+
+class SearchPlayerInput(graphene.InputObjectType):
+    player_email = graphene.ID(required=False)
+    player_Name = graphene.ID(required=False)
+    # player_lastName = graphene.ID(required=False)

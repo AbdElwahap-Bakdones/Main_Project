@@ -30,7 +30,6 @@ class auth:
         regex = re.compile('^HTTP_')
         header = dict((regex.sub('', header), value) for (header, value)
                       in request.META.items() if header.startswith('HTTP_'))
-        print(header)
         if not 'TOKEN' in header:
             return self.__return(status_code.HTTP_400_BAD_REQUEST, 'there is no token')
         return self.checkToken(header['TOKEN'], request=request)
@@ -64,6 +63,5 @@ class CSRF:
         regex = re.compile('^HTTP_')
         header = dict((regex.sub('', header), value) for (header, value)
                       in request.META.items() if header.startswith('HTTP_'))
-        print(request.META.items())
         response = self.get_response(request)
         return response
