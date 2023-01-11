@@ -103,9 +103,11 @@ class Player_reservationObjectType(DjangoObjectType):
 
 
 class TeamObjectType(DjangoObjectType):
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.Team
-        fields = "__all__"
+        fields = ['id', 'pk', 'name', 'type_id', 'search_game', 'temp']
         interfaces = (relay.Node,)
 
 
