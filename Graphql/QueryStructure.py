@@ -84,3 +84,22 @@ class QueryFields(object):
 
     def resolve_data(root, info: ResolveInfo, **kwargs):
         return []
+
+    def queryAll(obj, info, permission):
+        user = info.context.META['user']
+        if not QueryFields.is_valide(info, user, permission):
+            return QueryFields.rise_error(user)
+        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
+        return obj.objects.all()
+
+    def queryGet(obj, info, permission, id):
+        user = info.context.META['user']
+        if not QueryFields.is_valide(info, user, permission):
+            return QueryFields.rise_error(user)
+        data = obj.objects.filter(id=id)
+        if not data.exists():
+            QueryFields.set_extra_data(
+                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
+            return []
+        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
+        return data

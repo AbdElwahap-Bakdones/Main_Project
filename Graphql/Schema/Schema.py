@@ -8,12 +8,12 @@ from graphene_django.views import GraphQLView
 from rx import Observable
 from rest_framework import status as status_code
 import graphene
-
 from core import models
 from Graphql.QueryStructure import QueryFields
 from test_app.models import Cars, Compani
 from ..Query.Club import AllClub, GetClub
 from ..Query.Section import AllSection, GetSection
+from ..Query.Friend import GetFriend, AllFriend
 from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
@@ -46,6 +46,9 @@ class Query(ObjectType):
     AllSection = graphene.Field(AllSection)
     GetSection = graphene.Field(GetSection)
 
+    getFriend = graphene.Field(GetFriend)
+    allFriend = graphene.Field(AllFriend)
+
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
 
@@ -57,6 +60,12 @@ class Query(ObjectType):
 
     def resolve_GetSection(root, info, **kwargs):
         return GetSection()
+
+    def resolve_getFriend(root, info, **kwargs):
+        return GetFriend()
+
+    def resolve_allFriend(root, info, **kwargs):
+        return AllFriend()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):

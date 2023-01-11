@@ -11,11 +11,7 @@ class AllClub(ObjectType, QueryFields):
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_club'):
-            return QueryFields.rise_error(user)
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
-        return Club.objects.all()
+        return QueryFields.queryAll(Club, info, 'core.view_club')
 
 
 class GetClub(ObjectType, QueryFields):
@@ -24,13 +20,4 @@ class GetClub(ObjectType, QueryFields):
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_club'):
-            return QueryFields.rise_error(user)
-        club = Club.objects.filter(id=kwargs["id"])
-        if not club.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
-        return club
+        return QueryFields.queryGet(Club, info, 'core.view_club', kwargs["id"])
