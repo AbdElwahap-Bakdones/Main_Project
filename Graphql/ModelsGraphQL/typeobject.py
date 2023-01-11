@@ -163,3 +163,12 @@ class NotificationObjectType(DjangoObjectType):
         model = models.Notification
         fields = "__all__"
         interfaces = (relay.Node,)
+
+
+class FriendObjectType(DjangoObjectType):
+    pk = graphene.Field(type=graphene.Int, source='id')
+
+    class Meta:
+        model = models.Friend
+        fields = ['id', 'pk', 'user1', 'user2', 'state']
+        interfaces = (relay.Node,)

@@ -100,3 +100,8 @@ class RateTypeConnection(relay.Connection):
 class NotificationConnection(relay.Connection):
     class Meta:
         node = typeobject.NotificationObjectType
+
+
+class FriendConnection(relay.Connection):
+    class Meta:
+        node = typeobject.FriendObjectType
