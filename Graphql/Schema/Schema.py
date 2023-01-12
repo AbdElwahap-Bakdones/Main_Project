@@ -12,6 +12,7 @@ from core import models
 from Graphql.QueryStructure import QueryFields
 from test_app.models import Cars, Compani
 from ..Query.Club import AllClub, GetClub
+from ..Query.Duration import searchOnReservation
 from ..Query.Section import AllSection, GetSection
 from ..Query.Friend import GetFriend, AllFriend
 from ..Query.Userteam import AllTeamMembers
@@ -24,7 +25,7 @@ from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 #from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Mutation import addFriend
+from ..Query import Player
 
 
 class User_model(DjangoObjectType):
@@ -53,6 +54,8 @@ class Query(ObjectType):
     allFriend = graphene.Field(AllFriend)
     myteam = graphene.Field(AllTeamMembers)
     getTeam = graphene.Field(GetTeam)
+    searchonReservation = graphene.Field(searchOnReservation)
+    serchPlayer = graphene.Field(Player.SerchPlayer)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -78,6 +81,12 @@ class Query(ObjectType):
     def resolve_getTeam(root, info, **kwargs):
         return GetTeam()
 
+    def resolve_searchonReservation(root, info, **kwargs):
+        return searchOnReservation()
+
+    def resolve_serchPlayer(root, info, **kwargs):
+        return Player.SerchPlayer()
+
 
 class Mutation (AuthMutation, graphene.ObjectType):
     SignUpPlyer = signup.SignUpPlayer.Field()
@@ -93,7 +102,6 @@ class Mutation (AuthMutation, graphene.ObjectType):
     updatestadium = UpdateStadium.Field()
     addservicesforstadiums = AddServicesForStadiums.Field()
     modificationstostadiumservices = ModificationsToStadiumServices.Field()
-    addFriend = addFriend.AddFrien.Field()
 
 
 class Subscription(graphene.ObjectType):
