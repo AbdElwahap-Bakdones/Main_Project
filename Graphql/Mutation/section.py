@@ -5,8 +5,6 @@ from core import models, serializer
 from ..Auth.permission import checkPermission
 from rest_framework import status as status_code
 from .. import QueryStructure
-from abc import ABC, abstractmethod, abstractclassmethod
-from django.http import HttpResponse
 
 
 class AddSection  (graphene.Mutation, QueryStructure.Attributes):
@@ -21,7 +19,7 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
         try:
             user = info.context.META["user"]
             if not checkPermission("core.add_section", user):
-                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.NoPermission(self)
             seria = serializer.SectionSerializer(data=kwargs["SectionData"])
             if seria.is_valid():
                 seria.validated_data
@@ -52,15 +50,12 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
         try:
             user = models.User(info.context.META["user"])
             if not checkPermission("core.change_section", user.pk):
-                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.NoPermission(self)
             data = kwargs['SectionData']
             Section_object = models.Section.objects.filter(
                 pk=data['id'], is_deleted=False)
             if not Section_object.exists():
-                msg = 'there is no Section with id='+data['id']
-                data = None
-                status = status_code.HTTP_404_NOT_FOUND
-                return QueryStructure.MyReturn(self, None, msg, status)
+                QueryStructure.NotFound(self)
 
             seria = serializer.SectionSerializer(
                 Section_object.first(), data=data, partial=True)
@@ -93,16 +88,12 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
         try:
             user = models.User(info.context.META["user"])
             if not checkPermission("core.delete_section", user.pk):
-                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.NoPermission(self)
             data = kwargs['SectionData']
             Section_object = models.Section.objects.filter(
                 pk=data["id"], is_deleted=False)
             if not Section_object.exists():
-                msg = 'there is no Section with id='+data['id']
-                Section = None
-                status = status_code.HTTP_404_NOT_FOUND
-                return QueryStructure.MyReturn(self, None, msg, status)
-
+                QueryStructure.NotFound(self)
             data.update({"is_deleted": True})
             seria = serializer.SectionSerializer(
                 Section_object.first(), data=data, partial=True)

@@ -21,7 +21,7 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
         try:
             user = info.context.META["user"]
             if not checkPermission("core.add_club", user):
-                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.NoPermission(self)
             # get manager_id
             manager_id = models.Manager.objects.get(user_id=user).pk
             # add manager_id to data
@@ -56,17 +56,14 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
         try:
             user = models.User(info.context.META["user"])
             if not checkPermission("core.change_club", user.pk):
-                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.NoPermission(self)
             data = kwargs['ClubData']
             # club_object = models.Club.objects.get(
             #     id=data['id'], is_deleted=False)
             club_object = models.Club.objects.filter(
                 pk=data['id'], is_deleted=False)
             if not club_object.exists():
-                msg = 'there is no club with id='+data['id']
-                club = None
-                status = status_code.HTTP_404_NOT_FOUND
-                return QueryStructure.MyReturn(self, None, msg, status)
+                return QueryStructure.NotFound(self)
 
             seria = serializer.ClubSerializer(
                 club_object.first(), data=data, partial=True)

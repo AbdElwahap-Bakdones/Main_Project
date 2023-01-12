@@ -112,3 +112,7 @@ class SearchPlayerInput(graphene.InputObjectType):
     player_email = graphene.ID(required=False)
     player_Name = graphene.ID(required=False)
     # player_lastName = graphene.ID(required=False)
+
+
+class AddRequestFriendInput(graphene.InputObjectType):
+    player_pk = graphene.ID(required=True)

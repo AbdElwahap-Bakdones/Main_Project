@@ -22,7 +22,7 @@ def BadRequest(instanse: object, message='Bad Request'):
 def NoPermission(instanse: object):
     return instanse(
         data=None, message='You do not have permission to complete the process',
-        status=status_code.HTTP_401_UNAUTHORIZED)
+        status=status_code.HTTP_403_FORBIDDEN)
 
 
 def MyReturn(instanse: object, data: object, message: str, code: status_code):
