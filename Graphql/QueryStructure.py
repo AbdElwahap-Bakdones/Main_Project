@@ -46,6 +46,11 @@ class QueryFields(object):
     #     if len(QueryFields) > 50:
     #         last_user = list(QueryFields.return_dict)[-1]
     #         del QueryFields.return_dict[last_user]
+    def clear():
+        print('clear QueryFields')
+        if len(QueryFields.return_dict) > 2:
+            last_user = list(QueryFields.return_dict)[-1]
+            del QueryFields.return_dict[last_user]
 
     def __chack_if_data_call_first(info: ResolveInfo) -> bool:
         if SelectionSet(Field(
@@ -54,6 +59,7 @@ class QueryFields(object):
         return False
 
     def is_valide(info: ResolveInfo, user: object, operation: str) -> bool:
+        QueryFields.clear
         if not permission.checkPermission(operation, user):
             QueryFields.__no_permission(user)
             return False
@@ -103,21 +109,44 @@ class QueryFields(object):
     def resolve_data(root, info: ResolveInfo, **kwargs):
         return []
 
-    def queryAll(obj, info, permission):
+    def NotFound(info: ResolveInfo):
+        user = info.context.META['user']
+        QueryFields.set_extra_data(
+            user, status_code.HTTP_404_NOT_FOUND, 'not exists')
+        return []
+
+    def BadRequest(info: ResolveInfo):
+        user = info.context.META['user']
+        QueryFields.set_extra_data(
+            user, status_code.HTTP_400_BAD_REQUEST, 'Bad Request')
+        return []
+
+    def ServerError(info: ResolveInfo, msg='Server Error'):
+        user = info.context.META['user']
+        QueryFields.set_extra_data(
+            user, status_code.HTTP_500_INTERNAL_SERVER_ERROR, msg)
+        return []
+
+    def OK(info: ResolveInfo):
+        user = info.context.META['user']
+        QueryFields.set_extra_data(
+            user, status_code.HTTP_200_OK, 'OK')
+        return []
+
+    def queryAll(obj, info: ResolveInfo, permission):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, permission):
             return QueryFields.rise_error(user)
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
         return obj.objects.all()
 
-    def queryGet(obj, info, permission, id):
+    def queryGet(obj, info: ResolveInfo, permission, id):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, permission):
             return QueryFields.rise_error(user)
         data = obj.objects.filter(id=id)
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
+            QueryFields.NotFound(info)
+
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
         return data
