@@ -72,9 +72,9 @@ class Team_membersConnection(relay.Connection):
         node = typeobject.Team_membersObjectType
 
 
-class PostionConnection(relay.Connection):
+class PositionConnection(relay.Connection):
     class Meta:
-        node = typeobject.PostionObjectType
+        node = typeobject.PositionObjectType
 
 
 class TypeConnection(relay.Connection):
