@@ -147,7 +147,7 @@ class Team_membersObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class PostionObjectType(DjangoObjectType):
+class PositionObjectType(DjangoObjectType):
     class Meta:
         model = models.Position
         fields = "__all__"
