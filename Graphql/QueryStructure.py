@@ -35,6 +35,12 @@ def NotFound(instanse: object):
         status=status_code.HTTP_404_NOT_FOUND)
 
 
+def OK(instanse: object, data=None):
+    return instanse(
+        data=data, message='OK',
+        status=status_code.HTTP_200_OK)
+
+
 class QueryFields(object):
     status = graphene.Int()
     message = graphene.String()
