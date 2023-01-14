@@ -143,3 +143,9 @@ class DurationSerializer(serializers.ModelSerializer):
         Duration = models.Duration(**validated_data)
         Duration.save()
         return Duration
+
+
+class FrienfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Friend
+        fields = '__all__'

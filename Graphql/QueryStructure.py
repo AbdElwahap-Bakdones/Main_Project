@@ -41,6 +41,17 @@ def OK(instanse: object, data=None):
         status=status_code.HTTP_200_OK)
 
 
+def InternalServerError(instanse: object, msg='server error'):
+    return instanse(
+        data=None, message=msg,
+        status=status_code.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def Created(instanse: object, data=None, msg='Created !'):
+    return instanse(data=data, message=msg,
+                    status=status_code.HTTP_201_CREATED)
+
+
 class QueryFields(object):
     status = graphene.Int()
     message = graphene.String()
