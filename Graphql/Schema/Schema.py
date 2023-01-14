@@ -12,11 +12,11 @@ from core import models
 from Graphql.QueryStructure import QueryFields
 from test_app.models import Cars, Compani
 from ..Query.Club import AllClub, GetClub
-from ..Query.Duration import searchOnReservation
+from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSection, GetSection
+from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
 from ..Query.Friend import GetFriend, AllFriend
-from ..Query.Userteam import AllTeamMembers
-from ..Query.team import GetTeam
+from ..Query.team import GetTeam, AllMyTeam, GetMyTeam
 from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
@@ -49,13 +49,16 @@ class Query(ObjectType):
     GetClub = graphene.Field(GetClub)
     AllSection = graphene.Field(AllSection)
     GetSection = graphene.Field(GetSection)
-
     getFriend = graphene.Field(GetFriend)
     allFriend = graphene.Field(AllFriend)
-    myteam = graphene.Field(AllTeamMembers)
-    getTeam = graphene.Field(GetTeam)
-    searchonReservation = graphene.Field(searchOnReservation)
+    getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
+    getTeam = graphene.Field(GetTeam)
+    allMyTeam = graphene.Field(AllMyTeam)
+    getMyTeam = graphene.Field(GetMyTeam)
+    getStadium = graphene.Field(GetStadium)
+    allStadiumByType = graphene.Field(AllStadiumByType)
+    getStadiumByType = graphene.Field(GetStadiumByType)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -75,17 +78,29 @@ class Query(ObjectType):
     def resolve_allFriend(root, info, **kwargs):
         return AllFriend()
 
-    def resolve_myteam(root, info, **kwargs):
-        return AllTeamMembers()
-
     def resolve_getTeam(root, info, **kwargs):
         return GetTeam()
 
-    def resolve_searchonReservation(root, info, **kwargs):
-        return searchOnReservation()
+    def resolve_getAllowDuration(root, info, **kwargs):
+        return GetAllowDuration()
 
     def resolve_serchPlayer(root, info, **kwargs):
         return Player.SerchPlayer()
+
+    def resolve_allMyTeam(root, info, **kwargs):
+        return AllMyTeam()
+
+    def resolve_getMyTeam(root, info, **kwargs):
+        return GetMyTeam()
+
+    def resolve_getStadium(root, info, **kwargs):
+        return GetStadium()
+
+    def resolve_allStadiumByType(root, info, **kwargs):
+        return AllStadiumByType()
+
+    def resolve_getStadiumByType(root, info, **kwargs):
+        return GetStadiumByType()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
