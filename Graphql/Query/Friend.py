@@ -24,15 +24,9 @@ class AllFriend(ObjectType, QueryFields):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_friend'):
             return QueryFields.rise_error(user)
-        data = Friend.objects.filter(Q(player1__user_id=user) | Q(
-            player2__user_id=user) & Q(state="accepted"))
-        if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
-        correct_structure(data, user)
-        return data
+        data = Friend.objects.filter(
+            Q(player1__user_id=user) & Q(state="accepted"))
+        return QueryFields.OK(info, data=data)
 
 
 class GetFriend(ObjectType, QueryFields):

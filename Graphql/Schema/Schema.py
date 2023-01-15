@@ -26,6 +26,7 @@ from ..Mutation.stadium import AddStadium, UpdateStadium
 #from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player
+from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 
 
 class User_model(DjangoObjectType):
@@ -102,6 +103,9 @@ class Mutation (AuthMutation, graphene.ObjectType):
     updatestadium = UpdateStadium.Field()
     addservicesforstadiums = AddServicesForStadiums.Field()
     modificationstostadiumservices = ModificationsToStadiumServices.Field()
+    addFreind = addFriend.addRequestFriend.Field()
+    rejectFriend = rejectFriend.RejectFriend.Field()
+    acceptFriend = acceptFriend.AcceptFriend.Field()
 
 
 class Subscription(graphene.ObjectType):

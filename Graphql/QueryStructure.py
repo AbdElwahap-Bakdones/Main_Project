@@ -15,7 +15,7 @@ class Attributes():
 
 def BadRequest(instanse: object, message='Bad Request'):
     return instanse(
-        data=None, message='Bad Request',
+        data=None, message=message,
         status=status_code.HTTP_400_BAD_REQUEST)
 
 
@@ -41,14 +41,14 @@ def OK(instanse: object, data=None):
         status=status_code.HTTP_200_OK)
 
 
-def InternalServerError(instanse: object, msg='server error'):
+def InternalServerError(instanse: object, message='server error'):
     return instanse(
-        data=None, message=msg,
+        data=None, message=message,
         status=status_code.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def Created(instanse: object, data=None, msg='Created !'):
-    return instanse(data=data, message=msg,
+def Created(instanse: object, data=None, message='Created !'):
+    return instanse(data=data, message=message,
                     status=status_code.HTTP_201_CREATED)
 
 
@@ -144,11 +144,11 @@ class QueryFields(object):
             user, status_code.HTTP_500_INTERNAL_SERVER_ERROR, msg)
         return []
 
-    def OK(info: ResolveInfo):
+    def OK(info: ResolveInfo, data=[]):
         user = info.context.META['user']
         QueryFields.set_extra_data(
             user, status_code.HTTP_200_OK, 'OK')
-        return []
+        return data
 
     def queryAll(obj, info: ResolveInfo, permission):
         user = info.context.META['user']
