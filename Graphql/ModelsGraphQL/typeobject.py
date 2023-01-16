@@ -44,9 +44,12 @@ class SubManagerObjectType(DjangoObjectType):
 
 
 class TypeObjectType(DjangoObjectType):
+    pk = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
+
         model = models.Type
-        fields = "__all__"
+        fields = ['pk', 'name']
         interfaces = (relay.Node,)
 
 
@@ -126,10 +129,11 @@ class Player_reservationObjectType(DjangoObjectType):
 
 class TeamObjectType(DjangoObjectType):
     pk = graphene.Field(type=graphene.Int, source='id')
+    type = graphene.Field(type=TypeObjectType, source='type_id')
 
     class Meta:
         model = models.Team
-        fields = ['id', 'pk', 'name', 'type_id', 'search_game', 'temp']
+        fields = ['pk', 'name', 'type', 'search_game', 'temp']
         interfaces = (relay.Node,)
 
 

@@ -116,3 +116,9 @@ class SearchPlayerInput(graphene.InputObjectType):
 
 class AddRequestFriendInput(graphene.InputObjectType):
     player_pk = graphene.ID(required=True)
+
+
+class AddTeamInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    type_id = graphene.ID()
+    # picture = graphene.String(required=False)

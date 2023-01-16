@@ -149,3 +149,9 @@ class FrienfSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Friend
         fields = '__all__'
+
+
+class MembersTeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Team_members
+        fields = '__all__'

@@ -14,7 +14,7 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        ClubData = inputtype.AddClubInput()
+        data = inputtype.AddClubInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -25,8 +25,8 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
             # get manager_id
             manager_id = models.Manager.objects.get(user_id=user).pk
             # add manager_id to data
-            kwargs["ClubData"].update({"manager_id": manager_id})
-            seria = serializer.ClubSerializer(data=kwargs["ClubData"])
+            kwargs["data"].update({"manager_id": manager_id})
+            seria = serializer.ClubSerializer(data=kwargs["data"])
             if seria.is_valid():
                 seria.validated_data
                 msg = seria.errors
@@ -49,7 +49,7 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        ClubData = inputtype.UpdateClubInput()
+        data = inputtype.UpdateClubInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -57,7 +57,7 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
             user = models.User(info.context.META["user"])
             if not checkPermission("core.change_club", user.pk):
                 return QueryStructure.NoPermission(self)
-            data = kwargs['ClubData']
+            data = kwargs['data']
             # club_object = models.Club.objects.get(
             #     id=data['id'], is_deleted=False)
             club_object = models.Club.objects.filter(
@@ -89,17 +89,18 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.ClubObjectType)
 
     class Arguments:
-        ClubData = inputtype.DeleteClubInput()
+        data = inputtype.DeleteClubInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
         try:
             user = models.User(info.context.META["user"])
             if not checkPermission("core.delete_club", user.pk):
-                return QueryStructure.MyReturn(self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
+                return QueryStructure.MyReturn(
+                    self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
             # club_object = models.Club.objects.get(
             #     id=data['id'], is_deleted=False)
-            data = kwargs['ClubData']
+            data = kwargs['data']
             club_object = models.Club.objects.filter(
                 pk=data["id"], is_deleted=False)
             if not club_object.exists():
