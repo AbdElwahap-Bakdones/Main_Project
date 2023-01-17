@@ -155,3 +155,10 @@ class MembersTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Team_members
         fields = '__all__'
+
+
+class TeamSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Team
+        fields = ['name', 'picture', 'type_id', 'search_game']

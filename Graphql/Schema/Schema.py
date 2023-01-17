@@ -10,6 +10,7 @@ from ..Query.Section import AllSection, GetSection
 from ..Query.Friend import GetFriend, AllFriend
 from ..Query.Userteam import AllTeamMembers
 from ..Query.team import GetTeam
+from ..Query.sub_manager import ClubSubManagerd
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
@@ -19,7 +20,7 @@ from ..Mutation.stadium import AddStadium, UpdateStadium
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
-from ..Mutation.Team import createTeam
+from ..Mutation.Team import createTeam, deleteTeam
 
 
 class User_model(DjangoObjectType):
@@ -50,6 +51,7 @@ class Query(ObjectType):
     searchonReservation = graphene.Field(searchOnReservation)
     serchPlayer = graphene.Field(Player.SerchPlayer)
     type_ = graphene.Field(Type.AllType)
+    clubSubManager = graphene.Field(ClubSubManagerd)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -84,6 +86,9 @@ class Query(ObjectType):
     def resolve_type_(root, info, **kwargs):
         return Type.AllType()
 
+    def resolve_clubSubManager(root, info, **kwargs):
+        return ClubSubManagerd()
+
 
 class Mutation (AuthMutation, graphene.ObjectType):
     SignUpPlyer = signup.SignUpPlayer.Field()
@@ -103,6 +108,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     rejectFriend = rejectFriend.RejectFriend.Field()
     acceptFriend = acceptFriend.AcceptFriend.Field()
     createTeam = createTeam.CreateTeam.Field()
+    deleteTeam = deleteTeam.DeleteTeam.Field()
 
 
 class Subscription(graphene.ObjectType):
