@@ -19,13 +19,13 @@ class AddStadium(graphene.Mutation):
     status = graphene.Int()
 
     class Arguments:
-        StadiumData = StadiumInput()
+        data = StadiumInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
         checkPermission("core.add_stadium", info)
         seria = serializer.StadiumSerializer(
-            data=kwargs["StadiumData"])
+            data=kwargs["data"])
         if seria.is_valid():
             seria.validated_data
             msg = seria.errors

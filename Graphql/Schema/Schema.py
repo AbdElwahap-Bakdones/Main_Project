@@ -1,23 +1,14 @@
-from graphene import relay, ObjectType
+from graphene import ObjectType
 from graphene_django.types import DjangoObjectType
-from graphene_django import DjangoListField
-from graphene_django.rest_framework.mutation import SerializerMutation
-from graphql.execution.base import ResolveInfo
-from graphql.language.ast import Field, SelectionSet
-from graphene_django.views import GraphQLView
 from rx import Observable
-from rest_framework import status as status_code
 import graphene
 from core import models
-from Graphql.QueryStructure import QueryFields
-from test_app.models import Cars, Compani
+from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub
 from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSection, GetSection
 from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
 from ..Query.Friend import GetFriend, AllFriend
-from ..Query.team import GetTeam, AllMyTeam, GetMyTeam
-from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
@@ -25,7 +16,9 @@ from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 #from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Query import Player
+from ..Query import Player, Type
+from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
+from ..Mutation.Team import createTeam, deleteTeam
 
 
 class User_model(DjangoObjectType):
@@ -53,12 +46,6 @@ class Query(ObjectType):
     allFriend = graphene.Field(AllFriend)
     getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
-    getTeam = graphene.Field(GetTeam)
-    allMyTeam = graphene.Field(AllMyTeam)
-    getMyTeam = graphene.Field(GetMyTeam)
-    getStadium = graphene.Field(GetStadium)
-    allStadiumByType = graphene.Field(AllStadiumByType)
-    getStadiumByType = graphene.Field(GetStadiumByType)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -87,20 +74,6 @@ class Query(ObjectType):
     def resolve_serchPlayer(root, info, **kwargs):
         return Player.SerchPlayer()
 
-    def resolve_allMyTeam(root, info, **kwargs):
-        return AllMyTeam()
-
-    def resolve_getMyTeam(root, info, **kwargs):
-        return GetMyTeam()
-
-    def resolve_getStadium(root, info, **kwargs):
-        return GetStadium()
-
-    def resolve_allStadiumByType(root, info, **kwargs):
-        return AllStadiumByType()
-
-    def resolve_getStadiumByType(root, info, **kwargs):
-        return GetStadiumByType()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
@@ -117,6 +90,11 @@ class Mutation (AuthMutation, graphene.ObjectType):
     updatestadium = UpdateStadium.Field()
     addservicesforstadiums = AddServicesForStadiums.Field()
     modificationstostadiumservices = ModificationsToStadiumServices.Field()
+    addFreind = addFriend.addRequestFriend.Field()
+    rejectFriend = rejectFriend.RejectFriend.Field()
+    acceptFriend = acceptFriend.AcceptFriend.Field()
+    createTeam = createTeam.CreateTeam.Field()
+    deleteTeam = deleteTeam.DeleteTeam.Field()
 
 
 class Subscription(graphene.ObjectType):

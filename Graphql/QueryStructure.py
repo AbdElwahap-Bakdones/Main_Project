@@ -15,7 +15,7 @@ class Attributes():
 
 def BadRequest(instanse: object, message='Bad Request'):
     return instanse(
-        data=None, message='Bad Request',
+        data=None, message=message,
         status=status_code.HTTP_400_BAD_REQUEST)
 
 
@@ -39,6 +39,17 @@ def OK(instanse: object, data=None):
     return instanse(
         data=data, message='OK',
         status=status_code.HTTP_200_OK)
+
+
+def InternalServerError(instanse: object, message='server error'):
+    return instanse(
+        data=None, message=message,
+        status=status_code.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def Created(instanse: object, data=None, message='Created !'):
+    return instanse(data=data, message=message,
+                    status=status_code.HTTP_201_CREATED)
 
 
 class QueryFields(object):
@@ -101,7 +112,9 @@ class QueryFields(object):
 
     def resolve_message(root, info: ResolveInfo, **kwargs):
         try:
+
             user = info.context.META['user']
+
             if not QueryFields.__chack_if_data_call_first(info):
                 return 'plase call data first'
             message = QueryFields.return_dict[user]['message']
@@ -109,7 +122,7 @@ class QueryFields(object):
         except Exception as e:
             print('Error in resolve_message')
             print(str(e))
-            message = 'INTERNAL_SERVER_ERROR'
+            message = 'INTERNAL_SERVER_ERROR' + str(e)
         return message
 
     def resolve_data(root, info: ResolveInfo, **kwargs):
@@ -133,11 +146,11 @@ class QueryFields(object):
             user, status_code.HTTP_500_INTERNAL_SERVER_ERROR, msg)
         return []
 
-    def OK(info: ResolveInfo):
+    def OK(info: ResolveInfo, data=[]):
         user = info.context.META['user']
         QueryFields.set_extra_data(
             user, status_code.HTTP_200_OK, 'OK')
-        return []
+        return data
 
     def queryAll(obj, info: ResolveInfo, permission):
         user = info.context.META['user']

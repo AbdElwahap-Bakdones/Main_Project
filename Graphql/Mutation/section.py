@@ -12,7 +12,7 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = inputtype.AddSectionInput()
+        data = inputtype.AddSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -20,7 +20,7 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             if not checkPermission("core.add_section", user):
                 return QueryStructure.NoPermission(self)
-            seria = serializer.SectionSerializer(data=kwargs["SectionData"])
+            seria = serializer.SectionSerializer(data=kwargs["data"])
             if seria.is_valid():
                 seria.validated_data
                 msg = seria.errors
@@ -43,7 +43,7 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = inputtype.UpdateSectionInput()
+        data = inputtype.UpdateSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -51,7 +51,7 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
             user = models.User(info.context.META["user"])
             if not checkPermission("core.change_section", user.pk):
                 return QueryStructure.NoPermission(self)
-            data = kwargs['SectionData']
+            data = kwargs['data']
             Section_object = models.Section.objects.filter(
                 pk=data['id'], is_deleted=False)
             if not Section_object.exists():
@@ -81,7 +81,7 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = inputtype.DeleteSectionInput()
+        data = inputtype.DeleteSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -89,7 +89,7 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
             user = models.User(info.context.META["user"])
             if not checkPermission("core.delete_section", user.pk):
                 return QueryStructure.NoPermission(self)
-            data = kwargs['SectionData']
+            data = kwargs['data']
             Section_object = models.Section.objects.filter(
                 pk=data["id"], is_deleted=False)
             if not Section_object.exists():
