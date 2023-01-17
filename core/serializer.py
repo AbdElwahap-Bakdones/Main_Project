@@ -50,7 +50,7 @@ class SubManagerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.SubManager
-        fields = ['user_id']
+        fields = ['user_id', 'club_id']
 
 
 class ClubSerializer(serializers.ModelSerializer):

@@ -11,14 +11,16 @@ import graphene
 class SerchPlayer  (ObjectType, QueryFields):
 
     data = relay.ConnectionField(
-        relays.PlayerConnection, player_Name=graphene.String(), player_Email=graphene.String(), without_Friend=graphene.Boolean(required=True))
+        relays.PlayerConnection, player_Name=graphene.String(),
+        player_Email=graphene.String(),
+        without_Friend=graphene.Boolean(required=True))
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
         try:
             user = info.context.META["user"]
             if not QueryFields.is_valide(info=info, user=user, operation="core.add_friend"):
-                return QueryFields.rise_error
+                return QueryFields.rise_error(user=user)
             if 'player_email' in kwargs:
                 data = models.Player.objects.filter(
                     user_id__email=kwargs['player_email'])
@@ -73,8 +75,10 @@ def GetPlayerByName(name: str, with_no_Friend=False, user=None) -> list:
             friend = GetFriendByName(name=name, user=user).values_list(
                 'player2__pk', flat=True)
 
-        data = models.Player.objects.filter(~Q(user_id=user) & ~Q(pk__in=friend) & (Q(user_id__username__iexact=name) | Q(
-            user_id__first_name__iexact=FL_name[0]) | Q(user_id__last_name__iexact=FL_name[1])))
+        data = models.Player.objects.filter(~Q(user_id=user) & ~Q(pk__in=friend) &
+                                            (Q(user_id__username__iexact=name) |
+                                             Q(user_id__first_name__iexact=FL_name[0]) |
+                                             Q(user_id__last_name__iexact=FL_name[1])))
 
     else:
         friend = []

@@ -17,8 +17,6 @@ class DeleteTeam(graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             team_id = kwargs['data']['pk']
             is_captin = models.Team_members.objects.filter(player_id__user_id=user, team_id=team_id, is_captin=True)
-            print('890990909090')
-            print(is_captin.exists())
             if not checkPermission("core.change_team", user) or not is_captin.exists():
                 return QueryStructure.NoPermission(self)
 

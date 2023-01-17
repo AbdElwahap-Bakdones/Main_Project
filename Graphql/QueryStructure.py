@@ -112,7 +112,9 @@ class QueryFields(object):
 
     def resolve_message(root, info: ResolveInfo, **kwargs):
         try:
+
             user = info.context.META['user']
+
             if not QueryFields.__chack_if_data_call_first(info):
                 return 'plase call data first'
             message = QueryFields.return_dict[user]['message']
@@ -120,7 +122,7 @@ class QueryFields(object):
         except Exception as e:
             print('Error in resolve_message')
             print(str(e))
-            message = 'INTERNAL_SERVER_ERROR'
+            message = 'INTERNAL_SERVER_ERROR' + str(e)
         return message
 
     def resolve_data(root, info: ResolveInfo, **kwargs):

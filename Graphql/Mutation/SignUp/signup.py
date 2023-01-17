@@ -146,6 +146,7 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name@last_name
             # add User via serializer   &  add subManager via serializer
+            print(data)
             seria_user = serializer.UserSerializer(data=user_data)
             seria_subManager = serializer.SubManagerSerializer(
                 data=data)
@@ -161,10 +162,8 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
                 seria_subManager.is_valid(
                     raise_exception='internal servre Error')
                 subManager = seria_subManager.save()
-                status = status_code.HTTP_201_CREATED
-                msg = 'ok'
+                return QueryStructure.Created(instanse=self, data=subManager)
             else:
-                print('else')
                 user_error = dict(seria_user.errors)
                 subManager_error = dict(seria_subManager.errors)
                 user_error.update(subManager_error)
@@ -173,6 +172,6 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
         except Exception as e:
             user = None
             subManager = None
-            msg = e
+            msg = str(e)
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return QueryStructure.MyReturn(self, subManager, msg, status)
