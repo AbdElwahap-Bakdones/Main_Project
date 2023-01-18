@@ -4,7 +4,7 @@ from rx import Observable
 import graphene
 from core import models
 from test_app.models import Cars
-from ..Query.Club import AllClub, GetClub
+from ..Query.Club import AllClub, GetClub, MyClub
 from ..Query.Duration import searchOnReservation
 from ..Query.Section import AllSection, GetSection
 from ..Query.Friend import GetFriend, AllFriend
@@ -52,6 +52,7 @@ class Query(ObjectType):
     serchPlayer = graphene.Field(Player.SerchPlayer)
     type_ = graphene.Field(Type.AllType)
     clubSubManager = graphene.Field(ClubSubManagerd)
+    myClub = graphene.Field(MyClub)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -89,9 +90,12 @@ class Query(ObjectType):
     def resolve_clubSubManager(root, info, **kwargs):
         return ClubSubManagerd()
 
+    def resolve_myClub(root, info, **kwargs):
+        return MyClub()
+
 
 class Mutation (AuthMutation, graphene.ObjectType):
-    SignUpPlyer = signup.SignUpPlayer.Field()
+    SignUpPlyer = signup.SignUpPlayer.Field(description='SignUpPlyer')
     SignUpManager = signup.SignUpManager.Field()
     SignUpSubManager = signup.SignUpSubManager.Field()
     addclub = AddClub.Field()
