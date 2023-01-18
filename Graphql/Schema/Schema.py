@@ -5,7 +5,7 @@ import graphene
 from core import models
 from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub, MyClub
-from ..Query.Duration import searchOnReservation
+# from ..Query.Duration import searchOnReservation
 from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSection, GetSection
 from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType

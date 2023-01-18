@@ -18,12 +18,3 @@ class ClubSubManagerd(ObjectType, QueryFields):
 
         sub_manager = models.SubManager.objects.filter(club_id=kwargs['club'])
         return QueryFields.OK(info=info, data=sub_manager)
-
-
-class GetSection(ObjectType, QueryFields):
-    data = relay.ConnectionField(
-        relays.SectionConnection, id=graphene.ID(required=True))
-
-    def resolve_data(root, info, **kwargs):
-        print(kwargs)
-        return QueryFields.OK(info=info)
