@@ -17,7 +17,7 @@ from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 #from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Query import Player, Type
+from ..Query import Player, Type, sub_manager
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 from ..Mutation.Team import createTeam, deleteTeam
 
@@ -48,7 +48,7 @@ class Query(ObjectType):
     getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
     type_ = graphene.Field(Type.AllType)
-    # clubSubManager = graphene.Field(ClubSubManagerd)
+    clubSubManager = graphene.Field(sub_manager.ClubSubManagerd)
     myClub = graphene.Field(MyClub)
 
     def resolve_AllClub(root, info, **kwargs):
@@ -74,6 +74,9 @@ class Query(ObjectType):
 
     def resolve_getAllowDuration(root, info, **kwargs):
         return GetAllowDuration()
+
+    def resolve_clubSubManager(root, info, **kwargs):
+        return sub_manager.ClubSubManagerd()
 
     def resolve_serchPlayer(root, info, **kwargs):
         return Player.SerchPlayer()

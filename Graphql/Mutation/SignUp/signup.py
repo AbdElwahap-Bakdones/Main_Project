@@ -1,5 +1,5 @@
 import graphene
-from core import serializer
+from core import serializer, models
 from ...ModelsGraphQL import typeobject, inputtype
 from rest_framework import status as status_code
 from ... import QueryStructure
@@ -76,9 +76,7 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
         user_error = {}
         manager_error = {}
         try:
-            print(kargs)
             user_data = kargs['data'].pop('user')  # extract data
-            print(kargs)
             data = kargs['data']  # extract data
             data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
@@ -131,14 +129,10 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
 
     @classmethod
     def mutate(self, root, info, **kargs):
-        status = status_code.HTTP_400_BAD_REQUEST
-        user = None
-        subManager = None
-        msg = {}
-        user_error = {}
-        subManager_error = {}
         try:
-            print(kargs)
+            user = info.context.META["user"]
+            if not models.Club.objects.filter(manager_id__user_id=user.pk, pk=kargs['data']['club_id']).exists():
+                return QueryStructure.BadRequest(instanse=self)
             user_data = kargs['data'].pop(
                 'user')  # extract data
             data = kargs['data']  # extract data
@@ -146,7 +140,6 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name@last_name
             # add User via serializer   &  add subManager via serializer
-            print(data)
             seria_user = serializer.UserSerializer(data=user_data)
             seria_subManager = serializer.SubManagerSerializer(
                 data=data)
@@ -169,9 +162,8 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
                 user_error.update(subManager_error)
                 msg = user_error
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
+                return QueryStructure.MyReturn(self, None, msg, status)
         except Exception as e:
-            user = None
-            subManager = None
-            msg = str(e)
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(self, subManager, msg, status)
+            print('Error in SignUpSubManager')
+            print(str(e))
+            QueryStructure.InternalServerError(instanse=self, message=str(e))
