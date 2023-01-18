@@ -6,17 +6,17 @@ from ..Relay import relays
 import graphene
 
 
-class GetTeam(ObjectType, QueryFields):
+class GetTeamMembers(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.TeamConnection, name=graphene.String(required=True))
+        relays.Team_membersConnection, username=graphene.String(required=True))
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
         user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_team'):
+        if not QueryFields.is_valide(info, user, 'core.view_team_members'):
             return QueryFields.rise_error(user)
-        data = Team.objects.filter(
-            name=kwargs['name'], deleted=False)
+        data = Team_members.objects.filter(
+            player_id__user_id__username=kwargs['username'], is_leave=False)
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')
@@ -25,9 +25,9 @@ class GetTeam(ObjectType, QueryFields):
         return data
 
 
-class AllMyTeam(ObjectType, QueryFields):
+class AllMyTeamMembers(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.Team_membersConnection)
+        relays.Team_membersConnection, id_team=graphene.Field(required=True))
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
@@ -35,26 +35,7 @@ class AllMyTeam(ObjectType, QueryFields):
         if not QueryFields.is_valide(info, user, 'core.view_team_members'):
             return QueryFields.rise_error(user)
         data = Team_members.objects.filter(
-            player_id__user_id=user, is_leave=False)
-        if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
-
-
-class GetMyTeam(ObjectType, QueryFields):
-    data = relay.ConnectionField(
-        relays.Team_membersConnection, name=graphene.String(required=True))
-
-    def resolve_data(root, info, **kwargs):
-        print(kwargs)
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_team_members'):
-            return QueryFields.rise_error(user)
-        data = Team_members.objects.filter(
-            player_id__user_id=user, team_id__name=kwargs['name'], is_leave=False)
+            team_id__id=kwargs['id_team'], team_id__deleted=False)
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')

@@ -6,11 +6,10 @@ from core import models
 from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub, MyClub
 from ..Query.Duration import searchOnReservation
+from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSection, GetSection
+from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
 from ..Query.Friend import GetFriend, AllFriend
-from ..Query.Userteam import AllTeamMembers
-from ..Query.team import GetTeam
-from ..Query.sub_manager import ClubSubManagerd
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
@@ -46,12 +45,10 @@ class Query(ObjectType):
     GetSection = graphene.Field(GetSection)
     getFriend = graphene.Field(GetFriend)
     allFriend = graphene.Field(AllFriend)
-    myteam = graphene.Field(AllTeamMembers)
-    getTeam = graphene.Field(GetTeam)
-    searchonReservation = graphene.Field(searchOnReservation)
+    getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
     type_ = graphene.Field(Type.AllType)
-    clubSubManager = graphene.Field(ClubSubManagerd)
+    # clubSubManager = graphene.Field(ClubSubManagerd)
     myClub = graphene.Field(MyClub)
 
     def resolve_AllClub(root, info, **kwargs):
@@ -72,23 +69,14 @@ class Query(ObjectType):
     def resolve_allFriend(root, info, **kwargs):
         return AllFriend()
 
-    def resolve_myteam(root, info, **kwargs):
-        return AllTeamMembers()
+    # def resolve_getTeam(root, info, **kwargs):
+    #     return GetTeam()
 
-    def resolve_getTeam(root, info, **kwargs):
-        return GetTeam()
-
-    def resolve_searchonReservation(root, info, **kwargs):
-        return searchOnReservation()
+    def resolve_getAllowDuration(root, info, **kwargs):
+        return GetAllowDuration()
 
     def resolve_serchPlayer(root, info, **kwargs):
         return Player.SerchPlayer()
-
-    def resolve_type_(root, info, **kwargs):
-        return Type.AllType()
-
-    def resolve_clubSubManager(root, info, **kwargs):
-        return ClubSubManagerd()
 
     def resolve_myClub(root, info, **kwargs):
         return MyClub()
