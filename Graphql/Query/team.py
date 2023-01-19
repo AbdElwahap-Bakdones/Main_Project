@@ -8,7 +8,7 @@ import graphene
 
 class GetTeam(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.TeamConnection, name=graphene.String(required=True))
+        relays.TeamConnection, name_team=graphene.String(required=True))
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
@@ -16,13 +16,10 @@ class GetTeam(ObjectType, QueryFields):
         if not QueryFields.is_valide(info, user, 'core.view_team'):
             return QueryFields.rise_error(user)
         data = Team.objects.filter(
-            name=kwargs['name'], deleted=False)
+            name=kwargs['name_team'], deleted=False)
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
+            return QueryFields.NotFound(info=info)
+        return QueryFields.OK(info=info,data=data)
 
 
 class AllMyTeam(ObjectType, QueryFields):
@@ -37,16 +34,13 @@ class AllMyTeam(ObjectType, QueryFields):
         data = Team_members.objects.filter(
             player_id__user_id=user, is_leave=False)
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
+            return QueryFields.NotFound(info=info)
+        return QueryFields.OK(info=info,data=data)
 
 
 class GetMyTeam(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.Team_membersConnection, name=graphene.String(required=True))
+        relays.Team_membersConnection, name_team=graphene.String(required=True))
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
@@ -54,7 +48,7 @@ class GetMyTeam(ObjectType, QueryFields):
         if not QueryFields.is_valide(info, user, 'core.view_team_members'):
             return QueryFields.rise_error(user)
         data = Team_members.objects.filter(
-            player_id__user_id=user, team_id__name=kwargs['name'], is_leave=False)
+            player_id__user_id=user, team_id__name=kwargs['name_team'], is_leave=False)
         if not data.exists():
             QueryFields.set_extra_data(
                 user, status_code.HTTP_404_NOT_FOUND, 'not exists')

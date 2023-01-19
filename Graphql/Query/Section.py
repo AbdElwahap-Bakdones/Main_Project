@@ -5,7 +5,7 @@ from rest_framework import status as status_code
 from ..Relay import relays
 import graphene
 
-
+# manager example :in selector add stadium
 class AllSection(ObjectType, QueryFields):
     data = relay.ConnectionField(relays.SectionConnection,club_id=graphene.ID(required=True))
 
@@ -18,10 +18,10 @@ class AllSection(ObjectType, QueryFields):
             return QueryFields.NotFound(info=info)
         return QueryFields.OK(info=info, data=data)
 
-
+# manager search on section by name
 class GetSection(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.SectionConnection,club_id=graphene.ID(required=True),section_id=graphene.ID(required=True))
+        relays.SectionConnection,club_id=graphene.ID(required=True),section_name=graphene.String(required=True))
 
     def resolve_data(root, info, **kwargs):
         user = info.context.META['user']

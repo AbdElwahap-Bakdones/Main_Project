@@ -8,7 +8,6 @@ from ..Query.Club import AllClub, GetClub, MyClub
 # from ..Query.Duration import searchOnReservation
 from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSection, GetSection
-from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
 from ..Query.Friend import GetFriend, AllFriend
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup

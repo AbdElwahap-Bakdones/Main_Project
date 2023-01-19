@@ -21,5 +21,5 @@ class PositionByType(ObjectType, QueryFields):
             return QueryFields.rise_error(user)
         data = Position.objects.filter(type_id=kwargs['type'])
         if not data.exists():
-            QueryFields.NotFound(info=info)
+            return QueryFields.NotFound(info=info)
         return QueryFields.OK(info=info,data=data)

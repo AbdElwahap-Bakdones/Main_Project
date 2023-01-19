@@ -28,5 +28,4 @@ class GetAllowDuration(ObjectType, QueryFields):
         data = duration_list.filter(~Q(pk__in=resrv_list))
         if not data.exists():
             return QueryFields.NotFound(info=info)
-        QueryFields.OK(info=info,data=data)
-        return data
+        return QueryFields.OK(info=info,data=data)

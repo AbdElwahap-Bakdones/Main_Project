@@ -1,53 +1,30 @@
-from core.models import Stadium, Duration
+from core.models import Stadium, Duration,Manager,SubManager
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
 from rest_framework import status as status_code
 from ..Relay import relays
 import graphene
+from django.db.models import Q
 
-
-class AllStadiumByType(ObjectType, QueryFields):
-    data = relay.ConnectionField(
-        relays.StadiumConnection, type_id=graphene.ID(required=True))
-
-    def resolve_data(root, info, **kwargs):
-        print(kwargs)
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_stadium'):
-            return QueryFields.rise_error(user)
-        data = Stadium.objects.filter(
-            type_id__id=kwargs['type_id'], is_deleted=False, is_available=True)
-        if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
-
-
-class GetStadium(ObjectType, QueryFields):
+# manager or sub manager show all your stadium example :in selector add duration
+class AllStadium(ObjectType, QueryFields):
     data = relay.ConnectionField(
         relays.StadiumConnection, club_id=graphene.ID(required=True))
-
     def resolve_data(root, info, **kwargs):
         print(kwargs)
         user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_stadium'):
-            return QueryFields.rise_error(user)
-        data = Stadium.objects.filter(
+        if not Manager.objects.filter(user_id=user).exists() or SubManager.objects.filter(user_id=user).exists():
+            return QueryFields.BadRequest(info=info)
+        data = Stadium.objects.filter(Q(section_id__club_id__user_id=user)or Q(sub_manager_id=user),
             section_id__club_id__id=kwargs['club_id'], is_deleted=False, is_available=True)
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
+            return QueryFields.NotFound(info=info)
+        return QueryFields.OK(info=info,data=data)
 
-
-class GetStadiumByType(ObjectType, QueryFields):
+# player search on stadium by type or size
+class GetStadiumByTypeOrSize(ObjectType, QueryFields):
     data = relay.ConnectionField(
         relays.StadiumConnection, club_id=graphene.ID(required=True), type_id=graphene.ID(), size=graphene.Int())
-
     def resolve_data(root, info, **kwargs):
         print(kwargs)
         user = info.context.META['user']
@@ -55,11 +32,8 @@ class GetStadiumByType(ObjectType, QueryFields):
             return QueryFields.rise_error(user)
         data = queryByFilter(kwargs)
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
+            return QueryFields.NotFound(info=info)
+        return QueryFields.OK(info=info,data=data)
 
 
 def queryByFilter(kwargs: object) -> Stadium.objects.filter:
