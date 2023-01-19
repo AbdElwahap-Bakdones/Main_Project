@@ -44,9 +44,5 @@ class GetFriend(ObjectType, QueryFields):
              ((Q(player1__user_id__first_name=kwargs['name']) | Q(player1__user_id__last_name=kwargs['name'])) & Q(
                  player2__user_id__id=user.id))) & Q(state="accepted"))
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
-        correct_structure(data, user)
-        return data
+           return QueryFields.NotFound(info=info)
+        return QueryFields.OK(info=info,data=data)

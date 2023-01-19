@@ -27,8 +27,6 @@ class GetAllowDuration(ObjectType, QueryFields):
                                                 duration_id__in=duration_list.values_list('pk'), canceled=False).values_list('duration_id__pk')
         data = duration_list.filter(~Q(pk__in=resrv_list))
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
+            return QueryFields.NotFound(info=info)
+        QueryFields.OK(info=info,data=data)
         return data
