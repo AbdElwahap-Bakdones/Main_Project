@@ -1,23 +1,15 @@
-from graphene import relay, ObjectType
+from graphene import ObjectType
 from graphene_django.types import DjangoObjectType
-from graphene_django import DjangoListField
-from graphene_django.rest_framework.mutation import SerializerMutation
-from graphql.execution.base import ResolveInfo
-from graphql.language.ast import Field, SelectionSet
-from graphene_django.views import GraphQLView
 from rx import Observable
-from rest_framework import status as status_code
 import graphene
 from core import models
-from Graphql.QueryStructure import QueryFields
-from test_app.models import Cars, Compani
-from ..Query.Club import AllClub, GetClub
-from ..Query.Duration import searchOnReservation
+from test_app.models import Cars
+from ..Query.Club import AllClub, GetClub, MyClub
+# from ..Query.Duration import searchOnReservation
+from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSection, GetSection
+from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
 from ..Query.Friend import GetFriend, AllFriend
-from ..Query.Userteam import AllTeamMembers
-from ..Query.team import GetTeam
-from graphql_auth.schema import UserQuery, MeQuery
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
@@ -25,8 +17,9 @@ from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 #from ..Mutation.service import AddService, UpdateService
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Query import Player
+from ..Query import Player, Type, sub_manager
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
+from ..Mutation.Team import createTeam, deleteTeam
 
 
 class User_model(DjangoObjectType):
@@ -50,13 +43,13 @@ class Query(ObjectType):
     GetClub = graphene.Field(GetClub)
     AllSection = graphene.Field(AllSection)
     GetSection = graphene.Field(GetSection)
-
     getFriend = graphene.Field(GetFriend)
     allFriend = graphene.Field(AllFriend)
-    myteam = graphene.Field(AllTeamMembers)
-    getTeam = graphene.Field(GetTeam)
-    searchonReservation = graphene.Field(searchOnReservation)
+    getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
+    type_ = graphene.Field(Type.AllType)
+    clubSubManager = graphene.Field(sub_manager.ClubSubManagerd)
+    myClub = graphene.Field(MyClub)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -76,21 +69,24 @@ class Query(ObjectType):
     def resolve_allFriend(root, info, **kwargs):
         return AllFriend()
 
-    def resolve_myteam(root, info, **kwargs):
-        return AllTeamMembers()
+    # def resolve_getTeam(root, info, **kwargs):
+    #     return GetTeam()
 
-    def resolve_getTeam(root, info, **kwargs):
-        return GetTeam()
+    def resolve_getAllowDuration(root, info, **kwargs):
+        return GetAllowDuration()
 
-    def resolve_searchonReservation(root, info, **kwargs):
-        return searchOnReservation()
+    def resolve_clubSubManager(root, info, **kwargs):
+        return sub_manager.ClubSubManagerd()
 
     def resolve_serchPlayer(root, info, **kwargs):
         return Player.SerchPlayer()
 
+    def resolve_myClub(root, info, **kwargs):
+        return MyClub()
+
 
 class Mutation (AuthMutation, graphene.ObjectType):
-    SignUpPlyer = signup.SignUpPlayer.Field()
+    SignUpPlyer = signup.SignUpPlayer.Field(description='SignUpPlyer')
     SignUpManager = signup.SignUpManager.Field()
     SignUpSubManager = signup.SignUpSubManager.Field()
     addclub = AddClub.Field()
@@ -106,6 +102,8 @@ class Mutation (AuthMutation, graphene.ObjectType):
     addFreind = addFriend.addRequestFriend.Field()
     rejectFriend = rejectFriend.RejectFriend.Field()
     acceptFriend = acceptFriend.AcceptFriend.Field()
+    createTeam = createTeam.CreateTeam.Field()
+    deleteTeam = deleteTeam.DeleteTeam.Field()
 
 
 class Subscription(graphene.ObjectType):

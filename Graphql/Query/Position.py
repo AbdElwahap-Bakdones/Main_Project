@@ -26,3 +26,13 @@ class AllPosition(ObjectType, QueryFields):
             return []
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
         return data
+
+
+class PositionByType(ObjectType, QueryFields):
+
+    data = relay.ConnectionField(
+        relays.PositionConnection, type_id=graphene.ID(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        print(kwargs)
+        return QueryFields.OK(info)

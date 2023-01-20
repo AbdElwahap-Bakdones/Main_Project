@@ -16,13 +16,13 @@ class AddServicesForStadiums(graphene.Mutation):
     status = graphene.Int()
 
     class Arguments:
-        StadiumServiceData = StadiumServiceInput()
+        data = StadiumServiceInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
         checkPermission("core.add_stadiumservice", info)
         seria = serializer.StadiumServiceSerializer(
-            data=kwargs["StadiumServiceData"])
+            data=kwargs["data"])
         if seria.is_valid():
             seria.validated_data
             msg = seria.errors

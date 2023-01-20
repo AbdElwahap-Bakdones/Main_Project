@@ -12,7 +12,7 @@ class UserInput(graphene.InputObjectType):
 
 class ManagerInput(graphene.InputObjectType):
     user = graphene.Field(UserInput)
-    field = graphene.String(requierd=False)
+    is_submanager = graphene.Boolean()
 
 
 class PlayerInput(graphene.InputObjectType):
@@ -23,7 +23,7 @@ class PlayerInput(graphene.InputObjectType):
 
 class SubManagerInput(graphene.InputObjectType):
     user = graphene.Field(UserInput)
-    field = graphene.String(requierd=False)
+    club_id = graphene.ID(requierd=False)
 
 
 class AddClubInput(graphene.InputObjectType):
@@ -116,3 +116,13 @@ class SearchPlayerInput(graphene.InputObjectType):
 
 class AddRequestFriendInput(graphene.InputObjectType):
     player_pk = graphene.ID(required=True)
+
+
+class AddTeamInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    type_id = graphene.ID(required=True)
+    # picture = graphene.String(required=False)
+
+
+class DeleteTeamInput(graphene.InputObjectType):
+    pk = graphene.ID(required=True)

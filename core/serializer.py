@@ -50,7 +50,7 @@ class SubManagerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.SubManager
-        fields = ['user_id']
+        fields = ['user_id', 'club_id']
 
 
 class ClubSerializer(serializers.ModelSerializer):
@@ -149,3 +149,16 @@ class FrienfSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Friend
         fields = '__all__'
+
+
+class MembersTeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Team_members
+        fields = '__all__'
+
+
+class TeamSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Team
+        fields = ['name', 'picture', 'type_id', 'search_game']

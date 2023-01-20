@@ -1,6 +1,6 @@
+pip install aiohttp==3.8.3
 pip install aiosignal==1.3.1
 pip install aniso8601==7.0.0
-pip install anyio==3.6.2
 pip install asgiref==3.5.2
 pip install async-timeout==4.0.2
 pip install attrs==22.1.0
@@ -15,6 +15,7 @@ pip install constantly==15.1.0
 pip install cryptography==38.0.3
 pip install daphne==3.0.2
 pip install Django==3.0
+pip install django-cors-headers==3.13.0
 pip install django-filter==2.3.0
 pip install django-graphql-auth==0.3.16
 pip install django-graphql-jwt==0.3.0
@@ -47,12 +48,9 @@ pip install Rx==1.6.1
 pip install service-identity==21.1.0
 pip install singledispatch==3.7.0
 pip install six==1.16.0
-pip install sniffio==1.3.0
 pip install sqlparse==0.4.3
-pip install starlette==0.20.4
 pip install text-unidecode==1.3
 pip install Twisted==22.10.0
-pip install twisted-iocpsupport==1.0.2
 pip install txaio==22.2.1
 pip install typing_extensions==4.4.0
 pip install tzdata==2022.4

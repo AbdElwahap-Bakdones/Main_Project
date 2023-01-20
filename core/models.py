@@ -132,11 +132,11 @@ class Player_reservation(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=255)
-    picture = models.ImageField()
+    picture = models.ImageField(null=True)
     type_id = models.ForeignKey(Type, on_delete=models.CASCADE)
-    deleted = models.BooleanField(default=True)
-    search_game = models.BooleanField(default=True)
-    temp = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False)
+    search_game = models.BooleanField(default=False)
+    temp = models.BooleanField(default=False)
 
 
 class Team_resevation(models.Model):
@@ -153,7 +153,7 @@ class Position(models.Model):
 
 class Team_members(models.Model):
     player_id = models.ForeignKey(Player, on_delete=models.CASCADE)
-    position_id = models.ForeignKey(Position, on_delete=models.CASCADE)
+    position_id = models.ForeignKey(Position, null=True, on_delete=models.CASCADE)
     team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     is_captin = models.BooleanField(default=True)
     is_leave = models.BooleanField(default=False)

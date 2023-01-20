@@ -217,4 +217,4 @@ AUTHENTICATION_BACKENDS = [
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 FunctionDonotNeedAuth = [b'login',
-                         b'SignUpPlyer', b'SignUpSubManager', b'SignUpManager', b'__schema']
+                         b'SignUpPlyer', b'SignUpManager', b'__schema']

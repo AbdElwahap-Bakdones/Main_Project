@@ -12,7 +12,7 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = inputtype.AddSectionInput()
+        data = inputtype.AddSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -20,12 +20,16 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             if not checkPermission("core.add_section", user):
                 return QueryStructure.NoPermission(self)
-            seria = serializer.SectionSerializer(data=kwargs["SectionData"])
+            if not models.SubManager.objects.filter(
+                    pk=kwargs['data']['sub_manager_id'],
+                    club_id=kwargs['data']['club_id'],
+                    club_id__manager_id__user_id=user.pk).exists():
+                return QueryStructure.BadRequest(self, message='maybe club id or sub manager not found')
+            seria = serializer.SectionSerializer(data=kwargs["data"])
             if seria.is_valid():
                 seria.validated_data
-                msg = seria.errors
-                status = status_code.HTTP_201_CREATED
                 data = seria.save()
+                return QueryStructure.Created(instanse=self, data=data)
             else:
                 msg = seria.errors
                 data = None
@@ -43,7 +47,7 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = inputtype.UpdateSectionInput()
+        data = inputtype.UpdateSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -51,9 +55,9 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
             user = models.User(info.context.META["user"])
             if not checkPermission("core.change_section", user.pk):
                 return QueryStructure.NoPermission(self)
-            data = kwargs['SectionData']
+            data = kwargs['data']
             Section_object = models.Section.objects.filter(
-                pk=data['id'], is_deleted=False)
+                pk=data['id'], club_id=data['club_id'], club_id__manager_id__user_id=user.pk, is_deleted=False)
             if not Section_object.exists():
                 QueryStructure.NotFound(self)
 
@@ -81,7 +85,7 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.SectionObjectType)
 
     class Arguments:
-        SectionData = inputtype.DeleteSectionInput()
+        data = inputtype.DeleteSectionInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -89,7 +93,7 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
             user = models.User(info.context.META["user"])
             if not checkPermission("core.delete_section", user.pk):
                 return QueryStructure.NoPermission(self)
-            data = kwargs['SectionData']
+            data = kwargs['data']
             Section_object = models.Section.objects.filter(
                 pk=data["id"], is_deleted=False)
             if not Section_object.exists():

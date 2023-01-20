@@ -1,9 +1,9 @@
 from core.models import Club
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
-from rest_framework import status as status_code
 from ..Relay import relays
 import graphene
+from core import models
 
 
 class AllClub(ObjectType, QueryFields):
@@ -12,6 +12,17 @@ class AllClub(ObjectType, QueryFields):
     def resolve_data(root, info, **kwargs):
         print(kwargs)
         return QueryFields.queryAll(Club, info, 'core.view_club')
+
+
+class MyClub(ObjectType, QueryFields):
+    data = relay.ConnectionField(relays.ClubConnection)
+
+    def resolve_data(root, info, **kwargs):
+        user = info.context.META['user']
+        if not models.Manager.objects.filter(user_id=user).exists():
+            return QueryFields.BadRequest(info=info)
+        data = models.Club.objects.filter(manager_id__user_id=user.pk, is_deleted=False)
+        return QueryFields.OK(info=info, data=data)
 
 
 class GetClub(ObjectType, QueryFields):
@@ -35,8 +46,5 @@ class searchOnClub(ObjectType, QueryFields):
         data = Club.objects.filter(
             name=kwargs['name'], is_deleted=False, is_available=True)
         if not data.exists():
-            QueryFields.set_extra_data(
-                user, status_code.HTTP_404_NOT_FOUND, 'not exists')
-            return []
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
-        return data
+            QueryFields.NotFound(info=info)
+        QueryFields.OK(info=info, data=data)
