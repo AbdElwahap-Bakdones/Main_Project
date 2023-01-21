@@ -133,7 +133,7 @@ class TeamObjectType(DjangoObjectType):
 
     class Meta:
         model = models.Team
-        fields = ['pk', 'name', 'type', 'search_game', 'temp']
+        fields = ['pk', 'name', 'type', 'search_game', 'member_count', 'temp']
         interfaces = (relay.Node,)
 
 

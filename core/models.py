@@ -133,6 +133,7 @@ class Player_reservation(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=255)
     picture = models.ImageField(null=True)
+    member_count = models.IntegerField(default=1)
     type_id = models.ForeignKey(Type, on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
     search_game = models.BooleanField(default=False)
