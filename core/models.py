@@ -156,7 +156,7 @@ class Team_members(models.Model):
     player_id = models.ForeignKey(Player, on_delete=models.CASCADE)
     position_id = models.ForeignKey(Position, null=True, on_delete=models.CASCADE)
     team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
-    is_captin = models.BooleanField(default=True)
+    is_captin = models.BooleanField(default=False)
     is_leave = models.BooleanField(default=False)
 
 

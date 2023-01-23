@@ -156,6 +156,11 @@ class MembersTeamSerializer(serializers.ModelSerializer):
         model = models.Team_members
         fields = '__all__'
 
+    def create(self, validated_data):
+        is_member_found = models.Team_members.objects.filter(player_id=validated_data['player_id'])
+        if not is_member_found.exists():
+            return super().create(validated_data)
+        return is_member_found.update(is_leave=False)
 
 class TeamSerializer(serializers.ModelSerializer):
 
