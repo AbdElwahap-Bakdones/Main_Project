@@ -30,15 +30,27 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '*', 'https://abdelwahapbak.pythonanywhere.com/%5Eapi/pull/$']
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOWED_ORIGINS = [
-    "https://domain.com",
-    "https://abdelwahapbak.pythonanywhere.com/$"
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+]
+# CORS_ALLOWED_ORIGINS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 
 INSTALLED_APPS = [
     "daphne",
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -52,7 +64,6 @@ INSTALLED_APPS = [
     "core",
     "test_app",
     "rest_framework",
-    "corsheaders",
     "postApp",
     "graphql_auth",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
