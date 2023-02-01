@@ -71,7 +71,7 @@ class SectionObjectType(DjangoObjectType):
     class Meta:
         model = models.Section
         fields = ['id', 'pk', 'name', 'is_available',
-                  'club_id', 'sub_manager_id']
+                  'club_id']
         interfaces = (relay.Node,)
 
 

@@ -1,6 +1,6 @@
-from django.db import models
+# from django.db import models
+from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
-# Create your models here.
 
 
 class Rule(models.Model):
@@ -154,7 +154,8 @@ class Position(models.Model):
 
 class Team_members(models.Model):
     player_id = models.ForeignKey(Player, on_delete=models.CASCADE)
-    position_id = models.ForeignKey(Position, null=True, on_delete=models.CASCADE)
+    position_id = models.ForeignKey(
+        Position, null=True, on_delete=models.CASCADE)
     team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     is_captin = models.BooleanField(default=False)
     is_leave = models.BooleanField(default=False)
@@ -165,8 +166,11 @@ class Notification(models.Model):
         User, on_delete=models.CASCADE, related_name='reciver_id')
     sender_id = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='sender_id')
-    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     sender_kind = models.CharField(max_length=255)
+    art = [('group message', 'group message'), ('freind message', 'freind message'),
+           ('request friend', 'request friend'), ('accept friend', 'accept friend')]
+    type = models.CharField(choices=art, max_length=30, default='pending')
     content = models.CharField(max_length=255)
 
 

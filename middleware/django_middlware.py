@@ -26,13 +26,11 @@ class auth:
         if not (request.path == '/graphql/') or notNeed > 0 or request.body == b'':
             print('no need auth')
             return self.get_response(request)
-        # extract data from header
-        regex = re.compile('^HTTP_')
-        header = dict((regex.sub('', header), value) for (header, value)
-                      in request.META.items() if header.startswith('HTTP_'))
-        if not 'TOKEN' in header:
-            return self.__return(status_code.HTTP_400_BAD_REQUEST, 'there is no token')
-        return self.checkToken(header['TOKEN'], request=request)
+
+        token = request.META.get('HTTP_AUTHORIZATION', None)
+        if not token:
+            return self.__return(status_code.HTTP_401_UNAUTHORIZED, 'Authorization token not provided.')
+        return self.checkToken(token, request=request)
 
     def checkToken(self, token, request):
         try:

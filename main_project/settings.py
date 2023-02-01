@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.gis",
     "graphene_django",
     "channels",
     "graphene_subscriptions",
@@ -112,32 +113,23 @@ ASGI_APPLICATION = "main_project.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        # "NAME": BASE_DIR / "db.sqlite3",
-        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3"))
-
-    }
-}
-'''DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sports',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': 'root'
-    }}
-'''
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'sql8526974',
-#         'USER': 'sql8526974',
-#         'PASSWORD': 'WYWuxELLAJ',
-#         'HOST': 'sql8.freesqldatabase.com',
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         # "NAME": BASE_DIR / "db.sqlite3",
+#         'NAME': str(os.path.join(BASE_DIR, "db.sqlite3"))
+
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
+        'NAME': 'AbdElwahapBak$SportForAll',
+        'HOST': 'AbdElwahapBak.mysql.pythonanywhere-services.com',
+        'USER': 'AbdElwahapBak',
+        'PASSWORD': 'root12345678'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

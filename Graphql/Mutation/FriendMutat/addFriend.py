@@ -44,6 +44,7 @@ class addRequestFriend(graphene.Mutation, QueryStructure.Attributes):
             print('old')
             if request.count() == 2 and request.first().state == 'rejected':
                 request.update(state='pending', sender=sender)
+                make_notifucation()
                 return QueryStructure.Created(self, data=request.first())
             return QueryStructure.BadRequest(self)
         except Exception as e:
