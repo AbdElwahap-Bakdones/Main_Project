@@ -22,6 +22,6 @@ def pull(request):
         print('Permission denied.')
         return HttpResponseForbidden('Permission denied.')
     print('pull from github')
-    comm = 'cd /home/AbdElwahapBak/main_project \ngit pull \ncd /var/www/\ntouch abdelwahapbak_pythonanywhere_com_wsgi.py\n'
+    comm = 'cd /home/AbdElwahapBak/main_project \ngit clean -fd\ngit pull \ncd /var/www/\ntouch abdelwahapbak_pythonanywhere_com_wsgi.py\n'
     rc = call(comm, shell=True)
     return HttpResponse('pulling')
