@@ -5,7 +5,7 @@ import graphene
 
 
 class UserObjectType(DjangoObjectType):
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_user = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = models.User
@@ -16,7 +16,7 @@ class UserObjectType(DjangoObjectType):
 
 class PlayerObjectType(DjangoObjectType):
     user_id = graphene.Field(UserObjectType)
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_player = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = models.Player
@@ -45,7 +45,7 @@ class SubManagerObjectType(DjangoObjectType):
 
 
 class TypeObjectType(DjangoObjectType):
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_type = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
 
@@ -56,7 +56,7 @@ class TypeObjectType(DjangoObjectType):
 
 class ClubObjectType(DjangoObjectType):
     manager = graphene.Field(ManagerObjectType, source='manager_id')
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_club = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = models.Club
@@ -66,7 +66,7 @@ class ClubObjectType(DjangoObjectType):
 
 
 class SectionObjectType(DjangoObjectType):
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_sectaion = graphene.Field(type=graphene.Int, source='id')
     sub_manager = graphene.Field(SubManagerObjectType, source='sub_manager_id')
 
     class Meta:
@@ -129,7 +129,7 @@ class Player_reservationObjectType(DjangoObjectType):
 
 
 class TeamObjectType(DjangoObjectType):
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_team = graphene.Field(type=graphene.Int, source='id')
     type = graphene.Field(type=TypeObjectType, source='type_id')
 
     class Meta:
@@ -188,7 +188,7 @@ class NotificationObjectType(DjangoObjectType):
 
 
 class FriendObjectType(DjangoObjectType):
-    pk = graphene.Field(type=graphene.Int, source='id')
+    pk_friend = graphene.Field(type=graphene.Int, source='id')
     friends = graphene.Field(type=PlayerObjectType, source='player2')
     me = graphene.Field(type=graphene.ID, source='player1')
 
