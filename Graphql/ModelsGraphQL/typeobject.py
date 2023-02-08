@@ -1,4 +1,4 @@
-from core import models
+from core import models, serializer
 from graphene_django import DjangoObjectType
 from graphene import relay
 import graphene
@@ -20,7 +20,8 @@ class PlayerObjectType(DjangoObjectType):
 
     class Meta:
         model = models.Player
-        fields = ['pk', 'location_lat', 'location_long', 'user_id']
+        fields = ['pk', 'location_lat',
+                  'location_long', 'user_id']
         interfaces = (relay.Node,)
 
 
@@ -193,5 +194,5 @@ class FriendObjectType(DjangoObjectType):
 
     class Meta:
         model = models.Friend
-        fields = ['id', 'pk', 'friends', 'me']
+        fields = ['pk', 'friends', 'me', 'state']
         interfaces = (relay.Node,)
