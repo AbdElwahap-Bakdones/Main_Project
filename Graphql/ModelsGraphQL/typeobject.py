@@ -17,6 +17,7 @@ class UserObjectType(DjangoObjectType):
 class PlayerObjectType(DjangoObjectType):
     user_id = graphene.Field(UserObjectType)
     pk_player = graphene.Field(type=graphene.Int, source='id')
+    state = graphene.Field(type=graphene.String, source='state')
 
     class Meta:
         model = models.Player

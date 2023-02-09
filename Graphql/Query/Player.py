@@ -1,11 +1,13 @@
 from ..ModelsGraphQL import typeobject, inputtype
 from rest_framework import status as status_code
 from graphene import ObjectType, relay
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from core import models, serializer
+from django.db.models import Subquery
 from ..Relay import relays
 from ..QueryStructure import QueryFields
 import graphene
+from itertools import chain
 
 
 class SerchPlayer  (ObjectType, QueryFields):
@@ -16,7 +18,6 @@ class SerchPlayer  (ObjectType, QueryFields):
         without_Friend=graphene.Boolean(required=True))
 
     def resolve_data(root, info, **kwargs):
-        print(kwargs)
         try:
             user = info.context.META["user"]
             if not QueryFields.is_valide(info=info, user=user, operation="core.add_friend"):
@@ -52,40 +53,57 @@ def GetFriendByName(name: str,  user: models.User) -> models.Friend.objects:
             (Q(player2__user_id__username__iexact=name) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
              Q(player2__user_id__last_name__iexact=FL_name[1])))
     else:
-        print(name)
-        print(type(user))
         friend = models.Friend.objects.filter(
             Q(player1__user_id=user) & Q(state='accepted')
             &
             (Q(player2__user_id__first_name__iexact=name) |
                 Q(player2__user_id__last_name__iexact=name)))
-    print(friend)
     return friend
 
 
 def GetPlayerByName(name: str, with_no_Friend=False, user=None) -> list:
-    print(with_no_Friend)
+    friend_list = []
     if name.count(' ') > 1:
         return []
     elif name.__contains__(' '):
         FL_name = name.split(sep=' ')
         name = name.replace(' ', '@')
-        friend = []
+        friend = GetFriendByName(name=name, user=user).values_list(
+            'player2__pk', flat=True)
         if with_no_Friend:
-            friend = GetFriendByName(name=name, user=user).values_list(
-                'player2__pk', flat=True)
+            friend_list = friend
 
-        data = models.Player.objects.filter(~Q(user_id=user) & ~Q(pk__in=friend) &
+        data = models.Player.objects.filter(~Q(user_id=user) & ~Q(pk__in=friend_list) &
                                             (Q(user_id__username__iexact=name) |
                                              Q(user_id__first_name__iexact=FL_name[0]) |
                                              Q(user_id__last_name__iexact=FL_name[1])))
 
     else:
-        friend = []
+        friend = GetFriendByName(name=name, user=user).values_list(
+            'player2__pk', flat=True)
         if with_no_Friend:
-            friend = GetFriendByName(name=name, user=user).values_list(
-                'player2__pk', flat=True)
-        print(friend)
-        data = models.Player.objects.filter(~Q(user_id=user) & ~Q(pk__in=friend) &
+            friend_list = friend
+        data = models.Player.objects.filter(~Q(user_id=user) & ~Q(pk__in=friend_list) &
                                             (Q(user_id__first_name__iexact=name) | Q(user_id__last_name__iexact=name)))
-    return data
+
+    return addStateToPlayer(data, user, friend)
+    # return data
+
+
+def addStateToPlayer(query_set: QuerySet, user: models.User, friend: list):
+    player = QuerySet
+    player_pending_list = list(models.Friend.objects.filter(
+        player1__user_id=user, player2__in=query_set.values_list('pk', flat=True), state='pending').values_list('player2__pk', flat=True))
+    player_friend = query_set.filter(pk__in=friend).annotate(state=Subquery(
+        models.Friend.objects.filter(state='accepted').values('state')[:1]))
+    player_pending = query_set.filter(pk__in=player_pending_list).annotate(state=Subquery(
+        models.Friend.objects.filter(state='pending').values('state')[:1]))
+    player_friend_list = list(player_friend.values_list('pk', flat=True))
+    all_player_list = list(query_set.values_list('pk', flat=True))
+    PL = player_friend_list+player_pending_list
+    player_not_friend_list = list(set(all_player_list) - set(PL))
+    player_not_friend = query_set.filter()
+    player = list(chain(player_friend, player_pending,
+                  query_set.filter(pk__in=player_not_friend_list)))
+
+    return player
