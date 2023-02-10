@@ -94,10 +94,10 @@ def addStateToPlayer(query_set: QuerySet, user: models.User, friend: list):
     player = QuerySet
     player_pending_list = list(models.Friend.objects.filter(
         player1__user_id=user, player2__in=query_set.values_list('pk', flat=True), state='pending').values_list('player2__pk', flat=True))
-    player_friend = query_set.filter(pk__in=friend).annotate(state=Subquery(
-        models.Friend.objects.filter(state='accepted').values('state')[:1]))
     player_pending = query_set.filter(pk__in=player_pending_list).annotate(state=Subquery(
         models.Friend.objects.filter(state='pending').values('state')[:1]))
+    player_friend = query_set.filter(pk__in=friend).annotate(state=Subquery(
+        models.Friend.objects.filter(state='accepted').values('state')[:1]))
     player_friend_list = list(player_friend.values_list('pk', flat=True))
     all_player_list = list(query_set.values_list('pk', flat=True))
     PL = player_friend_list+player_pending_list

@@ -21,12 +21,13 @@ class CreateTeam(graphene.Mutation, QueryStructure.Attributes):
             if not team['state']:
                 return QueryStructure.BadRequest(self, message=team['errors'])
 
-            member_data = {'player_id': models.Player.objects.get(
+            admin_data = {'player_id': models.Player.objects.get(
                 user_id=user).pk, 'team_id': team['team'].pk, 'is_captin': True}
-            member = CreateTeam.add_member(member_data)
+            member = CreateTeam.add_admin(admin_data)
 
             if not member['state']:
-                models.Team.objects.filter(pk=team['team'].pk).update(deleted=True)
+                models.Team.objects.filter(
+                    pk=team['team'].pk).update(deleted=True)
 
                 return QueryStructure.BadRequest(self, message=member['errors'])
 
@@ -44,7 +45,7 @@ class CreateTeam(graphene.Mutation, QueryStructure.Attributes):
             return {'state': True, 'team': team}
         return {'state': False, 'errors': team_seria.errors}
 
-    def add_member(data: dict) -> bool:
+    def add_admin(data: dict) -> dict:
         member_seria = serializer.MembersTeamSerializer(data=data)
         if member_seria.is_valid():
             member = member_seria.save()
