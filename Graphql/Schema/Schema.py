@@ -84,6 +84,9 @@ class Query(ObjectType):
     def resolve_myClub(root, info, **kwargs):
         return MyClub()
 
+    def resolve_type_(root, info, **kwargs):
+        return Type.AllType()
+
 
 class Mutation (AuthMutation, graphene.ObjectType):
     SignUpPlyer = signup.SignUpPlayer.Field(description='SignUpPlyer')
