@@ -31,7 +31,7 @@ class AddDuration(graphene.Mutation, QueryStructure.Attributes):
         end = kwargs["data"]["end_time"]
         range_time = kwargs["data"]["time_reservation"]
         print(dueationlist(start, end))
-        if not cheackTime(start, end, range_time):
+        if not dueationlist(start, end):
             msg = "problem time"
             duration = None
             status = 400
@@ -66,8 +66,8 @@ class AddDuration(graphene.Mutation, QueryStructure.Attributes):
 
 
 class time(graphene.InputObjectType):
-    start_time = graphene.Time()
-    end_time = graphene.Time()
+    start_time = graphene.Time(required=True)
+    end_time = graphene.Time(required=True)
 
 
 class DurationsInput(graphene.InputObjectType):
@@ -75,7 +75,7 @@ class DurationsInput(graphene.InputObjectType):
     time = graphene.List(time)
 
 
-class AddDurationlist(graphene.Mutation, QueryStructure.Attributes):
+class AddDurationList(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.DurationObjectType)
 
     class Arguments:
@@ -101,18 +101,16 @@ class AddDurationlist(graphene.Mutation, QueryStructure.Attributes):
                 return self(data=duration, message=msg, status=status)
             dataDuration = {"stad_id": kwargs["data"]["stad_id"],
                             "start_time": i["start_time"], "end_time": i["end_time"], "is_available": True}
-            seria = serializer.ClubSerializer(data=dataDuration)
+            seria = serializer.DurationSerializer(data=dataDuration)
             if seria.is_valid():
                 seria.validated_data
                 msg = seria.errors
                 status = 200
-                data = seria.save()
-                return self(data=data, message=msg, status=status)
+                seria.save()
             else:
                 msg = seria.errors
-                data = None
                 status = 400
-                return self(data=data, message=msg, status=status)
+                return self(data=models.Duration.objects.filter(stad_id__id=kwargs["data"]["stad_id"]).last(), message=msg, status=status)
         return QueryStructure.MyReturn(instanse=self, data=models.Duration.objects.filter(stad_id__id=kwargs["data"]["stad_id"]).last(), message="ok", code=200)
 
 
