@@ -12,7 +12,7 @@ for model_name, model in app.models.items():
 
 @admin.register(models.Friend)
 class FrindAdmin(admin.ModelAdmin):
-    list_display = ['player1', 'player2', 'state', 'sender']
+    list_display = ['pk', 'player1', 'player2', 'state', 'sender']
 
 
 @admin.register(models.User)
