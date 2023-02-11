@@ -7,6 +7,7 @@ from .. import QueryStructure
 import datetime
 from graphene_django import DjangoObjectType
 from graphene import relay
+from rest_framework import status as status_code
 
 
 class DurationInput(graphene.InputObjectType):
@@ -30,8 +31,7 @@ class AddDuration(graphene.Mutation, QueryStructure.Attributes):
         start = kwargs["data"]["start_time"]
         end = kwargs["data"]["end_time"]
         range_time = kwargs["data"]["time_reservation"]
-        print(dueationlist(start, end))
-        if not dueationlist(start, end):
+        if not CheckOverlap(start, end):
             msg = "problem time"
             duration = None
             status = 400
@@ -68,6 +68,7 @@ class AddDuration(graphene.Mutation, QueryStructure.Attributes):
 class time(graphene.InputObjectType):
     start_time = graphene.Time(required=True)
     end_time = graphene.Time(required=True)
+    is_available = graphene.Boolean(required=True)
 
 
 class DurationsInput(graphene.InputObjectType):
@@ -83,35 +84,28 @@ class AddDurationList(graphene.Mutation, QueryStructure.Attributes):
 
     @classmethod
     def mutate(self, root, info, **kwargs):
-        user = info.context.META["user"]
-        if not checkPermission("core.add_duration", user):
-            return QueryStructure.NoPermission(self)
-        stadium = models.Stadium.objects.filter(
-            id=kwargs["data"]["stad_id"])
-        if not stadium.exists():
-            msg = "stadium not found"
-            duration = None
-            status = 404
-            return self(data=duration, message=msg, status=status)
-        for i in kwargs["data"]["time"]:
-            if not dueationlist(i["start_time"], i["end_time"], kwargs["data"]["stad_id"]):
-                msg = "This time overlaps with others"
-                duration = None
-                status = 400
-                return self(data=duration, message=msg, status=status)
-            dataDuration = {"stad_id": kwargs["data"]["stad_id"],
-                            "start_time": i["start_time"], "end_time": i["end_time"], "is_available": True}
-            seria = serializer.DurationSerializer(data=dataDuration)
-            if seria.is_valid():
-                seria.validated_data
-                msg = seria.errors
-                status = 200
-                seria.save()
-            else:
-                msg = seria.errors
-                status = 400
-                return self(data=models.Duration.objects.filter(stad_id__id=kwargs["data"]["stad_id"]).last(), message=msg, status=status)
-        return QueryStructure.MyReturn(instanse=self, data=models.Duration.objects.filter(stad_id__id=kwargs["data"]["stad_id"]).last(), message="ok", code=200)
+        try:
+            user = info.context.META["user"]
+            if not checkPermission("core.add_duration", user):
+                return QueryStructure.NoPermission(self)
+            stadium = models.Stadium.objects.filter(
+                id=kwargs["data"]["stad_id"])
+            if not stadium.exists():
+                return QueryStructure.BadRequest(self, message="stadium not found")
+            checkOverlap = all([CheckOverlap(
+                i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["time"]])
+            if not checkOverlap:
+                return QueryStructure.BadRequest(self, message="This time overlaps with others")
+            for i in kwargs["data"]["time"]:
+                dataDuration = {"stad_id": kwargs["data"]["stad_id"],
+                                "start_time": i["start_time"], "end_time": i["end_time"], "is_available": i["is_available"]}
+                seria = serializer.DurationSerializer(data=dataDuration)
+                if seria.is_valid():
+                    seria.validated_data
+                    seria.save()
+            return QueryStructure.OK(self, data=seria.save())
+        except Exception as e:
+            return QueryStructure.InternalServerError(self, message=str(e))
 
 
 def cheackTime(start, end, range_time):
@@ -126,8 +120,8 @@ def cheackTime(start, end, range_time):
     return True
 
 
-def dueationlist(start, end, stad_id):
-    j = models.Duration.objects.filter(stad_id__id=stad_id)
+def CheckOverlap(start, end, stad_id):
+    j = models.Duration.objects.filter(stad_id__id=stad_id, is_deleted=False)
     for i in j:
         if i.start_time <= start < i.end_time or i.start_time < end <= i.end_time:
             return False
