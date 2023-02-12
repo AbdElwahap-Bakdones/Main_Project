@@ -83,7 +83,10 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
         try:
             user_data = kargs['data'].pop('user')  # extract data
             data = kargs['data']  # extract data
-            data['user_id'] = 41  # Set an initial user_id vlaue
+            # server
+            data['user_id'] = 2  # Set an initial user_id vlaue
+            # local
+            # data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name$last_name
 
@@ -141,7 +144,10 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
             user_data = kargs['data'].pop(
                 'user')  # extract data
             data = kargs['data']  # extract data
-            data['user_id'] = 41  # Set an initial user_id vlaue
+            # server
+            data['user_id'] = 2  # Set an initial user_id vlaue
+            # local
+            # data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name@last_name
             # add User via serializer   &  add subManager via serializer
