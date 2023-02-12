@@ -129,9 +129,12 @@ class StadiumServiceSerializer(serializers.ModelSerializer):
 
 
 class DurationSerializer(serializers.ModelSerializer):
+    stad_id = StadiumSerializer
+
     class Meta:
         model = models.Duration
-        fields = "__all__"
+        fields = ["id", "stad_id", "start_time",
+                  "end_time", "is_available", "is_deleted"]
 
     def create(self, validated_data):
         Duration = models.Duration(**validated_data)
