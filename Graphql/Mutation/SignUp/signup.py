@@ -140,7 +140,7 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
         try:
             user = info.context.META["user"]
             if not models.Club.objects.filter(manager_id__user_id=user.pk, pk=kargs['data']['club_id']).exists():
-                return QueryStructure.BadRequest(instanse=self)
+                return QueryStructure.NoPermission(instanse=self)
             user_data = kargs['data'].pop(
                 'user')  # extract data
             data = kargs['data']  # extract data
