@@ -23,7 +23,10 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
         try:
             user_data = kargs['data'].pop('user')  # extract data
             data = kargs['data']  # extract data
-            data['user_id'] = 41  # Set an initial user_id vlaue
+            # server
+            data['user_id'] = 2  # Set an initial user_id vlaue
+            # local
+            # data['user_id'] = 41  # Set an initial user_id vlaue
             user_data['username'] = user_data['first_name'] + '@' + \
                 user_data['last_name']  # define username as first_name@last_name
 
@@ -53,9 +56,11 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
         except Exception as e:
             print('Error in SignUpPlayer ')
             print(e)
+            if models.User.objects.filter(pk=user.pk).exists():
+                models.User.objects.filter(pk=user.pk).delete()
             user = None
             player = None
-            msg = e
+            msg = str(e)
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         # self(user=user, player=player, message=msg, status=status)
         return QueryStructure.MyReturn(self, player, msg, status)
