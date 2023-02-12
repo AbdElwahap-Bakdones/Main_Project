@@ -28,7 +28,7 @@ class SerchPlayer  (ObjectType, QueryFields):
                               with_no_friend=kwargs['without_Friend']).getPlayerByEmail()
             elif 'player_Name' in kwargs:
                 data = Player(
-                    name=kwargs['player_Name'], with_no_friend=kwargs['without_Friend'], user=user).GetPlayerByName()
+                    nameORemail=kwargs['player_Name'], with_no_friend=kwargs['without_Friend'], user=user).GetPlayerByName()
 
             else:
                 return QueryFields.BadRequest(info=info)
@@ -65,10 +65,10 @@ class Player:
             return []
         if self.name.__contains__(' '):
             FL_name = self.name.split(sep=' ')
-            name = self.name.replace(' ', '@')
+            username = self.name.replace(' ', '@')
             friend = models.Friend.objects.filter(
                 Q(player1__user_id=self.user) & Q(state='accepted') &
-                (Q(player2__user_id__username__iexact=name) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
+                (Q(player2__user_id__username__iexact=username) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
                  Q(player2__user_id__last_name__iexact=FL_name[1])))
         else:
             friend = models.Friend.objects.filter(
@@ -113,23 +113,37 @@ class Player:
             query_set=query_set, friend_list=friend_list)
         all_player_list = list(query_set.values_list('pk', flat=True))
         F_P = friend.get('list')+pending.get('list')
-        player_not_friend_list = list(set(all_player_list) - set(F_P))
-        player_not_friend = query_set.filter(pk__in=player_not_friend_list).annotate(state=Value(
-            'notFriend', output_field=MODELS.CharField()))
+        notFriend = self.get_player_notFriend(query_set, all_player_list, F_P)
         player = list(chain(friend.get('objects'), pending.get(
-            'objects'), player_not_friend))
+            'objects'), notFriend.get('objects')))
 
         return player
 
     def get_friend_player(self, query_set: QuerySet, friend_list: list) -> dict:
         player_friend = query_set.filter(pk__in=friend_list).annotate(
-            state=Value('accepted', output_field=MODELS.CharField()))
+            state=Value('friend', output_field=MODELS.CharField()))
         player_friend_list = list(player_friend.values_list('pk', flat=True))
         return {'objects': player_friend, 'list': player_friend_list}
 
     def get_pending_player(self, query_set: QuerySet) -> dict:
-        player_pending_list = list(models.Friend.objects.filter(
-            player1__user_id=self.user, player2__in=query_set.values_list('pk', flat=True), state='pending').values_list('player2__pk', flat=True))
-        player_pending = query_set.filter(
-            pk__in=player_pending_list).annotate(state=Value('pending', output_field=MODELS.CharField()))
-        return {'objects': player_pending, 'list': player_pending_list}
+        all_pending_objets = models.Friend.objects.filter(
+            player1__user_id=self.user, player2__in=query_set.values_list('pk', flat=True), state='pending')
+        all_player_pending_list = list(
+            all_pending_objets.values_list('player2__pk', flat=True))
+        pending_request_list = all_pending_objets.filter(
+            sender__user_id=self.user).values_list('player2__pk', flat=True)
+        pending_recive_list = all_pending_objets.filter(
+            ~Q(sender__user_id=self.user)).values_list('player2__pk', flat=True)
+        player_pending_request = query_set.filter(
+            pk__in=pending_request_list).annotate(state=Value('pending', output_field=MODELS.CharField()))
+        player_pending_recive = query_set.filter(
+            pk__in=pending_recive_list).annotate(state=Value('accept', output_field=MODELS.CharField()))
+        player_pending = list(
+            chain(player_pending_recive, player_pending_request))
+        return {'objects': player_pending, 'list': all_player_pending_list}
+
+    def get_player_notFriend(self, query_set: QuerySet, all_player_list: list, F_P: list) -> dict:
+        player_not_friend_list = list(set(all_player_list) - set(F_P))
+        player_not_friend = query_set.filter(pk__in=player_not_friend_list).annotate(state=Value(
+            'notFriend', output_field=MODELS.CharField()))
+        return {'objects': player_not_friend, 'list': player_not_friend_list}
