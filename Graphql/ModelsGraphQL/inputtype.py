@@ -1,5 +1,6 @@
 
 import graphene
+from graphene_file_upload.scalars import Upload
 
 
 class UserInput(graphene.InputObjectType):
@@ -69,6 +70,21 @@ class AddStadiumInput(graphene.InputObjectType):
     size = graphene.Float(required=True)
     is_available = graphene.Boolean(required=True)
     has_legua = graphene.Boolean(required=True)
+    picture = Upload()
+
+
+class UpdateStadiumInput(graphene.InputObjectType):
+    id = graphene.ID(required=True)
+    name = graphene.String()
+    section_id = graphene.ID()
+    type_id = graphene.ID()
+    size = graphene.Float()
+    is_available = graphene.Boolean()
+    has_legua = graphene.Boolean()
+
+
+class DeleteStadiumInput(graphene.InputObjectType):
+    id = graphene.ID(required=True)
 
 
 class AddServiceInput(graphene.InputObjectType):

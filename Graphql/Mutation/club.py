@@ -29,9 +29,8 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
             seria = serializer.ClubSerializer(data=kwargs["data"])
             if seria.is_valid():
                 seria.validated_data
-                msg = seria.errors
-                status = status_code.HTTP_201_CREATED
                 data = seria.save()
+                return QueryStructure.Created(self, data=data)
             else:
                 msg = seria.errors
                 data = None
@@ -60,18 +59,16 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
             data = kwargs['data']
             # club_object = models.Club.objects.get(
             #     id=data['id'], is_deleted=False)
-            club_object = models.Club.objects.filter(
-                pk=data['id'], is_deleted=False)
+            club_object = models.Club.objects.filter(user_id=user,
+                                                     pk=data['id'], is_deleted=False)
             if not club_object.exists():
                 return QueryStructure.NotFound(self)
-
             seria = serializer.ClubSerializer(
                 club_object.first(), data=data, partial=True)
             if seria.is_valid():
                 seria.validated_data
-                msg = 'updated!'
-                status = status_code.HTTP_200_OK
                 data = seria.save()
+                return QueryStructure.Updated(self, data=data)
             else:
                 msg = seria.errors
                 data = None
@@ -96,35 +93,28 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
         try:
             user = models.User(info.context.META["user"])
             if not checkPermission("core.delete_club", user.pk):
-                return QueryStructure.MyReturn(
-                    self, None, 'You do not have permission to complete the process', status_code.HTTP_401_UNAUTHORIZED)
-            # club_object = models.Club.objects.get(
-            #     id=data['id'], is_deleted=False)
+                return QueryStructure.NoPermission(self)
             data = kwargs['data']
-            club_object = models.Club.objects.filter(
-                pk=data["id"], is_deleted=False)
+            club_object = models.Club.objects.filter(user_id=user,
+                                                     pk=data["id"], is_deleted=False)
             if not club_object.exists():
-                msg = 'there is no club with id='+data['id']
-                club = None
-                status = status_code.HTTP_404_NOT_FOUND
-                return QueryStructure.MyReturn(self, None, msg, status)
+                return QueryStructure.NotFound(self)
 
             data.update({"is_deleted": True})
             seria = serializer.ClubSerializer(
                 club_object.first(), data=data, partial=True)
             if seria.is_valid():
                 seria.validated_data
-                msg = 'deleted!'
-                status = status_code.HTTP_200_OK
-                club = seria.save()
+                data = seria.save()
+                return QueryStructure.Deleted(self, data=data)
             else:
                 msg = seria.errors
-                club = None
+                data = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
         except Exception as e:
             print('Error in UpdateClub')
             print(e)
             msg = str(e)
-            club = None
+            data = None
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=club, message=msg, code=status)
+        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
