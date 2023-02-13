@@ -11,7 +11,7 @@ import graphene
 from itertools import chain
 
 
-class SerchPlayer  (ObjectType, QueryFields):
+class SerchPlayer (ObjectType, QueryFields):
 
     data = relay.ConnectionField(
         relays.PlayerConnection, player_Name=graphene.String(),
@@ -147,3 +147,19 @@ class Player:
         player_not_friend = query_set.filter(pk__in=player_not_friend_list).annotate(state=Value(
             'notFriend', output_field=MODELS.CharField()))
         return {'objects': player_not_friend, 'list': player_not_friend_list}
+
+
+class me(ObjectType, QueryFields):
+    data = relay.ConnectionField(relays.PlayerConnection)
+
+    def resolve_data(root, info, **kwargs):
+        try:
+            user = info.context.META["user"]
+            if not QueryFields.is_valide(info=info, user=user, operation="core.add_friend"):
+                return QueryFields.rise_error(user=user)
+            player_obj = models.Player.objects.filter(user_id=user)
+            return QueryFields.OK(info=info, data=player_obj)
+        except Exception as e:
+            print('Error in Player.me :')
+            print(e)
+            return QueryFields.ServerError(info=info, msg=str(e))

@@ -52,6 +52,7 @@ class Query(ObjectType):
     type_ = graphene.Field(Type.AllType)
     clubSubManager = graphene.Field(sub_manager.ClubSubManagerd)
     myClub = graphene.Field(MyClub)
+    playerMe = graphene.Field(Player.me)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -88,6 +89,9 @@ class Query(ObjectType):
 
     def resolve_type_(root, info, **kwargs):
         return Type.AllType()
+
+    def resolve_playerMe(root, info, **kwargs):
+        return Player.me()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
