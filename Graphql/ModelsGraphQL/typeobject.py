@@ -22,7 +22,7 @@ class PlayerObjectType(DjangoObjectType):
     class Meta:
         model = models.Player
         fields = ['pk', 'location_lat',
-                  'location_long', 'user_id']
+                  'location_long', 'user_id', 'available_on_map']
         interfaces = (relay.Node,)
 
 
@@ -195,5 +195,5 @@ class FriendObjectType(DjangoObjectType):
 
     class Meta:
         model = models.Friend
-        fields = ['pk', 'friends', 'me', 'state']
+        fields = ['pk', 'friends', 'me']
         interfaces = (relay.Node,)

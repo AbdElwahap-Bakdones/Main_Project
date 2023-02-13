@@ -21,6 +21,7 @@ from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToSta
 from ..Query import Player, Type, sub_manager
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 from ..Mutation.Team import createTeam, deleteTeam
+from ..Mutation import search_on_map
 
 
 class User_model(DjangoObjectType):
@@ -109,6 +110,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     createTeam = createTeam.CreateTeam.Field()
     deleteTeam = deleteTeam.DeleteTeam.Field()
     addDurationList = AddDurationList.Field()
+    changeSearchMap = search_on_map.ChangeSearchOnMap.Field()
 
 
 class Subscription(graphene.ObjectType):
