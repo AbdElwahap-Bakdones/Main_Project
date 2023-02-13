@@ -23,7 +23,7 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
             if not models.SubManager.objects.filter(
                     pk=kwargs['data']['sub_manager_id'],
                     club_id=kwargs['data']['club_id'],
-                    club_id__manager_id__user_id=user.pk).exists():
+                    club_id__manager_id__user_id=user).exists():
                 return QueryStructure.BadRequest(self, message='maybe club id or sub manager not found')
             seria = serializer.SectionSerializer(data=kwargs["data"])
             if seria.is_valid():
@@ -57,17 +57,15 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
                 return QueryStructure.NoPermission(self)
             data = kwargs['data']
             Section_object = models.Section.objects.filter(
-                pk=data['id'], club_id=data['club_id'], club_id__manager_id__user_id=user.pk, is_deleted=False)
+                pk=data['id'], club_id=data['club_id'], club_id__manager_id__user_id=user, is_deleted=False)
             if not Section_object.exists():
                 QueryStructure.NotFound(self)
-
             seria = serializer.SectionSerializer(
                 Section_object.first(), data=data, partial=True)
             if seria.is_valid():
                 seria.validated_data
-                msg = 'updated!'
-                status = status_code.HTTP_200_OK
                 data = seria.save()
+                return QueryStructure.Updated(self, data=data)
             else:
                 msg = seria.errors
                 data = None
@@ -94,8 +92,8 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
             if not checkPermission("core.delete_section", user.pk):
                 return QueryStructure.NoPermission(self)
             data = kwargs['data']
-            Section_object = models.Section.objects.filter(
-                pk=data["id"], is_deleted=False)
+            Section_object = models.Section.objects.filter(club_id__manager_id__user_id=user, club_id=data["club_id"],
+                                                           pk=data["id"], is_deleted=False)
             if not Section_object.exists():
                 QueryStructure.NotFound(self)
             data.update({"is_deleted": True})
@@ -103,9 +101,8 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
                 Section_object.first(), data=data, partial=True)
             if seria.is_valid():
                 seria.validated_data
-                msg = 'deleted!'
-                status = status_code.HTTP_200_OK
-                Section = seria.save()
+                data = seria.save()
+                return QueryStructure.Deleted(self, data=data)
             else:
                 msg = seria.errors
                 Section = None

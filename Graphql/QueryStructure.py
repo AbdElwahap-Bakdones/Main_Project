@@ -41,6 +41,18 @@ def OK(instanse: object, data=None):
         status=status_code.HTTP_200_OK)
 
 
+def Updated(instanse: object, data=None):
+    return instanse(
+        data=data, message='updated',
+        status=status_code.HTTP_200_OK)
+
+
+def Deleted(instanse: object, data=None):
+    return instanse(
+        data=data, message='deleted',
+        status=status_code.HTTP_200_OK)
+
+
 def InternalServerError(instanse: object, message='server error'):
     return instanse(
         data=None, message=message,
