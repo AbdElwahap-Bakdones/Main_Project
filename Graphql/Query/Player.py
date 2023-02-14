@@ -9,8 +9,8 @@ from ..Relay import relays
 from ..QueryStructure import QueryFields
 import graphene
 from itertools import chain
-# from django.contrib.gis.geos import GEOSGeometry
-# from django.contrib.gis.measure import D
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
 
 
 class SerchPlayer (ObjectType, QueryFields):
