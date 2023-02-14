@@ -9,6 +9,8 @@ from ..Relay import relays
 from ..QueryStructure import QueryFields
 import graphene
 from itertools import chain
+# from django.contrib.gis.geos import GEOSGeometry
+# from django.contrib.gis.measure import D
 
 
 class SerchPlayer (ObjectType, QueryFields):
@@ -24,11 +26,11 @@ class SerchPlayer (ObjectType, QueryFields):
             if not QueryFields.is_valide(info=info, user=user, operation="core.add_friend"):
                 return QueryFields.rise_error(user=user)
             if 'player_Email' in kwargs:
-                data = Player(nameORemail=kwargs['player_Email'], user=user,
-                              with_no_friend=kwargs['without_Friend']).getPlayerByEmail()
+                data = Player().getPlayerByEmail(
+                    nameORemail=kwargs['player_Email'], user=user, with_no_friend=kwargs['without_Friend'])
             elif 'player_Name' in kwargs:
-                data = Player(
-                    nameORemail=kwargs['player_Name'], with_no_friend=kwargs['without_Friend'], user=user).GetPlayerByName()
+                data = Player().GetPlayerByName(
+                    nameORemail=kwargs['player_Name'], user=user, with_no_friend=kwargs['without_Friend'])
 
             else:
                 return QueryFields.BadRequest(info=info)
@@ -42,11 +44,15 @@ class SerchPlayer (ObjectType, QueryFields):
 
 
 class Player:
-    def __init__(self, nameORemail: str,  user: models.User, with_no_friend=False):
-        print('123')
-        self.name = nameORemail
-        self.user = user
-        self.with_no_friend = with_no_friend
+    def __init__(self):
+        pass
+        # print('init player')
+
+    def getPlayerById(self, id: int) -> models.Player:
+        player_obj = models.Player.objects.filter(id=id)
+        if not player_obj.exists():
+            return[]
+        return self.add_state_toPlayer(player_obj)
 
     def getPlayerByEmail(self):
         data = models.Player.objects.filter(
@@ -78,7 +84,10 @@ class Player:
                     Q(player2__user_id__last_name__iexact=self.name)))
         return friend
 
-    def GetPlayerByName(self) -> list:
+    def GetPlayerByName(self, nameORemail: str,  user: models.User, with_no_friend=False) -> list:
+        self.name = nameORemail
+        self.user = user
+        self.with_no_friend = with_no_friend
         friend_list = []
         if self.name.count(' ') > 1:
             return []
@@ -106,7 +115,7 @@ class Player:
         return self.add_state_toPlayer(query_set=data,  friend_list=friend)
         # return data
 
-    def add_state_toPlayer(self, query_set: QuerySet,  friend_list: list):
+    def add_state_toPlayer(self, query_set: QuerySet,  friend_list=[]):
         player = QuerySet
         pending = self.get_pending_player(query_set=query_set)
         friend = self.get_friend_player(
@@ -155,11 +164,34 @@ class me(ObjectType, QueryFields):
     def resolve_data(root, info, **kwargs):
         try:
             user = info.context.META["user"]
-            if not QueryFields.is_valide(info=info, user=user, operation="core.add_friend"):
+            if not QueryFields.is_valide(info=info, user=user, operation="core.view_player"):
                 return QueryFields.rise_error(user=user)
             player_obj = models.Player.objects.filter(user_id=user)
             return QueryFields.OK(info=info, data=player_obj)
         except Exception as e:
             print('Error in Player.me :')
+            print(e)
+            return QueryFields.ServerError(info=info, msg=str(e))
+
+
+class GeoPlayer(ObjectType, QueryFields):
+    data = relay.ConnectionField(relays.PlayerConnection, location_lat=graphene.String(
+        required=True), location_long=graphene.String(required=True), distance=graphene.Float(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        try:
+            user = info.context.META["user"]
+            if not QueryFields.is_valide(info=info, user=user, operation="core.view_player"):
+                return QueryFields.rise_error(user=user)
+                pnt = GEOSGeometry(
+                    "POINT("+kwargs['location_lat']+" " + kwargs['location_long'])+", srid=32140)"
+            data = models.Player.objects.filter(point__distance_lte=(
+                pnt, D(km=kwargs['distance'])), available_on_map=True)
+            if not data.exists():
+                return QueryFields.NotFound(info)
+            return QueryFields.OK(info, data=data)
+
+        except Exception as e:
+            print('Error in Player.GeoPlayer :')
             print(e)
             return QueryFields.ServerError(info=info, msg=str(e))

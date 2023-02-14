@@ -53,6 +53,7 @@ class Query(ObjectType):
     clubSubManager = graphene.Field(sub_manager.ClubSubManagerd)
     myClub = graphene.Field(MyClub)
     playerMe = graphene.Field(Player.me)
+    findPlayerOnMap = graphene.Field(Player.GeoPlayer)
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -92,6 +93,9 @@ class Query(ObjectType):
 
     def resolve_playerMe(root, info, **kwargs):
         return Player.me()
+
+    def resolve_findPlayerOnMap(root, info, **kwargs):
+        return Player.GeoPlayer()
 
 
 class Mutation (AuthMutation, graphene.ObjectType):
