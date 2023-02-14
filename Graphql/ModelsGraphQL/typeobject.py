@@ -78,71 +78,91 @@ class SectionObjectType(DjangoObjectType):
 
 
 class StadiumObjectType(DjangoObjectType):
+    pk_stadium = graphene.Field(type=graphene.Int, source='id')
     section = graphene.Field(type=SectionObjectType, source='section_id')
     type_ = graphene.Field(type=TypeObjectType, source='type_id')
 
     class Meta:
         model = models.Stadium
-        fields = "__all__"
+        fields = ['id', 'pk', 'name', 'is_available',
+                  'has_legua', 'size', 'picture']
         interfaces = (relay.Node,)
 
 
 class ServiceObjectType(DjangoObjectType):
+    pk_service = graphene.Field(type=graphene.Int, source='id')
+
     class Meta:
         model = models.Service
-        fields = "__all__"
+        fields = ['id', 'pk', 'name']
         interfaces = (relay.Node,)
 
 
 class StadiumServiceObjectType(DjangoObjectType):
+    pk_stadium_service = graphene.Field(type=graphene.Int, source='id')
+    service = graphene.Field(type=ServiceObjectType, source='service_id')
+    stadium = graphene.Field(type=StadiumObjectType, source='stad_id')
+
     class Meta:
         model = models.StadiumService
-        fields = "__all__"
+        fields = ['id', 'pk', 'stad_id', 'service_id', 'is_available']
         interfaces = (relay.Node,)
 
 
 class DurationObjectType(DjangoObjectType):
+    pk_duration = graphene.Field(type=graphene.Int, source='id')
+    stadium = graphene.Field(type=StadiumObjectType, source='stad_id')
+
     class Meta:
         model = models.Duration
-        fields = "__all__"
+        fields = ['id', 'pk', 'start_time', 'end_time', 'is_available']
         interfaces = (relay.Node,)
 
 
 class ReservationObjectType(DjangoObjectType):
+    pk_reservation = graphene.Field(type=graphene.Int, source='id')
+    duration = graphene.Field(type=DurationObjectType, source='duration_id')
+
     class Meta:
         model = models.Reservation
-        fields = "__all__"
+        fields = ['id', 'pk', 'duration_id',
+                  'kind', 'count', 'time', 'canceled']
         interfaces = (relay.Node,)
 
 
 class Player_reservationObjectType(DjangoObjectType):
+    pk_player_reservation = graphene.Field(type=graphene.Int, source='id')
+    reservation = graphene.Field(
+        type=ReservationObjectType, source='reservation_id')
+    player = graphene.Field(
+        type=PlayerObjectType, source='player_id')
+
     class Meta:
         model = models.Player_reservation
-        fields = "__all__"
-        interfaces = (relay.Node,)
-
-
-class Player_reservationObjectType(DjangoObjectType):
-    class Meta:
-        model = models.Player_reservation
-        fields = "__all__"
+        fields = ['id', 'pk', 'player_id', 'reservation_id']
         interfaces = (relay.Node,)
 
 
 class TeamObjectType(DjangoObjectType):
     pk_team = graphene.Field(type=graphene.Int, source='id')
-    type = graphene.Field(type=TypeObjectType, source='type_id')
+    type_ = graphene.Field(type=TypeObjectType, source='type_id')
 
     class Meta:
         model = models.Team
-        fields = ['pk', 'name', 'type', 'search_game', 'member_count', 'temp']
+        fields = ['pk', 'name', 'type_id',
+                  'search_game', 'member_count', 'temp']
         interfaces = (relay.Node,)
 
 
 class Team_resevationObjectType(DjangoObjectType):
+    pk_team_resevation = graphene.Field(type=graphene.Int, source='id')
+    reservation = graphene.Field(
+        type=ReservationObjectType, source='reservation_id')
+    team = graphene.Field(type=TeamObjectType, source='team_id')
+
     class Meta:
         model = models.Team_resevation
-        fields = "__all__"
+        fields = ['id', 'pk', 'team_id', 'reservation_id']
         interfaces = (relay.Node,)
 
 

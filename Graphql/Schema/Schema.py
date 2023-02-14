@@ -7,7 +7,7 @@ from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub, MyClub
 # from ..Query.Duration import searchOnReservation
 from ..Query.Duration import GetAllowDuration
-from ..Query.Section import AllSection, GetSection
+from ..Query.Section import AllSectionByClub, GetSection
 from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
 from ..Query.Friend import GetFriend, AllFriend
 from ..Auth.graphql_auth import AuthMutation
@@ -43,7 +43,7 @@ class Query(ObjectType):
 
     AllClub = graphene.Field(AllClub)
     GetClub = graphene.Field(GetClub)
-    AllSection = graphene.Field(AllSection)
+    allSectionByClub = graphene.Field(AllSectionByClub)
     GetSection = graphene.Field(GetSection)
     getFriend = graphene.Field(GetFriend)
     allFriend = graphene.Field(AllFriend)
@@ -61,8 +61,8 @@ class Query(ObjectType):
     def resolve_GetClub(root, info, **kwargs):
         return GetClub()
 
-    def resolve_AllSection(root, info, **kwargs):
-        return AllSection()
+    def resolve_allSectionByClub(root, info, **kwargs):
+        return AllSectionByClub()
 
     def resolve_GetSection(root, info, **kwargs):
         return GetSection()
