@@ -83,7 +83,7 @@ class SectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Section
-        fields = ["id", "name", "sub_manager_id",
+        fields = ["name", "sub_manager_id",
                   "club_id", "is_available", "is_deleted"]
 
 
