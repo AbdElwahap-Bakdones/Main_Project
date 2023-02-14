@@ -183,8 +183,10 @@ class GeoPlayer(ObjectType, QueryFields):
             user = info.context.META["user"]
             if not QueryFields.is_valide(info=info, user=user, operation="core.view_player"):
                 return QueryFields.rise_error(user=user)
+            # pnt = GEOSGeometry(
+            #     'POINT(33.52874079439407 36.29965029546363)', srid=32140)
             pnt = GEOSGeometry(
-                "POINT("+kwargs['location_lat']+" " + kwargs['location_long'])+", srid=32140)"
+                "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
             data = models.Player.objects.filter(point__distance_lte=(
                 pnt, D(km=kwargs['distance'])), available_on_map=True)
             if not data.exists():
