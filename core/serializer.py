@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.hashers import make_password
+from core import Geo
 
 
 def hashPassword(password: str) -> str:
@@ -29,6 +30,10 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
         fields = ['location_lat', 'location_long', 'user_id']
+
+    def create(self, validated_data):
+        validated_data = Geo.set_point_field(validated_data)
+        return models.Player.objects.create(**validated_data)
 
 
 class ManagerSerializer(serializers.ModelSerializer):
