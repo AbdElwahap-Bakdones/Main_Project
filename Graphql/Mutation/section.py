@@ -26,11 +26,11 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
                 pk=kwargs['data']['club_id'], manager_id__user_id=user)
             if not club_obj.filter().exists():
                 return QueryStructure.BadRequest(self, message='Club id not found')
-            if ['sub_manager_id'] in kwargs['data']:
+            if 'sub_manager_id' in kwargs['data']:
                 is_there_sub_manager = True
                 sub_manager_obj = models.SubManager.objects.filter(
-                    club_id=club_obj)
-            if is_there_sub_manager and sub_manager_obj.exists():
+                    club_id=club_obj.get())
+            if is_there_sub_manager and not sub_manager_obj.exists():
                 return QueryStructure.BadRequest(self, message='Sub Manager id not found')
             seria = serializer.SectionSerializer(data=kwargs["data"])
             if seria.is_valid():
@@ -70,7 +70,7 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
                 return QueryStructure.NoPermission(self)
             data = kwargs['data']
             Section_object = models.Section.objects.filter(
-                pk=data['id'], club_id=data['club_id'], club_id__manager_id__user_id=user, is_deleted=False)
+                pk=data['id'], club_id__manager_id__user_id=user, is_deleted=False)
             if not Section_object.exists():
                 QueryStructure.NotFound(self)
             seria = serializer.SectionSerializer(

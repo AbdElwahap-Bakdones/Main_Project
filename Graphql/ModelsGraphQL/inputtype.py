@@ -55,7 +55,7 @@ class AddSectionInput(graphene.InputObjectType):
 class UpdateSectionInput(graphene.InputObjectType):
     id = graphene.ID(required=True)
     name = graphene.String()
-    club_id = graphene.ID()
+    # club_id = graphene.ID()
     sub_manager_id = graphene.ID()
     is_available = graphene.Boolean()
 
