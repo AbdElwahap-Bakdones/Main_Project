@@ -186,8 +186,8 @@ class GeoPlayer(ObjectType, QueryFields):
 
             pnt = GEOSGeometry(
                 "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
-            data = models.Player.objects.filter(point__distance_lte=(
-                pnt, D(km=kwargs['distance'])), available_on_map=True)
+            data = models.Player.objects.filter(~Q(pk=user.pk) and Q(point__distance_lte=(
+                pnt, D(km=kwargs['distance'])), available_on_map=True))
             if not data.exists():
                 return QueryFields.NotFound(info)
             return QueryFields.OK(info, data=data)
