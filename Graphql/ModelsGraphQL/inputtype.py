@@ -20,6 +20,7 @@ class PlayerInput(graphene.InputObjectType):
     user = graphene.Field(UserInput)
     location_lat = graphene.String(requierd=True)
     location_long = graphene.String(requierd=True)
+    picture = Upload(required=False)
 
 
 class SubManagerInput(graphene.InputObjectType):
@@ -47,8 +48,8 @@ class DeleteClubInput(graphene.InputObjectType):
 class AddSectionInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     club_id = graphene.ID(required=True)
-    sub_manager_id = graphene.ID(required=True)
-    is_available = graphene.Boolean(required=True)
+    sub_manager_id = graphene.ID(required=False)
+    is_available = graphene.Boolean(required=False)
 
 
 class UpdateSectionInput(graphene.InputObjectType):

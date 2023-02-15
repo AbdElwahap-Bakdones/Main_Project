@@ -20,11 +20,18 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             if not checkPermission("core.add_section", user):
                 return QueryStructure.NoPermission(self)
-            if not models.SubManager.objects.filter(
-                    pk=kwargs['data']['sub_manager_id'],
-                    club_id=kwargs['data']['club_id'],
-                    club_id__manager_id__user_id=user).exists():
-                return QueryStructure.BadRequest(self, message='maybe club id or sub manager not found')
+            sub_manager_obj = None
+            is_there_sub_manager = False
+            club_obj = models.Club.objects.filter(
+                pk=kwargs['data']['club_id'], manager_id__user_id=user)
+            if not club_obj.filter().exists():
+                return QueryStructure.BadRequest(self, message='Club id not found')
+            if ['sub_manager_id'] in kwargs['data']:
+                is_there_sub_manager = True
+                sub_manager_obj = models.SubManager.objects.filter(
+                    club_id=club_obj)
+            if is_there_sub_manager and sub_manager_obj.exists():
+                return QueryStructure.BadRequest(self, message='Sub Manager id not found')
             seria = serializer.SectionSerializer(data=kwargs["data"])
             if seria.is_valid():
                 seria.validated_data
@@ -41,6 +48,12 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
             data = None
             status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
         return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+
+        # if not models.SubManager.objects.filter(
+        #         pk=kwargs['data']['sub_manager_id'],
+        #         club_id=kwargs['data']['club_id'],
+        #         club_id__manager_id__user_id=user).exists():
+        #     return QueryStructure.BadRequest(self, message='maybe club id or sub manager not found')
 
 
 class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
