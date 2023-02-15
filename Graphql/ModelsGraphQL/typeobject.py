@@ -68,11 +68,12 @@ class ClubObjectType(DjangoObjectType):
 
 class SectionObjectType(DjangoObjectType):
     pk_sectaion = graphene.Field(type=graphene.Int, source='id')
-    sub_manager = graphene.Field(SubManagerObjectType, source='sub_manager_id')
+    sub_manager = graphene.Field(
+        SubManagerObjectType, source='sub_manager_id')
 
     class Meta:
         model = models.Section
-        fields = ['id', 'pk', 'name', 'is_available',
+        fields = ['name', 'is_available',
                   'club_id']
         interfaces = (relay.Node,)
 
