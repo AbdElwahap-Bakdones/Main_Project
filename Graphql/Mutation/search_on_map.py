@@ -12,7 +12,7 @@ class ChangeSearchOnMap(graphene.Mutation, QueryStructure.Attributes):
     def mutate(self, root, info, **kwargs):
         try:
             user = info.context.META["user"]
-            if not checkPermission("core.add_team_members", user):
+            if not checkPermission("core.change_player", user):
                 return QueryStructure.NoPermission(self)
             player_obj = models.Player.objects.filter(user_id=user)
             if player_obj.get().available_on_map:

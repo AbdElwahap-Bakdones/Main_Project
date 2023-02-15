@@ -26,11 +26,11 @@ class SerchPlayer (ObjectType, QueryFields):
             if not QueryFields.is_valide(info=info, user=user, operation="core.add_friend"):
                 return QueryFields.rise_error(user=user)
             if 'player_Email' in kwargs:
-                data = Player().getPlayerByEmail(
-                    nameORemail=kwargs['player_Email'], user=user, with_no_friend=kwargs['without_Friend'])
+                data = Player(user=user).getPlayerByEmail(
+                    email=kwargs['player_Email'])
             elif 'player_Name' in kwargs:
-                data = Player().GetPlayerByName(
-                    nameORemail=kwargs['player_Name'], user=user, with_no_friend=kwargs['without_Friend'])
+                data = Player(user=user).GetPlayerByName(
+                    nameORemail=kwargs['player_Name'], with_no_friend=kwargs['without_Friend'])
 
             else:
                 return QueryFields.BadRequest(info=info)
@@ -44,8 +44,8 @@ class SerchPlayer (ObjectType, QueryFields):
 
 
 class Player:
-    def __init__(self):
-        pass
+    def __init__(self, user: models.User):
+        self.user = user
         # print('init player')
 
     def getPlayerById(self, id: int) -> models.Player:
@@ -54,49 +54,24 @@ class Player:
             return[]
         return self.add_state_toPlayer(player_obj)
 
-    def getPlayerByEmail(self):
+    def getPlayerByEmail(self, email: str):
         data = models.Player.objects.filter(
-            user_id__email=self.name)
-        print(data)
+            user_id__email=email)
         if not data.exists():
             return[]
-        fried = models.Friend.objects.filter(
-            player1__user_id=self.user, player2__user_id__email=self.name, state='accepted').values_list('player2__pk', flat=True)
-        print(fried)
-        return self.add_state_toPlayer(query_set=data, friend_list=fried)
+        return self.add_state_toPlayer(query_set=data)
 
-    def GetFriendByName(self) -> models.Friend.objects:
-
-        if self.name.count(' ') > 1:
-            return []
-        if self.name.__contains__(' '):
-            FL_name = self.name.split(sep=' ')
-            username = self.name.replace(' ', '@')
-            friend = models.Friend.objects.filter(
-                Q(player1__user_id=self.user) & Q(state='accepted') &
-                (Q(player2__user_id__username__iexact=username) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
-                 Q(player2__user_id__last_name__iexact=FL_name[1])))
-        else:
-            friend = models.Friend.objects.filter(
-                Q(player1__user_id=self.user) & Q(state='accepted')
-                &
-                (Q(player2__user_id__first_name__iexact=self.name) |
-                    Q(player2__user_id__last_name__iexact=self.name)))
-        return friend
-
-    def GetPlayerByName(self, nameORemail: str,  user: models.User, with_no_friend=False) -> list:
-        self.name = nameORemail
-        self.user = user
-        self.with_no_friend = with_no_friend
+    def GetPlayerByName(self, nameORemail: str, with_no_friend=False) -> list:
+        name = nameORemail
         friend_list = []
-        if self.name.count(' ') > 1:
+        if name.count(' ') > 1:
             return []
-        elif self.name.__contains__(' '):
-            FL_name = self.name.split(sep=' ')
-            name = self.name.replace(' ', '@')
-            friend = self.GetFriendByName().values_list(
-                'player2__pk', flat=True)
-            if self.with_no_friend:
+        friend = self.GetFriendByName(name=name).values_list(
+            'player2__pk', flat=True)
+        if name.__contains__(' '):
+            FL_name = name.split(sep=' ')
+            name = name.replace(' ', '@')
+            if with_no_friend:
                 friend_list = friend
 
             data = models.Player.objects.filter(~Q(user_id=self.user) & ~Q(pk__in=friend_list) &
@@ -105,21 +80,38 @@ class Player:
                                                 Q(user_id__last_name__iexact=FL_name[1])))
 
         else:
-            friend = self.GetFriendByName().values_list(
-                'player2__pk', flat=True)
-            if self.with_no_friend:
+            if with_no_friend:
                 friend_list = friend
             data = models.Player.objects.filter(~Q(user_id=self.user) & ~Q(pk__in=friend_list) &
-                                                (Q(user_id__first_name__iexact=self.name) | Q(user_id__last_name__iexact=self.name)))
+                                                (Q(user_id__first_name__iexact=name) | Q(user_id__last_name__iexact=name)))
 
-        return self.add_state_toPlayer(query_set=data,  friend_list=friend)
+        return self.add_state_toPlayer(query_set=data)
         # return data
 
-    def add_state_toPlayer(self, query_set: QuerySet,  friend_list=[]):
+    def GetFriendByName(self, name: str) -> models.Friend.objects:
+
+        if name.count(' ') > 1:
+            return []
+        if name.__contains__(' '):
+            FL_name = name.split(sep=' ')
+            username = name.replace(' ', '@')
+            friend = models.Friend.objects.filter(
+                Q(player1__user_id=self.user) & Q(state='accepted') &
+                (Q(player2__user_id__username__iexact=username) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
+                 Q(player2__user_id__last_name__iexact=FL_name[1])))
+        else:
+            friend = models.Friend.objects.filter(
+                Q(player1__user_id=self.user) & Q(state='accepted')
+                &
+                (Q(player2__user_id__first_name__iexact=name) |
+                    Q(player2__user_id__last_name__iexact=name)))
+        return friend
+
+    def add_state_toPlayer(self, query_set: QuerySet):
         player = QuerySet
         pending = self.get_pending_player(query_set=query_set)
         friend = self.get_friend_player(
-            query_set=query_set, friend_list=friend_list)
+            query_set=query_set)
         all_player_list = list(query_set.values_list('pk', flat=True))
         F_P = friend.get('list')+pending.get('list')
         notFriend = self.get_player_notFriend(query_set, all_player_list, F_P)
@@ -128,7 +120,9 @@ class Player:
 
         return player
 
-    def get_friend_player(self, query_set: QuerySet, friend_list: list) -> dict:
+    def get_friend_player(self, query_set: QuerySet) -> dict:
+        friend_list = models.Friend.objects.filter(
+            player1__user_id=self.user, player2__in=query_set.values_list('pk', flat=True), state='accepted')
         player_friend = query_set.filter(pk__in=friend_list).annotate(
             state=Value('friend', output_field=MODELS.CharField()))
         player_friend_list = list(player_friend.values_list('pk', flat=True))
@@ -186,13 +180,28 @@ class GeoPlayer(ObjectType, QueryFields):
 
             pnt = GEOSGeometry(
                 "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
-            data = models.Player.objects.filter(~Q(pk=user.pk) and Q(point__distance_lte=(
+            all_player = models.Player.objects.filter(~Q(pk=user.pk) and Q(point__distance_lte=(
                 pnt, D(km=kwargs['distance'])), available_on_map=True))
-            if not data.exists():
+            if not all_player.exists():
                 return QueryFields.NotFound(info)
+            data = Player(user=user).add_state_toPlayer(
+                query_set=all_player)
             return QueryFields.OK(info, data=data)
 
         except Exception as e:
             print('Error in Player.GeoPlayer :')
             print(e)
             return QueryFields.ServerError(info=info, msg=str(e))
+
+
+'''user = info.context.META["user"]
+if not QueryFields.is_valide(info=info, user=user, operation="core.view_player"):
+    return QueryFields.rise_error(user=user)
+
+pnt = GEOSGeometry(
+    "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
+data = models.Player.objects.filter(~Q(pk=user.pk) and Q(point__distance_lte=(
+    pnt, D(km=kwargs['distance'])), available_on_map=True))
+if not data.exists():
+    return QueryFields.NotFound(info)
+return QueryFields.OK(info, data=data)'''
