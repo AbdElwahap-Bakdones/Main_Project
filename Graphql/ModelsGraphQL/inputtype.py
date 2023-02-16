@@ -98,11 +98,35 @@ class AddStadiumServiceInput(graphene.InputObjectType):
     is_available = graphene.Boolean(required=True)
 
 
-class AddDurationInput(graphene.InputObjectType):
-    time = graphene.Time(required=True)
-    stad_id = graphene.ID(required=True)
+class addtime(graphene.InputObjectType):
+    start_time = graphene.Time(required=True)
+    end_time = graphene.Time(required=True)
     is_available = graphene.Boolean(required=True)
-    is_deleted = graphene.Boolean(required=True)
+
+
+class AddDurationInput(graphene.InputObjectType):
+    stad_id = graphene.ID(required=True)
+    time = graphene.List(addtime)
+
+
+class updatetime(graphene.InputObjectType):
+    id = graphene.ID(required=True)
+    start_time = graphene.Time(required=True)
+    end_time = graphene.Time(required=True)
+    is_available = graphene.Boolean(required=True)
+
+
+class UpdateDurationInput(graphene.InputObjectType):
+    stad_id = graphene.ID(required=True)
+    duration = graphene.List(updatetime)
+
+
+class deleteDuration(graphene.InputObjectType):
+    id = graphene.ID(required=True)
+
+
+class DeleteDurationInput(graphene.InputObjectType):
+    id_list = graphene.List(graphene.ID, required=True)
 
 
 class AddReservationInput(graphene.InputObjectType):

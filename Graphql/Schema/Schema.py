@@ -16,7 +16,7 @@ from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
 # from ..Mutation.service import AddService, UpdateService
-from ..Mutation.duration import AddDurationList
+from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
@@ -119,6 +119,8 @@ class Mutation (AuthMutation, graphene.ObjectType):
     deleteTeam = deleteTeam.DeleteTeam.Field()
     addDurationList = AddDurationList.Field()
     changeSearchMap = search_on_map.ChangeSearchOnMap.Field()
+    updateDurationList = UpdateDurationList.Field()
+    deleteDurationList = DeleteDurationList.Field()
 
 
 class Subscription(graphene.ObjectType):
