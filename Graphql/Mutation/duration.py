@@ -65,22 +65,11 @@ class AddDuration(graphene.Mutation, QueryStructure.Attributes):
         return QueryStructure.MyReturn(instanse=self, data=models.Duration.objects.filter(stad_id__id=kwargs["data"]["stad_id"]).last(), message="ok", code=200)
 
 
-class time(graphene.InputObjectType):
-    start_time = graphene.Time(required=True)
-    end_time = graphene.Time(required=True)
-    is_available = graphene.Boolean(required=True)
-
-
-class DurationsInput(graphene.InputObjectType):
-    stad_id = graphene.ID(required=True)
-    time = graphene.List(time)
-
-
 class AddDurationList(graphene.Mutation, QueryStructure.Attributes):
     data = graphene.Field(typeobject.DurationObjectType)
 
     class Arguments:
-        data = DurationsInput()
+        data = inputtype.AddDurationInput()
 
     @classmethod
     def mutate(self, root, info, **kwargs):
@@ -106,6 +95,79 @@ class AddDurationList(graphene.Mutation, QueryStructure.Attributes):
             return QueryStructure.OK(self, data=seria.save())
         except Exception as e:
             return QueryStructure.InternalServerError(self, message=str(e))
+
+
+class UpdateDurationList(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.DurationObjectType)
+
+    class Arguments:
+        data = inputtype.UpdateDurationInput()
+
+    @classmethod
+    def mutate(self, root, info, **kwargs):
+        try:
+            user = info.context.META["user"]
+            if not checkPermission("core.add_duration", user):
+                return QueryStructure.NoPermission(self)
+            checkOverlap = all([CheckOverlap(
+                i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["duration"]])
+            if not checkOverlap:
+                return QueryStructure.BadRequest(self, message="This time overlaps with others")
+            for i in kwargs["data"]["duration"]:
+                sub = models.Duration.objects.filter(
+                    id=i['id'])
+                if not sub.exists():
+                    return QueryStructure.NotFound(self)
+            for i in kwargs["data"]["duration"]:
+                sub = models.Duration.objects.filter(
+                    id=i['id'])
+                dataDuration = {
+                    "start_time": i["start_time"], "end_time": i["end_time"], "is_available": i["is_available"]}
+                seria = serializer.DurationSerializer(
+                    sub.first(), data=dataDuration, partial=True)
+                if seria.is_valid():
+                    seria.validated_data
+                    seria.save()
+            return QueryStructure.OK(self, data=seria.save())
+        except Exception as e:
+            return QueryStructure.InternalServerError(self, message=str(e))
+
+
+class DeleteDurationList(graphene.Mutation, QueryStructure.Attributes):
+    data = graphene.Field(typeobject.DurationObjectType)
+
+    class Arguments:
+        data = inputtype.DeleteDurationInput()
+
+    @classmethod
+    def mutate(self, root, info, **kwargs):
+        try:
+            user = info.context.META["user"]
+            if not checkPermission("core.add_duration", user):
+                return QueryStructure.NoPermission(self)
+            data = kwargs['data']
+            if data['id_list'] == []:
+                return QueryStructure.BadRequest(self, message="the list is empty")
+            for i in data['id_list']:
+                duration_object = models.Duration.objects.filter(
+                    id=i, is_deleted=False)
+            if not duration_object.exists():
+                return QueryStructure.BadRequest(self, message="the duration has ID :"+str(i)+" is not found")
+            for i in data['id_list']:
+                duration_object = models.Duration.objects.filter(
+                    id=i, is_deleted=False)
+                seria = serializer.DurationSerializer(
+                    duration_object.first(), data={"is_deleted": True}, partial=True)
+                if seria.is_valid():
+                    seria.validated_data
+                    seria.save()
+            return QueryStructure.OK(self, data=seria.save())
+        except Exception as e:
+            print(e)
+            msg = str(e)
+            data = None
+            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
+        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
 
 
 def cheackTime(start, end, range_time):
@@ -134,10 +196,10 @@ def sturctTime(start, end, range_time):
 
 def convertHourToMinute(hour):
     return hour*60
-# class UpdateDuration(graphene.Mutation):
-#     Duration = graphene.Field(typeobject.DurationObjectType)
-#     message = graphene.String()
-#     status = graphene.Int()
+
+
+# class UpdateDuration(graphene.Mutation, QueryStructure.Attributes):
+#     data = graphene.Field(typeobject.DurationObjectType)
 
 #     class Arguments:
 #         id = graphene.ID(required=True)
