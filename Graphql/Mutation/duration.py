@@ -75,16 +75,24 @@ class AddDurationList(graphene.Mutation, QueryStructure.Attributes):
     def mutate(self, root, info, **kwargs):
         try:
             user = info.context.META["user"]
-            if not checkPermission("core.add_duration", user):
+            if not checkPermission("core.change_stadium", user):
                 return QueryStructure.NoPermission(self)
-            stadium = models.Stadium.objects.filter(
-                id=kwargs["data"]["stad_id"])
+            if checkPermission("core.add_club", user):
+                userType = "manager"
+            else:
+                userType = "subManager"
+            if userType == "manager":
+                stadium = models.Stadium.objects.filter(section_id__club_id__manager_id__user_id=user,
+                                                        id=kwargs["data"]["stad_id"])
+            else:
+                stadium = models.Stadium.objects.filter(section_id__sub_manager_id__user_id=user,
+                                                        id=kwargs["data"]["stad_id"])
             if not stadium.exists():
                 return QueryStructure.BadRequest(self, message="stadium not found")
-            checkOverlap = all([CheckOverlap(
-                i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["time"]])
-            if not checkOverlap:
-                return QueryStructure.BadRequest(self, message="This time overlaps with others")
+            # checkOverlap = all([CheckOverlap(
+            #     i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["time"]])
+            # if not checkOverlap:
+            #     return QueryStructure.BadRequest(self, message="This time overlaps with others")
             for i in kwargs["data"]["time"]:
                 dataDuration = {"stad_id": kwargs["data"]["stad_id"],
                                 "start_time": i["start_time"], "end_time": i["end_time"], "is_available": i["is_available"]}
@@ -107,15 +115,23 @@ class UpdateDurationList(graphene.Mutation, QueryStructure.Attributes):
     def mutate(self, root, info, **kwargs):
         try:
             user = info.context.META["user"]
-            if not checkPermission("core.add_duration", user):
+            if not checkPermission("core.change_stadium", user):
                 return QueryStructure.NoPermission(self)
-            checkOverlap = all([CheckOverlap(
-                i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["duration"]])
-            if not checkOverlap:
-                return QueryStructure.BadRequest(self, message="This time overlaps with others")
+            if checkPermission("core.add_club", user):
+                userType = "manager"
+            else:
+                userType = "subManager"
+            # checkOverlap = all([CheckOverlap(
+            #     i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["duration"]])
+            # if not checkOverlap:
+            #     return QueryStructure.BadRequest(self, message="This time overlaps with others")
             for i in kwargs["data"]["duration"]:
-                sub = models.Duration.objects.filter(
-                    id=i['id'])
+                if userType == "manager":
+                    sub = models.Duration.objects.filter(stad_id__section_id__club_id__manager_id__user_id=user,
+                                                         id=i['id'])
+                else:
+                    sub = models.Duration.objects.filter(stad_id__section_id__sub_manager_id__user_id=user,
+                                                         id=i['id'])
                 if not sub.exists():
                     return QueryStructure.NotFound(self)
             for i in kwargs["data"]["duration"]:
@@ -143,14 +159,22 @@ class DeleteDurationList(graphene.Mutation, QueryStructure.Attributes):
     def mutate(self, root, info, **kwargs):
         try:
             user = info.context.META["user"]
-            if not checkPermission("core.add_duration", user):
+            if not checkPermission("core.change_stadium", user):
                 return QueryStructure.NoPermission(self)
+            if checkPermission("core.add_club", user):
+                userType = "manager"
+            else:
+                userType = "subManager"
             data = kwargs['data']
             if data['id_list'] == []:
                 return QueryStructure.BadRequest(self, message="the list is empty")
             for i in data['id_list']:
-                duration_object = models.Duration.objects.filter(
-                    id=i, is_deleted=False)
+                if userType == "manager":
+                    duration_object = models.Duration.objects.filter(stad_id__section_id__club_id__manager_id__user_id=user,
+                                                                     id=i, is_deleted=False)
+                else:
+                    duration_object = models.Duration.objects.filter(stad_id__section_id__sub_manager_id__user_id=user,
+                                                                     id=i, is_deleted=False)
             if not duration_object.exists():
                 return QueryStructure.BadRequest(self, message="the duration has ID :"+str(i)+" is not found")
             for i in data['id_list']:
@@ -188,6 +212,19 @@ def CheckOverlap(start, end, stad_id):
         if i.start_time <= start < i.end_time or i.start_time < end <= i.end_time:
             return False
     return True
+
+
+li = [{"id": 1, "startTime": "16:30:00", "endTime": "18:00:00", "isAvailable": True}, {"id": 2, "startTime": "18:30:00",
+                                                                                       "endTime": "20:00:00", "isAvailable": True}, {"id": 3, "startTime": "18:30:00", "endTime": "20:00:00", "isAvailable": True}]
+
+
+def over(lists):
+    for i in range(len(lists)-1):
+
+        print(lists[i+1]['startTime'])
+
+
+over(li)
 
 
 def sturctTime(start, end, range_time):
