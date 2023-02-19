@@ -18,9 +18,9 @@ from ..Mutation.stadium import AddStadium, UpdateStadium
 # from ..Mutation.service import AddService, UpdateService
 from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Query import Player, Type, sub_manager
+from ..Query import Player, Type, sub_manager, team
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
-from ..Mutation.Team import createTeam, deleteTeam
+from ..Mutation.Team import createTeam, deleteTeam, addMember
 from ..Mutation import search_on_map
 
 
@@ -54,6 +54,19 @@ class Query(ObjectType):
     myClub = graphene.Field(MyClub)
     playerMe = graphene.Field(Player.me)
     findPlayerOnMap = graphene.Field(Player.GeoPlayer)
+    myAllTeam = graphene.Field(team.MyAllTeam)
+    myTeamByName = graphene.Field(team.SearchMyTeamByName)
+    teamByName = graphene.Field(team.SearchTeamByName)
+    myTeamById = graphene.Field(team.GetTeamById)
+
+    def resolve_myTeamByName(root, info, **kwargs):
+        return team.SearchMyTeamByName()
+
+    def resolve_teamByName(root, info, **kwargs):
+        return team.SearchTeamByName()
+
+    def resolve_myTeamById(root, info, **kwargs):
+        return team.GetTeamById()
 
     def resolve_AllClub(root, info, **kwargs):
         return AllClub()
@@ -97,6 +110,9 @@ class Query(ObjectType):
     def resolve_findPlayerOnMap(root, info, **kwargs):
         return Player.GeoPlayer()
 
+    def resolve_myAllTeam(root, info, **kwargs):
+        return team.MyAllTeam()
+
 
 class Mutation (AuthMutation, graphene.ObjectType):
     SignUpPlyer = signup.SignUpPlayer.Field(description='SignUpPlyer')
@@ -119,8 +135,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     deleteTeam = deleteTeam.DeleteTeam.Field()
     addDurationList = AddDurationList.Field()
     changeSearchMap = search_on_map.ChangeSearchOnMap.Field()
-    updateDurationList = UpdateDurationList.Field()
-    deleteDurationList = DeleteDurationList.Field()
+    addMember = addMember.AddMember.Field()
 
 
 class Subscription(graphene.ObjectType):
