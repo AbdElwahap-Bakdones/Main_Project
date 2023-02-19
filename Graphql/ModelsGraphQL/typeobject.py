@@ -167,17 +167,20 @@ class Team_resevationObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class Team_membersObjectType(DjangoObjectType):
-    class Meta:
-        model = models.Team_members
-        fields = "__all__"
-        interfaces = (relay.Node,)
-
-
 class PositionObjectType(DjangoObjectType):
     class Meta:
         model = models.Position
         fields = "__all__"
+        interfaces = (relay.Node,)
+
+
+class Team_membersObjectType(DjangoObjectType):
+    member = graphene.Field(type=PlayerObjectType, source='player_id')
+    position = graphene.Field(type=PositionObjectType, source='position_id')
+
+    class Meta:
+        model = models.Team_members
+        fields = ['member', 'position', 'is_captin']
         interfaces = (relay.Node,)
 
 

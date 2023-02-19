@@ -18,7 +18,7 @@ from ..Mutation.stadium import AddStadium, UpdateStadium
 # from ..Mutation.service import AddService, UpdateService
 from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Query import Player, Type, sub_manager, team
+from ..Query import Player, Type, sub_manager, team, team_members
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 from ..Mutation.Team import createTeam, deleteTeam, addMember
 from ..Mutation import search_on_map
@@ -58,6 +58,10 @@ class Query(ObjectType):
     myTeamByName = graphene.Field(team.SearchMyTeamByName)
     teamByName = graphene.Field(team.SearchTeamByName)
     myTeamById = graphene.Field(team.GetTeamById)
+    memmberTeamById = graphene.Field(team_members.MembersTeamById)
+
+    def resolve_memmberTeamById(root, info, **kwargs):
+        return team_members.MembersTeamById()
 
     def resolve_myTeamByName(root, info, **kwargs):
         return team.SearchMyTeamByName()
