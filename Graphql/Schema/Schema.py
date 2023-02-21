@@ -63,6 +63,10 @@ class Query(ObjectType):
     getStadium = graphene.Field(GetStadium)
     getStadiumBySection = graphene.Field(GetStadiumBySection)
     getDuration = graphene.Field(GetDuration)
+    getPLayerById = graphene.Field(Player.GetPlayerById)
+
+    def resolve_getPLayerById(root, info, **kwargs):
+        return Player.GetPlayerById()
 
     def resolve_getDuration(root, info, **kwargs):
         return GetDuration()
