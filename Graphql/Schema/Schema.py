@@ -6,9 +6,9 @@ from core import models
 from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub, MyClub
 # from ..Query.Duration import searchOnReservation
-from ..Query.Duration import GetAllowDuration
+from ..Query.Duration import GetAllowDuration, GetDuration
 from ..Query.Section import AllSectionByClub, GetSection
-from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
+from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumBySection
 from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
@@ -59,6 +59,18 @@ class Query(ObjectType):
     teamByName = graphene.Field(team.SearchTeamByName)
     myTeamById = graphene.Field(team.GetTeamById)
     memmberTeamById = graphene.Field(team_members.MembersTeamById)
+    getStadium = graphene.Field(GetStadium)
+    getStadiumBySection = graphene.Field(GetStadiumBySection)
+    getDuration = graphene.Field(GetDuration)
+
+    def resolve_getDuration(root, info, **kwargs):
+        return GetDuration()
+
+    def resolve_getStadiumBySection(root, info, **kwargs):
+        return GetStadiumBySection()
+
+    def resolve_getStadium(root, info, **kwargs):
+        return GetStadium()
 
     def resolve_memmberTeamById(root, info, **kwargs):
         return team_members.MembersTeamById()

@@ -38,14 +38,34 @@ class GetSection(ObjectType, QueryFields):
     def resolve_data(root, info, **kwargs):
         try:
             user = info.context.META['user']
-            if not QueryFields.is_valide(info, user, 'core.view_section'):
+            if not QueryFields.is_valide(info, user, 'core.add_section'):
                 return QueryFields.rise_error(user)
-            section_obj = Section.objects.filter(
-                pk=kwargs['id'], is_deleted=False, club_id__is_deleted=True)
-            if section_obj.filter(club_id__manager_id__user_id=user).exists() or section_obj.filter(sub_manager_id__user_id=user).exists():
+            section_obj = Section.objects.filter(club_id__manager_id__user_id=user,
+                                                 pk=kwargs['id'], is_deleted=False, club_id__is_deleted=False)
+            if section_obj.exists():
                 return QueryFields.OK(info, data=section_obj)
             return QueryFields.NotFound(info)
         except Exception as e:
             print('error in GetSection')
             print(e)
             return QueryFields.ServerError(info, msg=str(e))
+
+
+# class GetSectionByClub(ObjectType, QueryFields):
+#     data = relay.ConnectionField(
+#         relays.SectionConnection, club_id=graphene.ID(required=True))
+
+#     def resolve_data(root, info, **kwargs):
+#         try:
+#             user = info.context.META['user']
+#             if not QueryFields.is_valide(info, user, 'core.add_section'):
+#                 return QueryFields.rise_error(user)
+#             section_obj = Section.objects.filter(
+#                 club_id__manager_id__user_id=user, club_id__id=kwargs['club_id'], is_deleted=False, club_id__is_deleted=False)
+#             if section_obj.exists():
+#                 return QueryFields.OK(info, data=section_obj)
+#             return QueryFields.NotFound(info)
+#         except Exception as e:
+#             print('error in GetSection')
+#             print(e)
+#             return QueryFields.ServerError(info, msg=str(e))
