@@ -15,7 +15,6 @@ from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
-# from ..Mutation.service import AddService, UpdateService
 from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager, team, team_members
