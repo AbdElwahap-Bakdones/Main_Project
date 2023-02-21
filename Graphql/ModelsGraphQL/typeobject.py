@@ -26,6 +26,21 @@ class PlayerObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
+class FriendPlayerObjectType(DjangoObjectType):
+    user_id = graphene.Field(UserObjectType)
+    pk_player = graphene.Field(type=graphene.Int, source='id')
+    state = graphene.Field(type=graphene.String)
+
+    class Meta:
+        model = models.Player
+        fields = ['pk', 'location_lat',
+                  'location_long', 'user_id', 'available_on_map']
+        interfaces = (relay.Node,)
+
+    def resolve_state(root, info, **kwargs):
+        return 'friend'
+
+
 class ManagerObjectType(DjangoObjectType):
     user_id = graphene.Field(UserObjectType)
     pk = graphene.Field(type=graphene.Int, source='id')
@@ -214,7 +229,7 @@ class NotificationObjectType(DjangoObjectType):
 
 class FriendObjectType(DjangoObjectType):
     pk_friend = graphene.Field(type=graphene.Int, source='id')
-    friends = graphene.Field(type=PlayerObjectType, source='player2')
+    friends = graphene.Field(type=FriendPlayerObjectType, source='player2')
     me = graphene.Field(type=graphene.ID, source='player1')
 
     class Meta:

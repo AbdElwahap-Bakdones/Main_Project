@@ -66,46 +66,23 @@ class Player:
         friend_list = []
         if name.count(' ') > 1:
             return []
-        friend = self.GetFriendByName(name=name).values_list(
-            'player2__pk', flat=True)
         if name.__contains__(' '):
             FL_name = name.split(sep=' ')
             name = name.replace(' ', '@')
-            if with_no_friend:
-                friend_list = friend
-
-            data = models.Player.objects.filter(~Q(user_id=self.user) & ~Q(pk__in=friend_list) &
+            data = models.Player.objects.filter(~Q(user_id=self.user) &
                                                 (Q(user_id__username__iexact=name) |
                                                 Q(user_id__first_name__iexact=FL_name[0]) |
                                                 Q(user_id__last_name__iexact=FL_name[1])))
 
         else:
-            if with_no_friend:
-                friend_list = friend
-            data = models.Player.objects.filter(~Q(user_id=self.user) & ~Q(pk__in=friend_list) &
+            data = models.Player.objects.filter(~Q(user_id=self.user) &
                                                 (Q(user_id__first_name__iexact=name) | Q(user_id__last_name__iexact=name)))
 
+        if with_no_friend:
+            friend_list = self.get_friend_player(data)['list']
+        data = data.filter(~Q(pk__in=friend_list))
         return self.add_state_toPlayer(query_set=data)
         # return data
-
-    def GetFriendByName(self, name: str) -> models.Friend.objects:
-
-        if name.count(' ') > 1:
-            return []
-        if name.__contains__(' '):
-            FL_name = name.split(sep=' ')
-            username = name.replace(' ', '@')
-            friend = models.Friend.objects.filter(
-                Q(player1__user_id=self.user) & Q(state='accepted') &
-                (Q(player2__user_id__username__iexact=username) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
-                 Q(player2__user_id__last_name__iexact=FL_name[1])))
-        else:
-            friend = models.Friend.objects.filter(
-                Q(player1__user_id=self.user) & Q(state='accepted')
-                &
-                (Q(player2__user_id__first_name__iexact=name) |
-                    Q(player2__user_id__last_name__iexact=name)))
-        return friend
 
     def add_state_toPlayer(self, query_set: QuerySet):
         player = QuerySet
@@ -121,8 +98,9 @@ class Player:
         return player
 
     def get_friend_player(self, query_set: QuerySet) -> dict:
+        player_list = query_set.values_list('pk', flat=True)
         friend_list = models.Friend.objects.filter(
-            player1__user_id=self.user, player2__in=query_set.values_list('pk', flat=True), state='accepted')
+            player1__user_id=self.user, player2__in=player_list, state='accepted').values_list('player2__pk', flat=True)
         player_friend = query_set.filter(pk__in=friend_list).annotate(
             state=Value('friend', output_field=MODELS.CharField()))
         player_friend_list = list(player_friend.values_list('pk', flat=True))
@@ -180,7 +158,7 @@ class GeoPlayer(ObjectType, QueryFields):
 
             pnt = GEOSGeometry(
                 "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
-            all_player = models.Player.objects.filter(~Q(pk=user.pk) and Q(point__distance_lte=(
+            all_player = models.Player.objects.filter(Q(point__distance_lte=(
                 pnt, D(km=kwargs['distance'])), available_on_map=True))
             if not all_player.exists():
                 return QueryFields.NotFound(info)
@@ -205,3 +183,22 @@ data = models.Player.objects.filter(~Q(pk=user.pk) and Q(point__distance_lte=(
 if not data.exists():
     return QueryFields.NotFound(info)
 return QueryFields.OK(info, data=data)'''
+
+# def GetFriendByName(self, name: str) -> models.Friend.objects:
+
+#     if name.count(' ') > 1:
+#         return []
+#     if name.__contains__(' '):
+#         FL_name = name.split(sep=' ')
+#         username = name.replace(' ', '@')
+#         friend = models.Friend.objects.filter(
+#             Q(player1__user_id=self.user) & Q(state='accepted') &
+#             (Q(player2__user_id__username__iexact=username) | Q(player2__user_id__first_name__iexact=FL_name[0]) |
+#              Q(player2__user_id__last_name__iexact=FL_name[1])))
+#     else:
+#         friend = models.Friend.objects.filter(
+#             Q(player1__user_id=self.user) & Q(state='accepted')
+#             &
+#             (Q(player2__user_id__first_name__iexact=name) |
+#                 Q(player2__user_id__last_name__iexact=name)))
+#     return friend

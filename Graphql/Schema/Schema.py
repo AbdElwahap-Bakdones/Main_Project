@@ -9,13 +9,12 @@ from ..Query.Club import AllClub, GetClub, MyClub
 from ..Query.Duration import GetAllowDuration
 from ..Query.Section import AllSectionByClub, GetSection
 from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumByType
-from ..Query.Friend import GetFriend, AllFriend
+from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium
-# from ..Mutation.service import AddService, UpdateService
 from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager, team, team_members
@@ -45,7 +44,8 @@ class Query(ObjectType):
     GetClub = graphene.Field(GetClub)
     allSectionByClub = graphene.Field(AllSectionByClub)
     GetSection = graphene.Field(GetSection)
-    getFriend = graphene.Field(GetFriend)
+    getFriendByName = graphene.Field(GetFriendByName)
+    getFriendById = graphene.Field(GetFriendById)
     allFriend = graphene.Field(AllFriend)
     getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
@@ -84,14 +84,14 @@ class Query(ObjectType):
     def resolve_GetSection(root, info, **kwargs):
         return GetSection()
 
-    def resolve_getFriend(root, info, **kwargs):
-        return GetFriend()
+    def resolve_getFriendByName(root, info, **kwargsByName):
+        return GetFriendByName()
 
     def resolve_allFriend(root, info, **kwargs):
         return AllFriend()
 
-    # def resolve_getTeam(root, info, **kwargs):
-    #     return GetTeam()
+    def resolve_getFriendById(root, info, **kwargs):
+        return GetFriendById()
 
     def resolve_getAllowDuration(root, info, **kwargs):
         return GetAllowDuration()
