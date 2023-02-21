@@ -16,24 +16,31 @@ class DeleteTeam(graphene.Mutation, QueryStructure.Attributes):
         try:
             user = info.context.META["user"]
             team_id = kwargs['data']['pk']
-            is_captin = models.Team_members.objects.filter(player_id__user_id=user, team_id=team_id, is_captin=True)
-            if not checkPermission("core.change_team", user) or not is_captin.exists():
+            if not checkPermission("core.change_team", user):
                 return QueryStructure.NoPermission(self)
 
-            team = models.Team.objects.filter(pk=team_id)
-            can_delete = DeleteTeam.__can_delete(team.get())
+            can_delete = DeleteTeam.__can_delete(team_id=team_id, user=user)
             if not can_delete['state']:
                 return QueryStructure.BadRequest(self, message=can_delete['error'])
+            team = can_delete['team']
             team.update(deleted=True)
+            models.Team_members.objects.filter(
+                team_id=team.get().pk, is_leave=False).update(is_leave=True)
             return QueryStructure.OK(self, data=team.get())
         except Exception as e:
             print('Error in CreateTeam !')
             print(str(e))
             return QueryStructure.InternalServerError(self, message=str(e))
 
-    def __can_delete(team: models.Team) -> dict:
-        if team.deleted:
-            return {'state': False, 'error': 'alrady deleted !'}
-        if team.search_game:
+    def __can_delete(team_id: int, user: models.User) -> dict:
+        is_captin = models.Team_members.objects.filter(
+            player_id__user_id=user, team_id=team_id, is_captin=True)
+        if not is_captin.exists():
+            return {'state': False, 'error': 'onlay admin can delete !'}
+        team = models.Team.objects.filter(pk=team_id, deleted=False)
+        if not team.exists():
+            return {'state': False, 'error': 'id team not found !'}
+        if team.get().search_game:
             return {'state': False, 'error': 'team has event \'search Game\' !'}
-        return {'state': True}
+
+        return {'state': True, 'team': team}
