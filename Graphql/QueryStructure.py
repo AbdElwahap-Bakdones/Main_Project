@@ -1,6 +1,8 @@
 from rest_framework import status as status_code
 from graphql.execution.base import ResolveInfo
 from graphql.language.ast import Field, SelectionSet
+from django.db import models as MODEL_CLASS
+
 from .Auth import permission
 
 import graphene
@@ -95,6 +97,11 @@ class QueryFields(object):
         if not QueryFields.__chack_if_data_call_first(info):
             return False
         return True
+
+    def user_type(user: object, model: MODEL_CLASS.Model):
+        if model.objects.filter(user_id=user).exists():
+            return True
+        return False
 
     def rise_error(user: object):
         return []
