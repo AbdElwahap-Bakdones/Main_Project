@@ -95,7 +95,7 @@ class GetFriendCanAddToTeam(ObjectType, QueryFields):
             if not is_valied.exists():
                 return QueryFields.BadRequest(info=info, msg='you not in the team or you not a caption in the team!')
             members_player_list = models.Team_members.objects.filter(
-                Q(team_id=team_id) & Q(is_leave=False) & ~Q(pk=is_valied.get().pk)).values_list('player_id', flat=True)
+                Q(team_id=team_id.get()) & Q(is_leave=False) & ~Q(pk=is_valied.get().pk)).values_list('player_id', flat=True)
             friend_can_add = Friend.objects.filter((Q(player1__user_id=user) & Q(
                 state='accepted')) & ~Q(player2__in=members_player_list))
             if friend_can_add.exists():
