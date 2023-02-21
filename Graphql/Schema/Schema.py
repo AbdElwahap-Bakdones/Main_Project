@@ -9,7 +9,7 @@ from ..Query.Club import AllClub, GetClub, MyClub
 from ..Query.Duration import GetAllowDuration, GetDuration
 from ..Query.Section import AllSectionByClub, GetSection
 from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumBySection
-from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById
+from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById, GetFriendCanAddToTeam
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
@@ -47,6 +47,7 @@ class Query(ObjectType):
     getFriendByName = graphene.Field(GetFriendByName)
     getFriendById = graphene.Field(GetFriendById)
     allFriend = graphene.Field(AllFriend)
+    getFriendCanAddToTeam = graphene.Field(GetFriendCanAddToTeam)
     getAllowDuration = graphene.Field(GetAllowDuration)
     serchPlayer = graphene.Field(Player.SerchPlayer)
     type_ = graphene.Field(Type.AllType)
@@ -104,6 +105,9 @@ class Query(ObjectType):
 
     def resolve_getFriendById(root, info, **kwargs):
         return GetFriendById()
+
+    def resolve_getFriendCanAddToTeam(root, info, **kwargs):
+        return GetFriendCanAddToTeam()
 
     def resolve_getAllowDuration(root, info, **kwargs):
         return GetAllowDuration()
