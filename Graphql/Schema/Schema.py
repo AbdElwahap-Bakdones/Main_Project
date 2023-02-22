@@ -19,7 +19,7 @@ from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurat
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager, team, team_members
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
-from ..Mutation.Team import createTeam, deleteTeam, addMember
+from ..Mutation.Team import createTeam, deleteTeam, addMember, leaveTeam
 from ..Mutation import search_on_map
 
 
@@ -160,6 +160,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     addDurationList = AddDurationList.Field()
     changeSearchMap = search_on_map.ChangeSearchOnMap.Field()
     addMember = addMember.AddMember.Field()
+    leaveTeam = leaveTeam.LeaveTeam.Field()
 
 
 class Subscription(graphene.ObjectType):

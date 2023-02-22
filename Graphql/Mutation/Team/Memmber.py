@@ -2,12 +2,13 @@ from core import models, serializer
 
 
 class MemmberClass():
-    def __init__(self, user: models.User, team_id: int, memmbers: list):
+    def __init__(self, user: models.User, team_id: int, memmbers: list = []):
         print('int MemmberClass')
         self.user = user
         self.memmbers = memmbers
         self.team_id = team_id
         self.errors = 'ok'
+        self.is_captin = False
 
     def __add_error_message(self, message: str):
         if self.errors == 'ok':
@@ -16,10 +17,10 @@ class MemmberClass():
         self.errors = self.errors+' \n' + message
         return
 
-    def __run_validate_fun(self, *fun):
+    def __run_validate_fun(self, fun):
         try:
-            for f in fun[0]:
-                if not f():
+            for f in fun:
+                if not f[0](**f[1]):
                     return False
             return True
         except Exception as e:
@@ -29,20 +30,29 @@ class MemmberClass():
 
     def __is_request_removeMemmber_valid(self) -> bool:
         functions = [
-            self.__is_team_exists,
-            self.__is_captin,
-            self.__is_players_exists,
-            self.__is_player_in_team,
+            (self.__is_team_exists, {}),
+            (self.__is_captin, {}),
+            (self.__is_players_exists, {}),
+            (self.__is_player_in_team, {}),
+        ]
+        return self.__run_validate_fun(functions)
+
+    def __is_request_leaveTeam_valid(self) -> bool:
+        functions = [
+            (self.__is_team_exists, {}),
+            (self.__is_captin, dict(throw_exception=False)),
+            (self.__is_user_inTeam, {})
         ]
         return self.__run_validate_fun(functions)
 
     def __is_request_addMemmber_valid(self) -> bool:
         functions = [
-            self.__is_team_exists,
-            self.__is_captin,
-            self.__is_players_exists,
-            self.__is_player_in_team,
-            self.__is_friend]
+            (self.__is_team_exists, {}),
+            (self.__is_captin, {}),
+            (self.__is_players_exists, {}),
+            (self.__is_player_in_team, {}),
+            (self.__is_friend, {})
+        ]
         return self.__run_validate_fun(functions)
 
     def __is_team_exists(self) -> bool:
@@ -79,12 +89,24 @@ class MemmberClass():
         self.__add_error_message('one or more memmber not friend ! ')
         return False
 
-    def __is_captin(self) -> bool:
+    def __is_captin(self, throw_exception: bool = True) -> bool:
         caption = models.Team_members.objects.filter(
             team_id=self.team_id, is_captin=True, player_id__user_id=self.user)
+        if throw_exception and not caption.exists():
+            self.__add_error_message('Only admin can do this operation ! ')
+            return False
         if caption.exists():
+            self.is_captin = True
+        return True
+
+    def __is_user_inTeam(self):
+        memmber = models.Team_members.objects.filter(
+            player_id__user_id=self.user, is_leave=False)
+        if memmber.exists():
+            self.memmbers_objecs = memmber
             return True
-        self.__add_error_message('only admin can add memmber ! ')
+        self.__add_error_message(
+            'Team does not exist or you have already left')
         return False
 
     def __serializer_member(self, player) -> bool:
@@ -107,6 +129,22 @@ class MemmberClass():
 
     def remove_memmber(self) -> bool:
         if self.__is_request_removeMemmber_valid():
+            self.memmbers_objecs.update(is_leave=True)
+            memmbers_count = models.Team_members.objects.filter(
+                team_id=self.team_id, is_leave=False).count()
+            self.team.update(member_count=memmbers_count)
+            return True
+        return False
+
+    def leave_team(self) -> bool:
+        if self.__is_request_leaveTeam_valid():
+            if self.is_captin:
+                # serializer.TeamSerializer(
+                #     self.team, data={'deleted': True}, partial=True)
+                self.team.update(deleted=True)
+                return True
+            # serializer.MembersTeamSerializer(
+            #     self.memmbers_objecs, data={'is_leave': True})
             self.memmbers_objecs.update(is_leave=True)
             memmbers_count = models.Team_members.objects.filter(
                 team_id=self.team_id, is_leave=False).count()

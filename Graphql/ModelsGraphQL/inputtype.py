@@ -173,3 +173,12 @@ class DeleteTeamInput(graphene.InputObjectType):
 class AddMembersInput(graphene.InputObjectType):
     team_pk = graphene.ID(required=True)
     members = graphene.List(graphene.Int, required=True)
+
+
+class RemoveMembersInput(graphene.InputObjectType):
+    team_pk = graphene.ID(required=True)
+    members = graphene.List(graphene.Int, required=True)
+
+
+class LeaveTeamInput(graphene.InputObjectType):
+    team_pk = graphene.ID(required=True)
