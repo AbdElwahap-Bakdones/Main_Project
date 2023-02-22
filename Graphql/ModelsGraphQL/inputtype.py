@@ -67,6 +67,7 @@ class DeleteSectionInput(graphene.InputObjectType):
 class AddStadiumInput(graphene.InputObjectType):
     name = graphene.String(required=True)
     section_id = graphene.ID(required=True)
+    club_id = graphene.ID(required=True)
     type_id = graphene.ID(required=True)
     size = graphene.Float(required=True)
     is_available = graphene.Boolean(required=True)
