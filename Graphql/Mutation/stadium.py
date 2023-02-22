@@ -19,10 +19,10 @@ class AddStadium(graphene.Mutation, QueryStructure.Attributes):
             if not checkPermission("core.add_stadium", user):
                 return QueryStructure.NoPermission(self)
             data = kwargs["data"]
-            checkdata = models.Section.objects.filter(
-                id=data["section_id"], sub_manager_id__user_id=user, is_deleted=False)
+            checkdata = models.Section.objects.filter(club_id__id=data["club_id"],
+                                                      id=data["section_id"], sub_manager_id__user_id=user, is_deleted=False)
             if not checkdata.exists():
-                return QueryStructure.BadRequest(self, message="the section not found")
+                return QueryStructure.BadRequest(self, message="the section or club not found")
             seria = serializer.StadiumSerializer(
                 data=kwargs["data"])
             if seria.is_valid():
