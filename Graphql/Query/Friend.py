@@ -1,4 +1,5 @@
 from core.models import Friend, Player, User
+from core import serializer, models
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
 from rest_framework import status as status_code
@@ -24,8 +25,10 @@ class AllFriend(ObjectType, QueryFields):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_friend'):
             return QueryFields.rise_error(user)
+
         data = Friend.objects.filter(
             Q(player1__user_id=user) & Q(state="accepted"))
+        print(data[1])
         return QueryFields.OK(info, data=data)
 
 
@@ -72,3 +75,33 @@ class GetFriendById(ObjectType, QueryFields):
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'ok')
         correct_structure(data, user)
         return data
+
+
+class GetFriendCanAddToTeam(ObjectType, QueryFields):
+    data = relay.ConnectionField(
+        relays.FriendConnection, team_id=graphene.ID(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        try:
+            user = info.context.META['user']
+            if not QueryFields.is_valide(info, user, 'core.view_friend'):
+                return QueryFields.rise_error(user)
+            team_id = models.Team.objects.filter(
+                pk=kwargs['team_id'], deleted=False)
+            if not team_id.exists():
+                return QueryFields.BadRequest(info=info, msg='Team id not found')
+            is_valied = models.Team_members.objects.filter(player_id__user_id=user,
+                                                           team_id=team_id.get(), is_captin=True, is_leave=False)
+            if not is_valied.exists():
+                return QueryFields.BadRequest(info=info, msg='you not in the team or you not a caption in the team!')
+            members_player_list = models.Team_members.objects.filter(
+                Q(team_id=team_id.get()) & Q(is_leave=False) & ~Q(pk=is_valied.get().pk)).values_list('player_id', flat=True)
+            friend_can_add = Friend.objects.filter((Q(player1__user_id=user) & Q(
+                state='accepted')) & ~Q(player2__in=members_player_list))
+            if friend_can_add.exists():
+                return QueryFields.OK(info=info, data=friend_can_add)
+            return QueryFields.NotFound(info)
+        except Exception as e:
+            print('error in GetFriendCanAddToTeam')
+            print(str(e))
+            return QueryFields.ServerError(info=info, msg=str(e))
