@@ -89,11 +89,11 @@ class GetFriendCanAddToTeam(ObjectType, QueryFields):
             team_id = models.Team.objects.filter(
                 pk=kwargs['team_id'], deleted=False)
             if not team_id.exists():
-                return QueryFields.BadRequest(info=info, msg='Team id not found')
+                return QueryFields.NotFound(info=info, msg='Team id not found')
             is_valied = models.Team_members.objects.filter(player_id__user_id=user,
                                                            team_id=team_id.get(), is_captin=True, is_leave=False)
             if not is_valied.exists():
-                return QueryFields.BadRequest(info=info, msg='you not in the team or you not a caption in the team!')
+                return QueryFields.NotFound(info=info, msg='you not in the team or you not a caption in the team!')
             members_player_list = models.Team_members.objects.filter(
                 Q(team_id=team_id.get()) & Q(is_leave=False) & ~Q(pk=is_valied.get().pk)).values_list('player_id', flat=True)
             friend_can_add = Friend.objects.filter((Q(player1__user_id=user) & Q(

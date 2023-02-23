@@ -52,8 +52,6 @@ class MyAllTeam(ObjectType, QueryFields):
         teams_id = Team_members.objects.filter(
             player_id__user_id=user, is_leave=False, team_id__deleted=False).values_list('team_id_id', flat=True)
         data = Team.objects.filter(pk__in=teams_id)
-        if not data.exists():
-            return QueryFields.NotFound(info=info)
         return QueryFields.OK(info=info, data=data)
 
 
