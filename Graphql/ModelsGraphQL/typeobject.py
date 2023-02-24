@@ -101,7 +101,7 @@ class StadiumObjectType(DjangoObjectType):
     class Meta:
         model = models.Stadium
         fields = ['id', 'pk', 'name', 'is_available',
-                  'has_legua', 'size', 'picture']
+                  'has_legua', 'size']
         interfaces = (relay.Node,)
 
 

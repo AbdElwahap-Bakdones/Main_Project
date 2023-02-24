@@ -19,25 +19,25 @@ class AddStadium(graphene.Mutation, QueryStructure.Attributes):
             if not checkPermission("core.add_stadium", user):
                 return QueryStructure.NoPermission(self)
             data = kwargs["data"]
-            checkdata = models.Section.objects.filter(club_id__id=data["club_id"],
-                                                      id=data["section_id"], sub_manager_id__user_id=user, is_deleted=False)
-            if not checkdata.exists():
+            club = models.Club.objects.filter(
+                id=data['club_id'], manager_id__user_id=user)
+            section_obj = models.Section.objects.filter(club_id=club.get(),
+                                                        id=data["section_id"], is_deleted=False)
+            if not section_obj.exists():
                 return QueryStructure.BadRequest(self, message="the section or club not found")
             seria = serializer.StadiumSerializer(
-                data=kwargs["data"])
+                data=data)
             if seria.is_valid():
                 seria.validated_data
                 data = seria.save()
+                club.update(number_stad=club.get().number_stad+1)
                 return QueryStructure.Created(self, data=data)
             else:
                 msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                return QueryStructure.BadRequest(instanse=self, message=msg)
         except Exception as e:
             msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=msg)
 
 
 class UpdateStadium(graphene.Mutation, QueryStructure.Attributes):
