@@ -70,8 +70,8 @@ class AddStadiumInput(graphene.InputObjectType):
     club_id = graphene.ID(required=True)
     type_id = graphene.ID(required=True)
     size = graphene.Float(required=True)
-    is_available = graphene.Boolean(required=True)
-    has_legua = graphene.Boolean(required=True)
+    is_available = graphene.Boolean()
+    has_legua = graphene.Boolean()
     picture = Upload()
 
 
