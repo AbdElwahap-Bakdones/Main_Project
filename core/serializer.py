@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PlayerSerializer(serializers.ModelSerializer):
     user_id = UserSerializer
+    # state = serializers.SerializerMethodField(method_name='get_state')
 
     class Meta:
         model = models.Player
@@ -34,6 +35,9 @@ class PlayerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data = Geo.set_point_field(validated_data)
         return models.Player.objects.create(**validated_data)
+
+    # def get_state(self, validated_data):
+    #     return 'state'
 
 
 class ManagerSerializer(serializers.ModelSerializer):
@@ -148,6 +152,7 @@ class DurationSerializer(serializers.ModelSerializer):
 
 
 class FrienfSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = models.Friend
         fields = '__all__'
@@ -160,7 +165,7 @@ class MembersTeamSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         is_member_found = models.Team_members.objects.filter(
-            player_id=validated_data['player_id'], is_captin=False)
+            player_id=validated_data['player_id'], is_captin=False, team_id=validated_data['team_id'])
         if not is_member_found.exists():
             return super().create(validated_data)
         return is_member_found.update(is_leave=False)
