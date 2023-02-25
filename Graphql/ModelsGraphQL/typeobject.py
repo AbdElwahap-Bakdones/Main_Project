@@ -71,12 +71,12 @@ class TypeObjectType(DjangoObjectType):
 
 
 class ClubObjectType(DjangoObjectType):
-    manager = graphene.Field(ManagerObjectType, source='manager_id')
+    manager = graphene.Field(type=ManagerObjectType, source='manager_id')
     pk_club = graphene.Field(type=graphene.Int, source='id')
 
     class Meta:
         model = models.Club
-        fields = ['id', 'pk', 'name', 'location_lat', 'location_long',
+        fields = ['pk', 'name', 'location_lat', 'location_long',
                   'number_stad', 'is_available', 'manager_id']
         interfaces = (relay.Node,)
 

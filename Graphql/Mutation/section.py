@@ -73,7 +73,7 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
             Section_object = models.Section.objects.filter(
                 pk=data['id'], club_id__manager_id__user_id=user.pk, is_deleted=False)
             if not Section_object.exists():
-                return QueryStructure.BadRequest(instanse=self)
+                return QueryStructure.BadRequest(self, message='section not found')
             seria = serializer.SectionSerializer(
                 Section_object.first(), data=data, partial=True)
             if seria.is_valid():
@@ -109,7 +109,7 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
             Section_object = models.Section.objects.filter(pk=data['id'],
                                                            club_id__manager_id__user_id=user.pk,  is_deleted=False)
             if not Section_object.exists():
-                return QueryStructure.BadRequest(self)
+                return QueryStructure.BadRequest(self, message='section not found')
             data.update({"is_deleted": True})
             seria = serializer.SectionSerializer(
                 Section_object.first(), data=data, partial=True)

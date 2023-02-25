@@ -59,10 +59,10 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
             data = kwargs['data']
             # club_object = models.Club.objects.get(
             #     id=data['id'], is_deleted=False)
-            club_object = models.Club.objects.filter(user_id=user,
+            club_object = models.Club.objects.filter(manager_id__user_id=user.pk,
                                                      pk=data['id'], is_deleted=False)
             if not club_object.exists():
-                return QueryStructure.NotFound(self)
+                return QueryStructure.BadRequest(self, message='club id not found')
             seria = serializer.ClubSerializer(
                 club_object.first(), data=data, partial=True)
             if seria.is_valid():
@@ -95,10 +95,10 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
             if not checkPermission("core.delete_club", user.pk):
                 return QueryStructure.NoPermission(self)
             data = kwargs['data']
-            club_object = models.Club.objects.filter(user_id=user,
+            club_object = models.Club.objects.filter(manager_id__user_id=user.pk,
                                                      pk=data["id"], is_deleted=False)
             if not club_object.exists():
-                return QueryStructure.NotFound(self)
+                return QueryStructure.BadRequest(self, message='club id not found')
 
             data.update({"is_deleted": True})
             seria = serializer.ClubSerializer(
