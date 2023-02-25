@@ -8,7 +8,7 @@ from ..Query.Club import AllClub, GetClub, MyClub
 # from ..Query.Duration import searchOnReservation
 from ..Query.Duration import GetAllowDuration, GetDuration
 from ..Query.Section import AllSectionByClub, GetSection
-from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumBySection
+from ..Query.Stadium import AllStadiumByType, GetStadium, GetStadiumBySection, StadiumFilter
 from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById, GetFriendCanAddToTeam
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
@@ -64,6 +64,14 @@ class Query(ObjectType):
     getStadiumBySection = graphene.Field(GetStadiumBySection)
     getDuration = graphene.Field(GetDuration)
     getPLayerById = graphene.Field(Player.GetPlayerById)
+    StadiumByType = graphene.Field(AllStadiumByType)
+    stadiumFilter = graphene.Field(StadiumFilter)
+
+    def resolve_stadiumFilter(root, info, **kwargs):
+        return StadiumFilter()
+
+    def resolve_StadiumByType(root, info, **kwargs):
+        return AllStadiumByType()
 
     def resolve_getPLayerById(root, info, **kwargs):
         return Player.GetPlayerById()

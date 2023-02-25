@@ -171,12 +171,13 @@ class QueryFields(object):
             user, status_code.HTTP_200_OK, 'OK')
         return data
 
-    def queryAll(obj, info: ResolveInfo, permission):
+    def queryAll(obj, info: ResolveInfo, permission='ok'):
         user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, permission):
-            return QueryFields.rise_error(user)
-        QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'OKK')
-        return obj.objects.all()
+        if permission == 'ok' or QueryFields.is_valide(info, user, permission):
+            data = obj.objects.all()
+            print(data)
+            return QueryFields.OK(info=info, data=data)
+        return QueryFields.NoPermission_403(info=info)
 
     def queryGet(obj, info: ResolveInfo, permission, id):
         user = info.context.META['user']
