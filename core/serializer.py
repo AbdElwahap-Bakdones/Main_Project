@@ -142,7 +142,7 @@ class DurationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Duration
-        fields = ["id", "stad_id", "start_time",
+        fields = ["id", "stad_id", "start_time", "price",
                   "end_time", "is_available", "is_deleted"]
 
     def create(self, validated_data):

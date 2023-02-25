@@ -102,6 +102,7 @@ class AddStadiumServiceInput(graphene.InputObjectType):
 class addtime(graphene.InputObjectType):
     start_time = graphene.Time(required=True)
     end_time = graphene.Time(required=True)
+    price = graphene.Float(required=True)
     is_available = graphene.Boolean(required=True)
 
 
@@ -114,6 +115,7 @@ class updatetime(graphene.InputObjectType):
     id = graphene.ID(required=True)
     start_time = graphene.Time(required=True)
     end_time = graphene.Time(required=True)
+    price = graphene.Float(required=True)
     is_available = graphene.Boolean(required=True)
 
 

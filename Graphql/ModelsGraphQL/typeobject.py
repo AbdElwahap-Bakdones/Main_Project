@@ -131,7 +131,8 @@ class DurationObjectType(DjangoObjectType):
 
     class Meta:
         model = models.Duration
-        fields = ['id', 'pk', 'start_time', 'end_time', 'is_available']
+        fields = ['id', 'pk', 'start_time',
+                  'end_time', 'price', 'is_available']
         interfaces = (relay.Node,)
 
 
