@@ -26,6 +26,7 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
                 pk=kwargs['data']['club_id'], manager_id__user_id=user)
             if not club_obj.filter().exists():
                 return QueryStructure.BadRequest(self, message='Club id not found')
+
             if 'sub_manager_id' in kwargs['data']:
                 is_there_sub_manager = True
                 sub_manager_obj = models.SubManager.objects.filter(
@@ -105,8 +106,8 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
             if not checkPermission("core.delete_section", user.pk):
                 return QueryStructure.NoPermission(self)
             data = kwargs['data']
-            Section_object = models.Section.objects.filter(club_id__manager_id__user_id=user, club_id=data["club_id"],
-                                                           pk=data["id"], is_deleted=False)
+            Section_object = models.Section.objects.filter(pk=data['id'],
+                                                           club_id__manager_id__user_id=user.pk,  is_deleted=False)
             if not Section_object.exists():
                 QueryStructure.NotFound(self)
             data.update({"is_deleted": True})
@@ -121,7 +122,7 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
                 Section = None
                 status = status_code.HTTP_406_NOT_ACCEPTABLE
         except Exception as e:
-            print('Error in UpdateSection')
+            print('Error in deleteSection')
             print(e)
             msg = str(e)
             Section = None
