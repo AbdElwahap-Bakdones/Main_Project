@@ -81,7 +81,7 @@ class searchClubByName(ObjectType, QueryFields):
             return QueryFields.ServerError(info, msg=str(e))
 
 
-class getClubById(ObjectType, QueryFields):
+class GetClubById(ObjectType, QueryFields):
     data = relay.ConnectionField(
         relays.ClubConnection, club_id=graphene.ID(required=True))
 

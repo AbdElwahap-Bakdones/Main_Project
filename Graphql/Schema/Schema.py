@@ -4,7 +4,7 @@ from rx import Observable
 import graphene
 from core import models
 from test_app.models import Cars
-from ..Query.Club import AllClub, GetClub, MyClub
+from ..Query.Club import AllClub, GetClub, MyClub, GetClubById
 # from ..Query.Duration import searchOnReservation
 from ..Query.Duration import GetAllowDuration, GetDuration
 from ..Query.Section import AllSectionByClub, GetSection
@@ -42,6 +42,7 @@ class Query(ObjectType):
 
     AllClub = graphene.Field(AllClub)
     GetClub = graphene.Field(GetClub)
+    getClubById = graphene.Field(GetClubById)
     allSectionByClub = graphene.Field(AllSectionByClub)
     GetSection = graphene.Field(GetSection)
     getFriendByName = graphene.Field(GetFriendByName)
@@ -65,6 +66,9 @@ class Query(ObjectType):
     getDuration = graphene.Field(GetDuration)
     getPLayerById = graphene.Field(Player.GetPlayerById)
     stadiumFilter = graphene.Field(StadiumFilter)
+
+    def resolve_getClubById(root, info, **kwargs):
+        return GetClubById()
 
     def resolve_stadiumFilter(root, info, **kwargs):
         return StadiumFilter()
