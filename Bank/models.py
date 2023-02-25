@@ -8,7 +8,7 @@ class ClientType(models.Model):
 class Account(models.Model):
     client_name = models.CharField(unique=True, max_length=150)
     client_type = models.ForeignKey(ClientType, on_delete=models.CASCADE)
-    client_ammunt = models.FloatField()
+    client_ammunt = models.FloatField(default=0)
 
 
 class Operation(models.Model):
