@@ -8,42 +8,11 @@ from django.db.models import Subquery, Value
 from django.db import models as MODELS
 
 
-class AllStadiumByType(ObjectType, QueryFields):
-    data = relay.ConnectionField(
-        relays.StadiumConnection, type_id=graphene.ID(required=True), available=graphene.Boolean(required=True))
-
-    def resolve_data(root, info, **kwargs):
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_stadium'):
-            return QueryFields.rise_error(user)
-        data = models.Stadium.objects.filter(
-            type_id__id=kwargs['type_id'], is_deleted=False, is_available=kwargs['available'])
-        if not data.exists():
-            return QueryFields.NotFound(info=info)
-        return QueryFields.OK(info=info, data=data)
-
-
-class GetStadiumByIdClub(ObjectType, QueryFields):
-    data = relay.ConnectionField(
-        relays.StadiumConnection, club_id=graphene.ID(required=True), available=graphene.Boolean(required=True))
-
-    def resolve_data(root, info, **kwargs):
-        user = info.context.META['user']
-        if not QueryFields.is_valide(info, user, 'core.view_stadium'):
-            return QueryFields.rise_error(user)
-        data = models.Stadium.objects.filter(
-            section_id__club_id__id=kwargs['club_id'], is_deleted=False, is_available=kwargs['available'])
-        if not data.exists():
-            return QueryFields.NotFound(info=info)
-        return QueryFields.OK(info=info, data=data)
-
-
 class GetStadium(ObjectType, QueryFields):
     data = relay.ConnectionField(
         relays.StadiumConnection, id=graphene.ID(required=True))
 
     def resolve_data(root, info, **kwargs):
-        print(kwargs)
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.change_stadium'):
             return QueryFields.rise_error(user)
@@ -65,7 +34,6 @@ class GetStadiumBySection(ObjectType, QueryFields):
         relays.StadiumConnection, section_id=graphene.ID(required=True))
 
     def resolve_data(root, info, **kwargs):
-        print(kwargs)
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.change_club'):
             return QueryFields.rise_error(user)
