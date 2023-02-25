@@ -2,7 +2,7 @@ from rest_framework import serializers
 from . import models
 from django.contrib.auth.hashers import make_password
 from core import Geo
-from Bank.models import Account
+from Bank.models import Account, ClientType
 
 
 def hashPassword(password: str) -> str:
@@ -37,8 +37,9 @@ class PlayerSerializer(serializers.ModelSerializer):
         validated_data = Geo.set_point_field(validated_data)
         player = models.Player(**validated_data)
         player.save()
-        name = ""+player.pk+"_"+1
-        account = Account(client_name=name, client_type=1)
+        name = ""+str(player.pk)+"_"+str(1)
+        account = Account(client_name=name,
+                          client_type=ClientType.objects.get(pk=1))
         account.save()
         return player
 
@@ -73,8 +74,9 @@ class ClubSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         club = models.Club(**validated_data)
         club.save()
-        name = ""+club.pk+"_"+2
-        account = Account(client_name=name, client_type=2)
+        name = ""+str(club.pk)+"_"+str(2)
+        account = Account(client_name=name,
+                          client_type=ClientType.objects.get(pk=2))
         account.save()
         return club
 
