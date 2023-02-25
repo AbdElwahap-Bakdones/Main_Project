@@ -107,7 +107,7 @@ class addtime(graphene.InputObjectType):
 
 class AddDurationInput(graphene.InputObjectType):
     stad_id = graphene.ID(required=True)
-    time = graphene.List(addtime)
+    duration = graphene.List(addtime)
 
 
 class updatetime(graphene.InputObjectType):
