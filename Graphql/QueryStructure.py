@@ -188,3 +188,9 @@ class QueryFields(object):
 
         QueryFields.set_extra_data(user, status_code.HTTP_200_OK, 'okk')
         return data
+
+    def NoPermission_403(info: ResolveInfo, msg='FORBIDDEN !!'):
+        user = info.context.META['user']
+        QueryFields.set_extra_data(
+            user, status_code.HTTP_403_FORBIDDEN, msg)
+        return []

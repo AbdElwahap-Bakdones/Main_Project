@@ -109,12 +109,12 @@ class StadiumSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Stadium
         fields = ["id", "name", "section_id",
-                  "type_id", "size", "is_available", "picture"]
+                  "type_id", "size", "is_available"]
 
-    def create(self, validated_data):
-        stadium = models.Stadium(**validated_data)
-        stadium.save()
-        return stadium
+    # def create(self, validated_data):
+    #     stadium = models.Stadium(**validated_data)
+    #     stadium.save()
+    #     return stadium
 
 
 class ServiceSerializer(serializers.ModelSerializer):
