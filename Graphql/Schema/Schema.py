@@ -54,7 +54,7 @@ class Query(ObjectType):
     clubSubManager = graphene.Field(sub_manager.ClubSubManagerd)
     myClub = graphene.Field(MyClub)
     playerMe = graphene.Field(Player.me)
-    findPlayerOnMap = graphene.Field(Player.GeoPlayer)
+    # findPlayerOnMap = graphene.Field(Player.GeoPlayer)
     myAllTeam = graphene.Field(team.MyAllTeam)
     myTeamByName = graphene.Field(team.SearchMyTeamByName)
     teamByName = graphene.Field(team.SearchTeamByName)
@@ -135,8 +135,8 @@ class Query(ObjectType):
     def resolve_playerMe(root, info, **kwargs):
         return Player.me()
 
-    def resolve_findPlayerOnMap(root, info, **kwargs):
-        return Player.GeoPlayer()
+    # def resolve_findPlayerOnMap(root, info, **kwargs):
+    #     return Player.GeoPlayer()
 
     def resolve_myAllTeam(root, info, **kwargs):
         return team.MyAllTeam()
@@ -162,6 +162,8 @@ class Mutation (AuthMutation, graphene.ObjectType):
     createTeam = createTeam.CreateTeam.Field()
     deleteTeam = deleteTeam.DeleteTeam.Field()
     addDurationList = AddDurationList.Field()
+    updateDurationList = UpdateDurationList.Field()
+    deleteDurationList = DeleteDurationList.Field()
     changeSearchMap = search_on_map.ChangeSearchOnMap.Field()
     addMember = addMember.AddMember.Field()
     leaveTeam = leaveTeam.LeaveTeam.Field()
