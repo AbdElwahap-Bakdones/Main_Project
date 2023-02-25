@@ -6,7 +6,7 @@ class ClientType(models.Model):
 
 
 class Account(models.Model):
-    client_name = models.IntegerField(unique=True)
+    client_name = models.CharField(unique=True, max_length=150)
     client_type = models.ForeignKey(ClientType, on_delete=models.CASCADE)
     client_ammunt = models.FloatField()
 
