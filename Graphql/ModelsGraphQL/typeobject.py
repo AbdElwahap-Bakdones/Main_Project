@@ -128,11 +128,11 @@ class StadiumServiceObjectType(DjangoObjectType):
 class DurationObjectType(DjangoObjectType):
     pk_duration = graphene.Field(type=graphene.Int, source='id')
     stadium = graphene.Field(type=StadiumObjectType, source='stad_id')
-
+    available = graphene.Field(type=graphene.Boolean, source='available')
     class Meta:
         model = models.Duration
         fields = ['id', 'pk', 'start_time',
-                  'end_time', 'price', 'is_available']
+                  'end_time', 'price']
         interfaces = (relay.Node,)
 
 

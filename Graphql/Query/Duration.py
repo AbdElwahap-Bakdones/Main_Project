@@ -1,10 +1,12 @@
-from core import models
+from rest_framework import status as status_code
+from django.db.models import Q, QuerySet, Subquery, Value
+from django.db import models as MODELS
+from itertools import chain
+from datetime import datetime
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
-from rest_framework import status as status_code
+from core import models
 from ..Relay import relays
-from django.db.models import Q
-from datetime import datetime
 import graphene
 
 
@@ -21,13 +23,22 @@ class DurationByStadium(ObjectType, QueryFields):
             if not stad_obj.exists():
                 return QueryFields.BadRequest(info=info, msg='staduim id not found')
             duration = models.Duration.objects.filter(
-                stad_id=stad_obj.get().pk, is_deleted=False, is_available=True)
+                stad_id=stad_obj.get().pk, is_deleted=False)
             reservation = models.Reservation.objects.filter(
                 date=kwargs['date'], duration_id__in=duration.values_list('pk', flat=True))
-            avlaible_duration = duration.filter(
-                ~Q(pk__in=reservation.values_list('duration_id', flat=True)))
+            avlaible_duration = duration.filter(Q(is_available=True) &
+                                                ~Q(pk__in=reservation.values_list('duration_id', flat=True)))
+            avlaible_duration_list = avlaible_duration.values_list(
+                'pk', flat=True)
+            NAV_duration = duration.filter(~Q(pk__in=avlaible_duration_list)).annotate(available=Value(
+                False, output_field=MODELS.BooleanField()))
+            avlaible_duration = avlaible_duration.annotate(available=Value(
+                True, output_field=MODELS.BooleanField()))
+            all_duration = list(chain(NAV_duration, avlaible_duration))
+            print(all_duration)
             if avlaible_duration.count() > 0:
-                return QueryFields.OK(info=info, data=avlaible_duration)
+
+                return QueryFields.OK(info=info, data=all_duration)
             return QueryFields.NotFound(info=info, msg='Sorry the date you have chosen is complete')
         except Exception as e:
             print('Error in DurationByStadium')
