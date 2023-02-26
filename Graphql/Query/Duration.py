@@ -17,13 +17,16 @@ class DurationByStadium(ObjectType, QueryFields):
             user = info.context.META['user']
             if not QueryFields.is_valide(info, user, 'core.view_reservation'):
                 return QueryFields.rise_error(user)
+            stad_obj = models.Stadium.objects.filter(pk=kwargs['stadium'])
+            if not stad_obj.exists():
+                QueryFields.BadRequest(info=info, msg='staduim id not found')
             duration = models.Duration.objects.filter(
-                stad_id=kwargs['stadium'], is_deleted=False, is_available=True)
+                stad_id=stad_obj.get().pk, is_deleted=False, is_available=True)
             reservation = models.Reservation.objects.filter(
                 date=kwargs['date'], duration_id__in=duration.values_list('pk', flat=True))
             avlaible_duration = duration.filter(
                 ~Q(pk__in=reservation.values_list('duration_id', flat=True)))
-            if avlaible_duration.count()>0:
+            if avlaible_duration.count() > 0:
                 return QueryFields.OK(info=info, data=avlaible_duration)
             return QueryFields.NotFound(info=info, msg='Sorry the date you have chosen is complete')
         except Exception as e:
