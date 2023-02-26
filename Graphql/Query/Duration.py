@@ -19,7 +19,7 @@ class DurationByStadium(ObjectType, QueryFields):
                 return QueryFields.rise_error(user)
             stad_obj = models.Stadium.objects.filter(pk=kwargs['stadium'])
             if not stad_obj.exists():
-                QueryFields.BadRequest(info=info, msg='staduim id not found')
+                return QueryFields.BadRequest(info=info, msg='staduim id not found')
             duration = models.Duration.objects.filter(
                 stad_id=stad_obj.get().pk, is_deleted=False, is_available=True)
             reservation = models.Reservation.objects.filter(
