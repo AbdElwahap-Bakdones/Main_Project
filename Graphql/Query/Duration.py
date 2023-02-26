@@ -8,6 +8,21 @@ from datetime import datetime
 import graphene
 
 
+class DurationByStadium(ObjectType, QueryFields):
+    data = relay.ConnectionField(
+        relays.DurationConnection, stadium=graphene.ID(required=True), date=graphene.DateTime(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        user = info.context.META['user']
+        if not QueryFields.is_valide(info, user, 'core.view_reservation'):
+            return QueryFields.rise_error(user)
+        print(kwargs['data'])
+        print(type(kwargs['data']))
+        print(kwargs['data'].day)
+
+        return QueryFields.BadRequest(info)
+
+
 class GetAllowDuration(ObjectType, QueryFields):
     data = relay.ConnectionField(
         relays.DurationConnection, stadium=graphene.ID(required=True), dateTime=graphene.Date(required=True))
