@@ -53,7 +53,7 @@ class ReservationManager(ObjectType, QueryFields):
         if duration.__len__() == 0:
             return QueryFields.NotFound(info=info)
         data = Reservation.objects.filter(
-            duration_id__in=duration, time__date=kwargs['date'], canceled=False)
+            duration_id__in=duration, date__date=kwargs['date'], canceled=False)
         if not data.exists():
             return QueryFields.NotFound(info=info)
         return QueryFields.OK(info=info, data=data)

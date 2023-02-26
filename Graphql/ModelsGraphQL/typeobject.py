@@ -143,7 +143,7 @@ class ReservationObjectType(DjangoObjectType):
     class Meta:
         model = models.Reservation
         fields = ['id', 'pk', 'duration_id',
-                  'kind', 'count', 'time', 'canceled']
+                  'kind', 'count', 'date', 'canceled']
         interfaces = (relay.Node,)
 
 
