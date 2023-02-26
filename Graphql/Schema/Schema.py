@@ -5,7 +5,7 @@ import graphene
 from core import models
 from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub, MyClub, GetClubById
-from ..Query.Duration import GetAllowDuration, GetDuration
+from ..Query.Duration import GetAllowDuration, GetDuration, DurationByStadium
 from ..Query.Section import AllSectionByClub, GetSection
 from ..Query.Stadium import GetStadium, GetStadiumBySection, StadiumFilter
 from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById, GetFriendCanAddToTeam
@@ -65,6 +65,10 @@ class Query(ObjectType):
     getDuration = graphene.Field(GetDuration)
     getPLayerById = graphene.Field(Player.GetPlayerById)
     stadiumFilter = graphene.Field(StadiumFilter)
+    durationByStadium = graphene.Field(DurationByStadium)
+
+    def resolve_durationByStadium(root, info, **kwargs):
+        return DurationByStadium()
 
     def resolve_getClubById(root, info, **kwargs):
         return GetClubById()
@@ -138,8 +142,8 @@ class Query(ObjectType):
     def resolve_playerMe(root, info, **kwargs):
         return Player.me()
 
-    # def resolve_findPlayerOnMap(root, info, **kwargs):
-    #     return Player.GeoPlayer()
+    def resolve_findPlayerOnMap(root, info, **kwargs):
+        return Player.GeoPlayer()
 
     def resolve_myAllTeam(root, info, **kwargs):
         return team.MyAllTeam()
