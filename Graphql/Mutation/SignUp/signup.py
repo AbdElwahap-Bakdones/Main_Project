@@ -43,27 +43,21 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
                 seria_player.is_valid(
                     raise_exception='internal servre Error')
                 player = seria_player.save()
-                groups = Group.objects.get(id=1)
+                # server
+                groups = Group.objects.get(id=2)
+                # local
+                # groups = Group.objects.get(id=1)
                 groups.user_set.add(user)
-                status = status_code.HTTP_201_CREATED
-                msg = 'ok'
+                return QueryStructure.Created(instanse=self, data=player)
             else:
                 user_error = dict(seria_user.errors)
                 player_error = dict(seria_player.errors)
                 user_error.update(player_error)
-                msg = user_error
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                QueryStructure.NotAcceptale(instanse=self, message=user_error)
         except Exception as e:
             print('Error in SignUpPlayer ')
             print(e)
-            if models.User.objects.filter(pk=user.pk).exists():
-                models.User.objects.filter(pk=user.pk).delete()
-            user = None
-            player = None
-            msg = str(e)
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        # self(user=user, player=player, message=msg, status=status)
-        return QueryStructure.MyReturn(self, player, msg, status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
 
 class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
@@ -104,24 +98,21 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
                 seria_manager.is_valid(
                     raise_exception='internal servre Error')
                 manager = seria_manager.save()
-                groups = Group.objects.get(id=3)
+                # server
+                groups = Group.objects.get(id=1)
+                # local
+                # groups = Group.objects.get(id=3)
                 groups.user_set.add(user)
-                # cheack if manager is subManager
-                # self.create_subManager(kargs['is_submanager'], data)
-                status = 200
-                msg = 'ok'
+                return QueryStructure.Created(instanse=self, data=manager)
             else:
                 user_error = dict(seria_user.errors)
                 manager_error = dict(seria_manager.errors)
                 user_error.update(manager_error)
-                msg = user_error
-                status = 400
+                return QueryStructure.NotAcceptale(instanse=self, message=user_error)
         except Exception as e:
-            user = None
-            manager = None
-            msg = e
-            status = 400
-        return QueryStructure.MyReturn(self, manager, msg, status)
+            print('Error in SignUpManager')
+            print(str(e))
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
     def create_subManager(is_submanager: bool, user_id: int):
         seria_subManager = serializer.SubManagerSerializer(data=user_id)
@@ -166,15 +157,18 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
                 seria_subManager.is_valid(
                     raise_exception='internal servre Error')
                 subManager = seria_subManager.save()
+                # server
+                groups = Group.objects.get(id=3)
+                # local
+                # groups = Group.objects.get(id=2)
+                groups.user_set.add(user)
                 return QueryStructure.Created(instanse=self, data=subManager)
             else:
                 user_error = dict(seria_user.errors)
                 subManager_error = dict(seria_subManager.errors)
                 user_error.update(subManager_error)
-                msg = user_error
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
-                return QueryStructure.MyReturn(self, None, msg, status)
+                return QueryStructure.NotAcceptale(instanse=self, message=user_error)
         except Exception as e:
             print('Error in SignUpSubManager')
             print(str(e))
-            QueryStructure.InternalServerError(instanse=self, message=str(e))
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))

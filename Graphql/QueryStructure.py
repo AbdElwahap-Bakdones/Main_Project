@@ -66,6 +66,12 @@ def Created(instanse: object, data=None, message='Created !'):
                     status=status_code.HTTP_201_CREATED)
 
 
+def NotAcceptale(instanse: object, message='NOT ACCEPTABLE'):
+    return instanse(
+        data=None, message=message,
+        status=status_code.HTTP_406_NOT_ACCEPTABLE)
+
+
 class QueryFields(object):
     status = graphene.Int()
     message = graphene.String()
