@@ -53,7 +53,7 @@ class Query(ObjectType):
     clubSubManager = graphene.Field(sub_manager.ClubSubManagerd)
     myClub = graphene.Field(MyClub)
     playerMe = graphene.Field(Player.me)
-    # findPlayerOnMap = graphene.Field(Player.GeoPlayer)
+    findPlayerOnMap = graphene.Field(Player.GeoPlayer)
     myAllTeam = graphene.Field(team.MyAllTeam)
     myTeamByName = graphene.Field(team.SearchMyTeamByName)
     teamByName = graphene.Field(team.SearchTeamByName)
