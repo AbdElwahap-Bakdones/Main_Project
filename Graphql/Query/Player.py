@@ -72,7 +72,7 @@ class GeoPlayer(ObjectType, QueryFields):
                 return QueryFields.rise_error(user=user)
 
             pnt = GEOSGeometry(
-                "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
+                "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=4326)
             all_player = models.Player.objects.filter(Q(point__distance_lte=(
                 pnt, D(km=kwargs['distance'])), available_on_map=True))
             if not all_player.exists():
