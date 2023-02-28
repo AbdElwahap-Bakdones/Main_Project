@@ -108,13 +108,8 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Deleted(self, data=data)
             else:
-                msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                return QueryStructure.NotAcceptale(instanse=self, message=seria.error_messages)
         except Exception as e:
             print('Error in UpdateClub')
             print(e)
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))

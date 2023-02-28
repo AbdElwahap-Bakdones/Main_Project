@@ -69,7 +69,7 @@ class ClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Club
         fields = ["pk", "manager_id", "number_stad", "name",
-                  "location_lat", "location_long", "is_available"]
+                  "location_lat", "location_long", "is_available", "is_deleted"]
 
     def create(self, validated_data):
         club = models.Club(**validated_data)
