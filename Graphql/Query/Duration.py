@@ -10,7 +10,28 @@ from ..Relay import relays
 import graphene
 
 
-class DurationByStadium(ObjectType, QueryFields):
+class AllDurationStadium(ObjectType, QueryFields):
+    data = relay.ConnectionField(
+        relays.DurationConnection, stadium_id=graphene.ID(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        try:
+            user = info.context.META['user']
+            if not QueryFields.is_valide(info, user, 'core.view_duration'):
+                return QueryFields.rise_error(user)
+            stad = models.Stadium.objects.filter(pk=kwargs['stadium_id'])
+            if not stad.exists():
+                return QueryFields.BadRequest(info=info, msg='Stadium id not found !')
+            duration = models.Duration.objects.filter(
+                stad_id=stad.get(), is_deleted=False)
+            return QueryFields.OK(info=info, data=duration)
+        except Exception as e:
+            print('Error in AllDurationStadium')
+            print(str(e))
+            return QueryFields.ServerError(info, msg=str(e))
+
+
+class AvailableDurationByStadium(ObjectType, QueryFields):
     data = relay.ConnectionField(
         relays.DurationConnection, stadium=graphene.ID(required=True), date=graphene.Date(required=True))
 
@@ -37,11 +58,30 @@ class DurationByStadium(ObjectType, QueryFields):
             all_duration = list(chain(NAV_duration, avlaible_duration))
             print(all_duration)
             if avlaible_duration.count() > 0:
-
                 return QueryFields.OK(info=info, data=all_duration)
             return QueryFields.NotFound(info=info, msg='Sorry the date you have chosen is complete')
         except Exception as e:
-            print('Error in DurationByStadium')
+            print('Error in AvailableDurationByStadium')
+            print(str(e))
+            return QueryFields.ServerError(info, msg=str(e))
+
+
+class DurationByGeo(ObjectType, QueryFields):
+    data = relay.ConnectionField(
+        relays.DurationConnection, type_id=graphene.ID(required=True), date=graphene.Date(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        try:
+            user = info.context.META['user']
+            if not QueryFields.is_valide(info, user, 'core.view_reservation'):
+                return QueryFields.rise_error(user)
+            type_obj = models.Type.objects.filter(id=kwargs['type_id'])
+            if not type_obj.exists():
+                return QueryFields.BadRequest(info=info, msg='type id not Found')
+            # club_id = models.Club.objects.filter(point__=)
+
+        except Exception as e:
+            print('Error in DurationByGeo')
             print(str(e))
             return QueryFields.ServerError(info, msg=str(e))
 
