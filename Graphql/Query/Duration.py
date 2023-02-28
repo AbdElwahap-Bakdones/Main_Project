@@ -51,9 +51,9 @@ class AvailableDurationByStadium(ObjectType, QueryFields):
                                                 ~Q(pk__in=reservation.values_list('duration_id', flat=True)))
             avlaible_duration_list = avlaible_duration.values_list(
                 'pk', flat=True)
-            NAV_duration = duration.filter(~Q(pk__in=avlaible_duration_list)).annotate(available=Value(
+            NAV_duration = duration.filter(~Q(pk__in=avlaible_duration_list)).annotate(is_available=Value(
                 False, output_field=MODELS.BooleanField()))
-            avlaible_duration = avlaible_duration.annotate(available=Value(
+            avlaible_duration = avlaible_duration.annotate(is_available=Value(
                 True, output_field=MODELS.BooleanField()))
             all_duration = list(chain(NAV_duration, avlaible_duration))
             return QueryFields.OK(info=info, data=all_duration)
