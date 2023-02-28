@@ -70,10 +70,10 @@ class GeoPlayer(ObjectType, QueryFields):
             user = info.context.META["user"]
             if not QueryFields.is_valide(info=info, user=user, operation="core.view_player"):
                 return QueryFields.rise_error(user=user)
-            # pnt = GEOSGeometry(
-            #     "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")", srid=32140)
-            pnt = Point(kwargs['location_lat'],
-                        kwargs['location_long'], srid=32140)
+            pnt = GEOSGeometry(
+                "POINT("+kwargs['location_lat']+" " + kwargs['location_long']+")")
+            # pnt = Point(kwargs['location_lat'],
+            #             kwargs['location_long'], srid=32140)
             all_player = models.Player.objects.filter(Q(point__distance_lte=(
                 pnt, D(km=kwargs['distance'])), available_on_map=True))
             if not all_player.exists():
