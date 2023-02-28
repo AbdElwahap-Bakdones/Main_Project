@@ -102,3 +102,15 @@ class GetDuration(ObjectType, QueryFields):
         if not data.exists():
             return QueryFields.NotFound(info=info)
         return QueryFields.OK(info=info, data=data)
+
+
+class IsStadHasDuration(ObjectType, QueryFields):
+    data = graphene.Boolean(id=graphene.ID(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        user = info.context.META['user']
+        duration = models.Duration.objects.filter(
+            stad_id=kwargs['id'], is_available=True, is_deleted=False)
+        if duration.exists():
+            return QueryFields.OK(info=info, data=True)
+        return QueryFields.BadRequest(info=info, data=False)
