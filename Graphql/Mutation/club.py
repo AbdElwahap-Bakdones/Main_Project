@@ -108,7 +108,7 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Deleted(self, data=data)
             else:
-                return QueryStructure.NotAcceptale(instanse=self, message=seria.error_messages)
+                return QueryStructure.NotAcceptale(instanse=self, message=seria.errors)
         except Exception as e:
             print('Error in UpdateClub')
             print(e)

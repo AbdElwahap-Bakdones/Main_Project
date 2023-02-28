@@ -13,7 +13,7 @@ from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
-from ..Mutation.stadium import AddStadium, UpdateStadium
+from ..Mutation.stadium import AddStadium, UpdateStadium, DeleteStadium
 from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager, team, team_members
@@ -171,6 +171,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     addMember = addMember.AddMember.Field()
     leaveTeam = leaveTeam.LeaveTeam.Field()
     removeMemmbers = removeMemmber.RemoveMemmber.Field()
+    deleteStadium = DeleteStadium.Field()
 
 
 class Subscription(graphene.ObjectType):

@@ -97,7 +97,7 @@ class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
             sub = models.Stadium.objects.filter(section_id__club_id__manager_id__user_id=user,
                                                 pk=data["id"], is_deleted=False)
             if not sub.exists():
-                return QueryStructure.NotFound(self)
+                return QueryStructure.BadRequest(instanse=self, message='Stadium Id not foun or stadium alrady deleted !')
             data.update({"is_deleted": True})
             seria = serializer.StadiumSerializer(
                 sub.first(), data=data, partial=True)
@@ -106,13 +106,8 @@ class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Deleted(self, data=data)
             else:
-                msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                return QueryStructure.NotAcceptale(instanse=self, message=seria.errors)
         except Exception as e:
-            print('Error in UpdateClub')
+            print('Error in DeleteStadium')
             print(e)
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
