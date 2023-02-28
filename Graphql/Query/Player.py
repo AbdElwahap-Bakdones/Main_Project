@@ -6,7 +6,7 @@ from ..QueryStructure import QueryFields
 import graphene
 from django.db.models import Q
 from .PlayerClass import Player
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.gis.measure import D
 
 
