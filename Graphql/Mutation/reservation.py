@@ -20,16 +20,26 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             if not checkPermission("core.add_reservation", user):
                 return QueryStructure.NoPermission(self)
-            print(kwargs)
+            # print(kwargs)
             data = kwargs['data']
-            if models.Duration.objects.filter(id=data['duration_id']):
-                # with transaction.atomic():
-                duration = models.Duration.objects.select_for_update(
-                    skip_locked=True
-                ).filter(id=data['duration_id'])
-                time.sleep(10)
-                print(duration.values())
-                # serializer.ReservationSerializer(data=)
+            duration_obj = models.Duration.objects.filter(
+                id=data['duration_id'])
+            reserv_obj = models.Reservation.objects.filter(
+                date=data['date'], duration_id=data['duration_id'])
+            if duration_obj.exists() and not reserv_obj.exists():
+                with transaction.atomic():
+                    duration = models.Duration.objects.select_for_update().filter(
+                        id=data['duration_id'])
+                    # data['duration_id'] = duration.get()
+                    print(data)
+                    seria = serializer.ReservationSerializer(data=data)
+                    if seria.is_valid():
+                        reserv = models.Reservation()
+                        data = seria.save()
+                        return QueryStructure.Created(instanse=self, data=data)
+                    else:
+                        return QueryStructure.BadRequest(instanse=self, message=seria.errors)
+
             else:
                 return QueryStructure.NotAcceptale(instanse=self)
             return QueryStructure.OK(instanse=self)

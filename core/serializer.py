@@ -187,3 +187,11 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Team
         fields = ['name', 'picture', 'type_id', 'search_game']
+
+
+class ReservationSerializer(serializers.ModelSerializer):
+    duration_id = DurationSerializer
+
+    class Meta:
+        model = models.Reservation
+        fields = ['kind', 'count', 'date', 'duration_id']
