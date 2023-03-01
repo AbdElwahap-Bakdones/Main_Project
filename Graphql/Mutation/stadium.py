@@ -1,6 +1,7 @@
 from ..ModelsGraphQL import typeobject, inputtype
 import graphene
 from core import models, serializer
+from django.db.models import Q
 from ..Auth.permission import checkPermission
 from .. import QueryStructure
 from rest_framework import status as status_code
@@ -52,19 +53,25 @@ class UpdateStadium(graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             if not checkPermission("core.change_stadium", user):
                 return QueryStructure.NoPermission(self)
-            if checkPermission("core.add_club", user):
-                userType = "manager"
-            userType = "subManager"
+            # if checkPermission("core.add_club", user):
+            #     userType = "manager"
+            # userType = "subManager"
+            # if userType == "subManager":
+            #     sub = models.Stadium.objects.filter(
+            #         id=data["id"], section_id__sub_manager_id__user_id=user, is_deleted=False)
+            # else:
+            #     sub = models.Stadium.objects.filter(
+            #         id=data["id"], section_id__club_id__manager_id__user_id=user, is_deleted=False)
+            # if not sub.exists():
+            #     return QueryStructure.NotFound(self)
             data = kwargs['data']
-            if userType == "subManager":
-                sub = models.Stadium.objects.filter(
-                    id=data["id"], section_id__sub_manager_id__user_id=user, is_deleted=False)
-            else:
-                sub = models.Stadium.objects.filter(
-                    id=data["id"], section_id__club_id__manager_id__user_id=user, is_deleted=False)
-            if not sub.exists():
-                return QueryStructure.NotFound(self)
-            seria = serializer.StadiumSerializer(sub.first(),
+            print(data)
+            stad_obj = models.Stadium.objects.filter(Q(id=data["id"]) & Q(is_deleted=False) & (
+                                                     Q(section_id__sub_manager_id__user_id=user) | Q(section_id__club_id__manager_id__user_id=user)))
+
+            if not stad_obj.exists():
+                return QueryStructure.BadRequest(instanse=self, message='Stadium id not found')
+            seria = serializer.StadiumSerializer(stad_obj.first(),
                                                  data=data, partial=True)
             if seria.is_valid():
                 seria.validated_data
@@ -72,13 +79,11 @@ class UpdateStadium(graphene.Mutation, QueryStructure.Attributes):
                 return QueryStructure.Updated(self, data=data)
             else:
                 msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                return QueryStructure.NotAcceptale(instanse=self, message=msg)
         except Exception as e:
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            print('Error in UpdateStadium')
+            print(e)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
 
 class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
