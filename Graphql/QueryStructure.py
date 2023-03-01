@@ -159,11 +159,11 @@ class QueryFields(object):
             user, status_code.HTTP_404_NOT_FOUND, msg)
         return []
 
-    def BadRequest(info: ResolveInfo, msg='Bad Request'):
+    def BadRequest(info: ResolveInfo, msg='Bad Request', data=[]):
         user = info.context.META['user']
         QueryFields.set_extra_data(
             user, status_code.HTTP_400_BAD_REQUEST, msg)
-        return []
+        return data
 
     def ServerError(info: ResolveInfo, msg='Server Error'):
         user = info.context.META['user']

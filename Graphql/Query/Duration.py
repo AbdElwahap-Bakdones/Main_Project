@@ -56,10 +56,7 @@ class AvailableDurationByStadium(ObjectType, QueryFields):
             avlaible_duration = avlaible_duration.annotate(available=Value(
                 True, output_field=MODELS.BooleanField()))
             all_duration = list(chain(NAV_duration, avlaible_duration))
-            print(all_duration)
-            if avlaible_duration.count() > 0:
-                return QueryFields.OK(info=info, data=all_duration)
-            return QueryFields.NotFound(info=info, msg='Sorry the date you have chosen is complete')
+            return QueryFields.OK(info=info, data=all_duration)
         except Exception as e:
             print('Error in AvailableDurationByStadium')
             print(str(e))
@@ -105,3 +102,15 @@ class GetDuration(ObjectType, QueryFields):
         if not data.exists():
             return QueryFields.NotFound(info=info)
         return QueryFields.OK(info=info, data=data)
+
+
+class IsStadHasDuration(ObjectType, QueryFields):
+    data = graphene.Boolean(id=graphene.ID(required=True))
+
+    def resolve_data(root, info, **kwargs):
+        user = info.context.META['user']
+        duration = models.Duration.objects.filter(
+            stad_id=kwargs['id'], is_available=True, is_deleted=False)
+        if duration.exists():
+            return QueryFields.OK(info=info, data=True)
+        return QueryFields.BadRequest(info=info, data=False)

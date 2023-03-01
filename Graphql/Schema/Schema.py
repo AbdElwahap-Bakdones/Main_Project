@@ -5,7 +5,7 @@ import graphene
 from core import models
 from test_app.models import Cars
 from ..Query.Club import AllClub, GetClub, MyClub, GetClubById
-from ..Query.Duration import GetDuration, AvailableDurationByStadium, AllDurationStadium
+from ..Query.Duration import GetDuration, AvailableDurationByStadium, AllDurationStadium, IsStadHasDuration
 from ..Query.Section import AllSectionByClub, GetSection
 from ..Query.Stadium import GetStadium, GetStadiumBySection, StadiumFilter
 from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById, GetFriendCanAddToTeam
@@ -66,6 +66,10 @@ class Query(ObjectType):
     stadiumFilter = graphene.Field(StadiumFilter)
     avaliableDurationByStadium = graphene.Field(AvailableDurationByStadium)
     allDurationStadium = graphene.Field(AllDurationStadium)
+    isStadHasDuration = graphene.Field(IsStadHasDuration)
+
+    def resolve_isStadHasDuration(root, info, **kwargs):
+        return IsStadHasDuration()
 
     def resolve_allDurationStadium(root, info, **kwargs):
         return AllDurationStadium()
