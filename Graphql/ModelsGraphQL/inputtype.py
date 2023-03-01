@@ -133,11 +133,10 @@ class DeleteDurationInput(graphene.InputObjectType):
 
 
 class AddReservationInput(graphene.InputObjectType):
-    # time = graphene.Date(required=True)
     duration_id = graphene.ID(required=True)
+    date = graphene.Date(required=True)
     kind = graphene.String(required=True)
     count = graphene.Int(required=True)
-    canceled = graphene.Boolean(required=True)
 
 
 class AddStadiumRateInput(graphene.InputObjectType):

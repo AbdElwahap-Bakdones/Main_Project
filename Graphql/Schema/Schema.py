@@ -20,6 +20,7 @@ from ..Query import Player, Type, sub_manager, team, team_members
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 from ..Mutation.Team import createTeam, deleteTeam, addMember, leaveTeam, removeMemmber
 from ..Mutation import search_on_map
+from ..Mutation.reservation import ReserveDuration
 
 
 class User_model(DjangoObjectType):
@@ -180,6 +181,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     leaveTeam = leaveTeam.LeaveTeam.Field()
     removeMemmbers = removeMemmber.RemoveMemmber.Field()
     deleteStadium = DeleteStadium.Field()
+    reserveDuration = ReserveDuration.Field()
 
 
 class Subscription(graphene.ObjectType):

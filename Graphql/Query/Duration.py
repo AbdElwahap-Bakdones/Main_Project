@@ -92,15 +92,19 @@ class GetDuration(ObjectType, QueryFields):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_stadium'):
             return QueryFields.rise_error(user)
-        if QueryFields.user_type(user, Manager):
+        if QueryFields.user_type(user, models.Manager):
 
             data = models.Duration.objects.filter(stad_id__section_id__club_id__manager_id__user_id=user,
                                                   pk=kwargs['id'])
-        else:
+            if not data.exists():
+                return QueryFields.NotFound(info=info)
+        elif QueryFields.user_type(user, model=models.SubManager):
             data = models.Duration.objects.filter(stad_id__section_id__sub_manager_id__user_id=user,
                                                   pk=kwargs['id'])
-        if not data.exists():
-            return QueryFields.NotFound(info=info)
+            if not data.exists():
+                return QueryFields.NotFound(info=info)
+        else:
+            return QueryFields.BadRequest(info=info)
         return QueryFields.OK(info=info, data=data)
 
 
