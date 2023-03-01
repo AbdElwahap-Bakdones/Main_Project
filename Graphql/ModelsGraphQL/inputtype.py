@@ -184,3 +184,7 @@ class RemoveMembersInput(graphene.InputObjectType):
 
 class LeaveTeamInput(graphene.InputObjectType):
     team_pk = graphene.ID(required=True)
+
+
+class ReserveDurationInput(graphene.InputObjectType):
+    duration_pk = graphene.ID(required=True)
