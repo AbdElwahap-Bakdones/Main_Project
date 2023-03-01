@@ -94,7 +94,7 @@ class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
             if not checkPermission("core.delete_stadium", user.pk):
                 return QueryStructure.NoPermission(self)
             data = kwargs['data']
-            sub = models.Stadium.objects.filter(section_id__club_id__manager_id__user_id=user,
+            sub = models.Stadium.objects.filter(section_id__club_id__manager_id__user_id=user.pk,
                                                 pk=data["id"], is_deleted=False)
             if not sub.exists():
                 return QueryStructure.BadRequest(instanse=self, message='Stadium Id not foun or stadium alrady deleted !')
