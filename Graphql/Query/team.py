@@ -42,7 +42,7 @@ class SearchTeamByName(ObjectType, QueryFields):
 
 class MyAllTeam(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.TeamConnection, onlay_caption=graphene.Boolean())
+        relays.TeamConnection, only_captin=graphene.Boolean())
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
@@ -50,7 +50,7 @@ class MyAllTeam(ObjectType, QueryFields):
         if not QueryFields.is_valide(info, user, 'core.view_team_members'):
             return QueryFields.rise_error(user)
         is_caption = [True, False]
-        if 'onlay_caption' in kwargs and kwargs['onlay_caption']:
+        if 'only_captin' in kwargs and kwargs['only_captin']:
             is_caption = [True]
         teams_id = Team_members.objects.filter(
             player_id__user_id=user, is_leave=False, team_id__deleted=False, is_captin__in=is_caption).values_list('team_id_id', flat=True)
