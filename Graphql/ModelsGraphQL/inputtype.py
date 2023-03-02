@@ -137,6 +137,7 @@ class AddReservationInput(graphene.InputObjectType):
     date = graphene.Date(required=True)
     kind = graphene.String(required=True)
     count = graphene.Int(required=True)
+    team_id = graphene.ID(required=False)
 
 
 class AddStadiumRateInput(graphene.InputObjectType):

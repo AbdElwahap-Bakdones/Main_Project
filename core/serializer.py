@@ -195,3 +195,56 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Reservation
         fields = ['kind', 'count', 'date', 'duration_id']
+
+    def create(self, validated_data):
+        try:
+            reserve = models.Reservation(**validated_data)
+            reserve.save(self)
+            if validated_data['kind'] == 'team' and self.team_reserv(reserv_obj=reserve.pk,
+                                                                     team_obj=self.context['team_id']):
+                return reserve
+
+            if validated_data['kind'] == 'player' and self.player_reserv(reserv_obj=reserve.pk,
+                                                                         player_obj=self.context['player']):
+                return reserve
+
+            reserve.delete(self)
+            return None
+        except Exception as e:
+            print('Error in ReservationSerializer')
+            print(e)
+            reserve.delete(self)
+            return None
+
+    def player_reserv(self, reserv_obj: models.Reservation, player_obj: models.Player) -> bool:
+        data = {'player_id': player_obj, 'reservation_id': reserv_obj}
+        seria = PlayerReservSerializers(data=data)
+        seria.is_valid()
+        if seria.is_valid():
+            seria.save()
+            return True
+        return False
+
+    def team_reserv(self, reserv_obj: models.Reservation, team_obj: models.Team) -> bool:
+        data = {'team_id': team_obj, 'reservation_id': reserv_obj}
+        seria = TeamReservSerializers(data=data)
+        if seria.is_valid():
+            seria.save()
+            return True
+        return False
+
+
+class PlayerReservSerializers(serializers.ModelSerializer):
+    reservation_id = ReservationSerializer
+
+    class Meta:
+        model = models.Player_reservation
+        fields = '__all__'
+
+
+class TeamReservSerializers(serializers.ModelSerializer):
+    reservation_id = ReservationSerializer
+
+    class Meta:
+        model = models.Team_resevation
+        fields = '__all__'
