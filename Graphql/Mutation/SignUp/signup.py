@@ -53,7 +53,7 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
                 user_error = dict(seria_user.errors)
                 player_error = dict(seria_player.errors)
                 user_error.update(player_error)
-                QueryStructure.NotAcceptale(instanse=self, message=user_error)
+                return QueryStructure.NotAcceptale(instanse=self, message=user_error)
         except Exception as e:
             print('Error in SignUpPlayer ')
             print(e)
