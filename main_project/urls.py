@@ -24,7 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path(r"pull/", pull, name='pull'),
     path("", include(test_app_urls), name=""),
-    path(r'^graphql', FileUploadGraphQLView.as_view(graphiql=True)),
+    path(r"graphql/", FileUploadGraphQLView.as_view(graphiql=True)),
 
     # path(r"graphql/", csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True))),
     # path('pgraphql', PrivateGraphQLView.as_view(graphiql=True, schema=Schema)),
