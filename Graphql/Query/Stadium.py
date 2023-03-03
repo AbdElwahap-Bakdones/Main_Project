@@ -46,17 +46,23 @@ class GetStadiumBySection(ObjectType, QueryFields):
 
 class StadiumFilter(ObjectType, QueryFields):
     data = relay.ConnectionField(
-        relays.StadiumConnection, id=graphene.ID(), club_id=graphene.ID(), type_id=graphene.ID(), is_available=graphene.Boolean(), has_legua=graphene.Boolean())
+        relays.StadiumConnection, id=graphene.ID(), club_id=graphene.ID(), type_id=graphene.ID(), is_available=graphene.Boolean(), has_legua=graphene.Boolean(), date=graphene.Date())
 
     def resolve_data(root, info, **kwargs):
         user = info.context.META['user']
         if not QueryFields.is_valide(info, user, 'core.view_stadium'):
             return QueryFields.rise_error(user)
+        date = ''
         if kwargs.__len__() == 0:
             return QueryFields.queryAll(models.Stadium, info=info)
+        if 'date' in kwargs:
+            date = kwargs.pop('date')
         data = queryByFilter(kwargs)
         if not data.exists():
             return QueryFields.NotFound(info=info)
+        if 'date' in kwargs:
+            data = stad_has_duration_onDate(stads=data, date=date)
+
         return QueryFields.OK(info=info, data=data)
 
 
@@ -66,3 +72,15 @@ def queryByFilter(kwargs: object) -> models.Stadium.objects.filter:
         del kwargs['club_id']
     data = models.Stadium.objects.filter(**kwargs)
     return data
+
+
+def stad_has_duration_onDate(stads: models.Stadium.objects, date: str) -> models.Stadium:
+    stads_id = []
+    for stad in stads:
+        durations_list = models.Duration.objects.filter(is_available=True,
+                                                        stad_id=stad.pk).values_list('pk', flat=True)
+        reservations = models.Reservation.objects.filter(
+            date=date, duration_id__in=durations_list, canceled=False)
+        if reservations.count() < durations_list.count():
+            stads_id.append(stad.pk)
+    return stads.filter(pk__in=stads_id)
