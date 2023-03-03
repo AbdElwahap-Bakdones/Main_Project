@@ -111,17 +111,9 @@ class AddDurationInput(graphene.InputObjectType):
     duration = graphene.List(addtime)
 
 
-class updatetime(graphene.InputObjectType):
-    id = graphene.ID(required=True)
-    start_time = graphene.Time(required=True)
-    end_time = graphene.Time(required=True)
-    price = graphene.Float(required=True)
-    is_available = graphene.Boolean(required=True)
-
-
 class UpdateDurationInput(graphene.InputObjectType):
     stad_id = graphene.ID(required=True)
-    duration = graphene.List(updatetime)
+    duration = graphene.List(addtime)
 
 
 class deleteDuration(graphene.InputObjectType):
