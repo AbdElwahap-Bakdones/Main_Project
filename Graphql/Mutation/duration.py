@@ -61,34 +61,28 @@ class UpdateDurationList(graphene.Mutation, QueryStructure.Attributes):
             user = info.context.META["user"]
             if not checkPermission("core.change_stadium", user):
                 return QueryStructure.NoPermission(self)
-
-            if not over(kwargs["data"]["duration"]):
-                print("dasada")
+            durationNewList = kwargs["data"]["duration"]
+            if not over(durationNewList):
                 return QueryStructure.BadRequest(self, message="This time overlaps with others")
-            checkOverlap = all([CheckUpdateOverlap(i["id"],
-                                                   i["start_time"], i["end_time"], kwargs["data"]["stad_id"]) for i in kwargs["data"]["duration"]])
-            if not checkOverlap:
-                return QueryStructure.BadRequest(self, message="This time overlaps with others in database")
-            for i in kwargs["data"]["duration"]:
-                if QueryStructure.QueryFields.user_type(user, models.Manager):
-                    sub = models.Duration.objects.filter(stad_id__section_id__club_id__manager_id__user_id=user,
-                                                         id=i['id'])
-                else:
-                    sub = models.Duration.objects.filter(stad_id__section_id__sub_manager_id__user_id=user,
-                                                         id=i['id'])
-                if not sub.exists():
-                    return QueryStructure.NotFound(self)
-            for i in kwargs["data"]["duration"]:
-                sub = models.Duration.objects.filter(
-                    id=i['id'])
-                dataDuration = {
-                    "start_time": i["start_time"], "end_time": i["end_time"], "is_available": i["is_available"], "price": i["price"]}
-                seria = serializer.DurationSerializer(
-                    sub.first(), data=dataDuration, partial=True)
-                if seria.is_valid():
-                    seria.validated_data
-                    seria.save()
-            return QueryStructure.OK(self, data=seria.save())
+            if QueryStructure.QueryFields.user_type(user, models.Manager):
+                duration = models.Duration.objects.filter(
+                    stad_id=kwargs["data"]["stad_id"], stad_id__section_id__club_id__manager_id__user_id=user)
+            else:
+                duration = models.Duration.objects.filter(
+                    stad_id=kwargs["data"]["stad_id"], stad_id__section_id__sub_manager_id__user_id=user)
+            if not duration.exists():
+                return QueryStructure.BadRequest(self, message="the staduim not found or you not have permission on this staduim ")
+            if len(durationNewList) != duration.count():
+                return QueryStructure.BadRequest(self, message="The number of new data must equal the number of old data")
+            for i in range(len(durationNewList)):
+                dd = duration.get(pk=duration[i].pk)
+                dd.start_time = durationNewList[i]["start_time"]
+                dd.start_time = durationNewList[i]["start_time"]
+                dd.end_time = durationNewList[i]["end_time"]
+                dd.is_available = durationNewList[i]["is_available"]
+                dd.price = durationNewList[i]["price"]
+                dd.save()
+            return QueryStructure.OK(self, data=duration.last())
         except Exception as e:
             return QueryStructure.InternalServerError(self, message=str(e))
 
