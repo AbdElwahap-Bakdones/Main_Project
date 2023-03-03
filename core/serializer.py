@@ -217,9 +217,8 @@ class ReservationSerializer(serializers.ModelSerializer):
             return None
 
     def player_reserv(self, reserv_obj: models.Reservation, player_obj: models.Player) -> bool:
-        data = {'player_id': player_obj, 'reservation_id': reserv_obj}
+        data = {'player_id': player_obj.pk, 'reservation_id': reserv_obj}
         seria = PlayerReservSerializers(data=data)
-        seria.is_valid()
         if seria.is_valid():
             seria.save()
             return True
