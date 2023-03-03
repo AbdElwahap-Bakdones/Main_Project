@@ -66,10 +66,10 @@ class UpdateDurationList(graphene.Mutation, QueryStructure.Attributes):
                 return QueryStructure.BadRequest(self, message="This time overlaps with others")
             if QueryStructure.QueryFields.user_type(user, models.Manager):
                 duration = models.Duration.objects.filter(
-                    stad_id=kwargs["data"]["stad_id"], stad_id__section_id__club_id__manager_id__user_id=user)
+                    stad_id=kwargs["data"]["stad_id"], stad_id__section_id__club_id__manager_id__user_id=user, is_deleted=False)
             else:
                 duration = models.Duration.objects.filter(
-                    stad_id=kwargs["data"]["stad_id"], stad_id__section_id__sub_manager_id__user_id=user)
+                    stad_id=kwargs["data"]["stad_id"], stad_id__section_id__sub_manager_id__user_id=user, is_deleted=False)
             if not duration.exists():
                 return QueryStructure.BadRequest(self, message="the staduim not found or you not have permission on this staduim ")
             if len(durationNewList) != duration.count():
