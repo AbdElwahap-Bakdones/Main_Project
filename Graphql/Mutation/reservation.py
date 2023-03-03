@@ -6,7 +6,7 @@ from core import models, serializer
 from .. import QueryStructure
 import time
 from Bank import models as MODELSBANK
-from Bank import views
+from Bank import views as Bank
 
 
 class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
@@ -28,11 +28,11 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
 
             if data['kind'] == 'team' and not self.is_caption(self, team_id=data['team_id'], user=user):
                 return QueryStructure.BadRequest(instanse=self, message='onlay caption can reserve !')
+            player_obj = models.Player.objects.filter(user_id=user).get()
             if data['kind'] == 'team':
                 contex = {'team_id': data['team_id']}
             if data['kind'] == 'player':
-                contex = {'player': models.Player.objects.filter(
-                    user_id=user).get()}
+                contex = {'player': player_obj}
             duration_obj = models.Duration.objects.filter(
                 id=data['duration_id'])
             reserv_obj = models.Reservation.objects.filter(
@@ -45,7 +45,7 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
                     seria = serializer.ReservationSerializer(
                         data=data, context=contex)
                     if seria.is_valid():
-                        if not self.withdrawal(data['duration_id'], contex['player'].pk):
+                        if not self.withdrawal(duration.get(), player_obj.pk):
                             return QueryStructure.BadRequest(self, message="You do not have enough balance to reserve the stadium")
                         data = seria.save()
                         return QueryStructure.Created(instanse=self, data=data)
@@ -66,15 +66,14 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
             return True
         return False
 
-    def withdrawal(id_duration, id_player):
-        priceDuration = models.Duration.objects.get(pk=id_duration)
+    def withdrawal(duration, id_player):
         player_id = ""+str(id_player)+"_" + str(1)
         club_id = "" + \
-            str(priceDuration.stad_id.section_id.club_id.pk)+"_" + str(2)
-        withdrawal = views.withdrawal(player_id, priceDuration.price)
+            str(duration.stad_id.section_id.club_id.pk)+"_" + str(2)
+        withdrawal = Bank.withdrawal(player_id, duration.price)
         if withdrawal == -1:
             return False
-        deposit = views.deposit(club_id, priceDuration.price)
+        deposit = Bank.deposit(club_id, duration.price)
         if deposit == -1:
             return False
         # balance.client_ammunt = balance.client_ammunt-priceDuration.price
