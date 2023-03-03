@@ -1,4 +1,4 @@
-from core.models import Duration, Reservation, Club, Section, Stadium, Player_reservation, Team_resevation, Team_members, User, Team
+from core.models import Player, Duration, Reservation, Club, Section, Stadium, Player_reservation, Team_resevation, Team_members, User, Team
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
 from rest_framework import status as status_code
@@ -148,8 +148,8 @@ class MyAllReservation(ObjectType, QueryFields):
         print(kwargs)
         try:
             user = info.context.META['user']
-            if not QueryFields.is_valide(info, user, 'core.view_player_reservation'):
-                return QueryFields.rise_error(user)
+            if not QueryFields.user_type(user, Player):
+                return QueryFields.NoPermission_403(info=info)
             player_reserve = team_reserve = None
             player_reserve = MyAllReservation.get_player_reserve(
                 user=user, kwargs=kwargs)
