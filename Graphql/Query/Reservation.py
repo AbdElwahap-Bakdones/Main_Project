@@ -1,10 +1,11 @@
-from core.models import Duration, Reservation, Club, Section, Stadium, Player_reservation, Team_resevation, Team_members
+from core.models import Player, Duration, Reservation, Club, Section, Stadium, Player_reservation, Team_resevation, Team_members, User, Team
 from graphene import ObjectType, relay
 from Graphql.QueryStructure import QueryFields
 from rest_framework import status as status_code
 from ..Relay import relays
-from django.db.models import Q
+from django.db.models import Q, Field, OuterRef, Subquery, F
 from datetime import datetime
+from itertools import chain
 import graphene
 
 
@@ -137,3 +138,54 @@ def getdurationlist(stadium):
 
 def getteamlist(user):
     return Team_members.objects.filter(player_id__user_id=user)
+
+
+class MyAllReservation(ObjectType, QueryFields):
+    data = relay.ConnectionField(relays.ReservationConnection,
+                                 player_reserve=graphene.Boolean(), team_reserve=graphene.Boolean())
+
+    def resolve_data(root, info, **kwargs):
+        print(kwargs)
+        try:
+            user = info.context.META['user']
+            if not QueryFields.user_type(user, Player):
+                return QueryFields.NoPermission_403(info=info)
+            player_reserve = team_reserve = None
+            player_reserve = MyAllReservation.get_player_reserve(
+                user=user, kwargs=kwargs)
+            team_reserve = MyAllReservation.get_team_reserve(
+                user=user, kwargs=kwargs)
+
+            all_reserve = player_reserve | team_reserve
+            data = all_reserve.order_by('-date')
+            return QueryFields.OK(info=info, data=data)
+        except Exception as e:
+            print('Error in MyAllReservation.resolve_data')
+            print(e)
+            return QueryFields.ServerError(info=info, msg=str(e))
+
+    def get_player_reserve(user: User, kwargs: bool) -> Reservation.objects:
+        if 'player_reserve' in kwargs and kwargs['player_reserve']:
+            player_OuterRef = Player_reservation.objects.filter(
+                reservation_id=OuterRef('pk'))
+            reserver_list = Player_reservation.objects.filter(
+                player_id__user_id=user).values_list('reservation_id', flat=True)
+            reserve_obj = Reservation.objects.filter(pk__in=reserver_list, canceled=False).annotate(
+                owner=Subquery(player_OuterRef.values('player_id__user_id__username'), output_field=Field()))
+
+            return reserve_obj
+        return Reservation.objects.filter(pk=-1)
+
+    def get_team_reserve(user: User, kwargs: bool) -> Reservation.objects:
+        if 'team_reserve' in kwargs and kwargs['team_reserve']:
+            team_OuterRef = Team_resevation.objects.filter(
+                reservation_id=OuterRef('pk'))
+
+            team_list = Team_members.objects.filter(
+                player_id__user_id=user.pk, is_leave=False).values_list('team_id', flat=True)
+            reserver_list = Team_resevation.objects.filter(
+                team_id__in=team_list).values_list('reservation_id', flat=True)
+            reserve_obj = Reservation.objects.filter(pk__in=reserver_list, canceled=False).annotate(
+                owner=Subquery(team_OuterRef.values('team_id__name'), output_field=Field()))
+            return reserve_obj
+        return Reservation.objects.filter(pk=-1)
