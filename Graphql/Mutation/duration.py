@@ -24,10 +24,10 @@ class AddDurationList(graphene.Mutation, QueryStructure.Attributes):
                 return QueryStructure.NoPermission(self)
             if QueryStructure.QueryFields.user_type(user, models.Manager):
                 stadium = models.Stadium.objects.filter(section_id__club_id__manager_id__user_id=user,
-                                                        id=kwargs["data"]["stad_id"])
+                                                        id=kwargs["data"]["stad_id"], is_deleted=False)
             else:
                 stadium = models.Stadium.objects.filter(section_id__sub_manager_id__user_id=user,
-                                                        id=kwargs["data"]["stad_id"])
+                                                        id=kwargs["data"]["stad_id"], is_deleted=False)
             if not stadium.exists():
                 return QueryStructure.BadRequest(self, message="stadium not found")
             if not over(kwargs["data"]["duration"]):
