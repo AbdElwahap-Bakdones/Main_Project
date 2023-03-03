@@ -12,6 +12,11 @@ class PlayerConnection(relay.Connection):
         node = typeobject.PlayerObjectType
 
 
+class PlayerPrpfileConnection(relay.Connection):
+    class Meta:
+        node = typeobject.PlayerProfileObjectType
+
+
 class SubManagerConnection(relay.Connection):
     class Meta:
         node = typeobject.SubManagerObjectType
@@ -20,6 +25,11 @@ class SubManagerConnection(relay.Connection):
 class ClubConnection(relay.Connection):
     class Meta:
         node = typeobject.ClubObjectType
+
+
+class ClubProfileConnection(relay.Connection):
+    class Meta:
+        node = typeobject.ClubProfileObjectType
 
 
 class SectionConnection(relay.Connection):

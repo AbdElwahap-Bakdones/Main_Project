@@ -5,6 +5,8 @@ import graphene
 from core import models, serializer
 from .. import QueryStructure
 import time
+from Bank import models as MODELSBANK
+from Bank import views
 
 
 class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
@@ -43,6 +45,8 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
                     seria = serializer.ReservationSerializer(
                         data=data, context=contex)
                     if seria.is_valid():
+                        if not self.withdrawal(data['duration_id'], contex['player'].pk):
+                            return QueryStructure.BadRequest(self, message="You do not have enough balance to reserve the stadium")
                         data = seria.save()
                         return QueryStructure.Created(instanse=self, data=data)
                     else:
@@ -61,3 +65,22 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
                                               player_id__user_id=user, is_captin=True, is_leave=False).exists():
             return True
         return False
+
+    def withdrawal(id_duration, id_player):
+        priceDuration = models.Duration.objects.get(pk=id_duration)
+        player_id = ""+str(id_player)+"_" + str(1)
+        club_id = "" + \
+            str(priceDuration.stad_id.section_id.club_id.pk)+"_" + str(2)
+        withdrawal = views.withdrawal(player_id, priceDuration.price)
+        if withdrawal == -1:
+            return False
+        deposit = views.deposit(club_id, priceDuration.price)
+        if deposit == -1:
+            return False
+        # balance.client_ammunt = balance.client_ammunt-priceDuration.price
+        # clubBalance = MODELSBANK.Account.objects.get(
+        #     client_name=""+str(priceDuration.stad_id.section_id.club_id.pk)+"_"+str(2))
+        # clubBalance.client_ammunt = clubBalance.client_ammunt+priceDuration.price
+        # balance.save()
+        # clubBalance.save()
+        return True

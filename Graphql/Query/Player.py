@@ -4,10 +4,12 @@ from core import models, serializer
 from ..Relay import relays
 from ..QueryStructure import QueryFields
 import graphene
-from django.db.models import Q
+from django.db.models import Q, Value
 from .PlayerClass import Player
-from django.contrib.gis.geos import GEOSGeometry, Point
-from django.contrib.gis.measure import D
+from django.db import models as MODELS
+from Bank import models as MODELSBANK
+# from django.contrib.gis.geos import GEOSGeometry, Point
+# from django.contrib.gis.measure import D
 
 
 class SerchPlayer (ObjectType, QueryFields):
@@ -89,14 +91,20 @@ class GeoPlayer(ObjectType, QueryFields):
 
 
 class me(ObjectType, QueryFields):
-    data = relay.ConnectionField(relays.PlayerConnection)
+    data = relay.ConnectionField(relays.PlayerPrpfileConnection)
 
     def resolve_data(root, info, **kwargs):
         try:
             user = info.context.META["user"]
             if not QueryFields.is_valide(info=info, user=user, operation="core.view_player"):
                 return QueryFields.rise_error(user=user)
+            if not QueryFields.user_type(user, models.Player):
+                return QueryFields.NoPermission_403(info)
             player_obj = models.Player.objects.filter(user_id=user)
+            balance = MODELSBANK.Account.objects.get(
+                client_name=""+str(player_obj.first().pk)+"_"+str(1)).client_ammunt
+            player_obj = player_obj.annotate(balance=Value(
+                balance, output_field=MODELS.FloatField()))
             return QueryFields.OK(info=info, data=player_obj)
         except Exception as e:
             print('Error in Player.me :')
