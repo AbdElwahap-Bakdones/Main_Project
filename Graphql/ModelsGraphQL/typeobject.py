@@ -165,6 +165,7 @@ class DurationObjectType(DjangoObjectType):
 class ReservationObjectType(DjangoObjectType):
     pk_reservation = graphene.Field(type=graphene.Int, source='id')
     duration = graphene.Field(type=DurationObjectType, source='duration_id')
+    owner = graphene.Field(type=graphene.String, source='owner')
 
     class Meta:
         model = models.Reservation
