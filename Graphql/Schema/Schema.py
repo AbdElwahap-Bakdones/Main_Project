@@ -16,7 +16,7 @@ from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium, DeleteStadium
 from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
-from ..Query import Player, Type, sub_manager, team, team_members
+from ..Query import Player, Type, sub_manager, team, team_members, Reservation
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 from ..Mutation.Team import createTeam, deleteTeam, addMember, leaveTeam, removeMemmber
 from ..Mutation import search_on_map
@@ -68,6 +68,10 @@ class Query(ObjectType):
     avaliableDurationByStadium = graphene.Field(AvailableDurationByStadium)
     allDurationStadium = graphene.Field(AllDurationStadium)
     isStadHasDuration = graphene.Field(IsStadHasDuration)
+    myReservation = graphene.Field(Reservation.MyAllReservation)
+
+    def resolve_myReservation(root, info, **kwargs):
+        return Reservation.MyAllReservation()
 
     def resolve_isStadHasDuration(root, info, **kwargs):
         return IsStadHasDuration()
