@@ -26,6 +26,19 @@ class PlayerObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
+class PlayerProfileObjectType(DjangoObjectType):
+    user_id = graphene.Field(UserObjectType)
+    pk_player = graphene.Field(type=graphene.Int, source='id')
+    state = graphene.Field(type=graphene.String, source='state')
+    balance = graphene.Field(type=graphene.Float, source='balance')
+
+    class Meta:
+        model = models.Player
+        fields = ['pk', 'location_lat',
+                  'location_long', 'user_id', 'available_on_map', 'balance']
+        interfaces = (relay.Node,)
+
+
 class FriendPlayerObjectType(DjangoObjectType):
     user_id = graphene.Field(UserObjectType)
     pk_player = graphene.Field(type=graphene.Int, source='id')
@@ -81,6 +94,18 @@ class ClubObjectType(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
+class ClubProfileObjectType(DjangoObjectType):
+    manager = graphene.Field(type=ManagerObjectType, source='manager_id')
+    pk_club = graphene.Field(type=graphene.Int, source='id')
+    balance = graphene.Field(type=graphene.Float, source='balance')
+
+    class Meta:
+        model = models.Club
+        fields = ['pk', 'name', 'location_lat', 'location_long',
+                  'number_stad', 'is_available', 'manager_id', 'balance']
+        interfaces = (relay.Node,)
+
+
 class SectionObjectType(DjangoObjectType):
     pk_sectaion = graphene.Field(type=graphene.Int, source='id')
     sub_manager = graphene.Field(
@@ -129,6 +154,7 @@ class DurationObjectType(DjangoObjectType):
     pk_duration = graphene.Field(type=graphene.Int, source='id')
     stadium = graphene.Field(type=StadiumObjectType, source='stad_id')
     available = graphene.Field(type=graphene.Boolean, source='available')
+
     class Meta:
         model = models.Duration
         fields = ['id', 'pk', 'start_time',
