@@ -245,3 +245,9 @@ class TeamReservSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.Team_resevation
         fields = '__all__'
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Notification
+        fields = '__all__'
