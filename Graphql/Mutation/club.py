@@ -32,16 +32,14 @@ class AddClub  (graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Created(self, data=data)
             else:
-                msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                print('serializer Errors in AddClub')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
             print('Error in AddClub :')
             print(e)
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
 
 class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
@@ -70,16 +68,14 @@ class UpdateClub(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Updated(self, data=data)
             else:
-                msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                print('serializer Errors in UpdateClub')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
-            print('Error in UpdateClub')
+            print('Error in UpdateClub :')
             print(e)
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
 
 class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
@@ -108,7 +104,10 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Deleted(self, data=data)
             else:
-                return QueryStructure.NotAcceptale(instanse=self, message=seria.errors)
+                print('serializer Errors in UpdateClub')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
             print('Error in UpdateClub')
             print(e)

@@ -34,11 +34,14 @@ class AddStadium(graphene.Mutation, QueryStructure.Attributes):
                 club.update(number_stad=club.get().number_stad+1)
                 return QueryStructure.Created(self, data=data)
             else:
-                msg = seria.errors
-                return QueryStructure.BadRequest(instanse=self, message=msg)
+                print('serializer Errors in AddStadium')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
-            msg = str(e)
-            return QueryStructure.InternalServerError(instanse=self, message=msg)
+            print('Error in AddStadium')
+            print(e)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
 
 class UpdateStadium(graphene.Mutation, QueryStructure.Attributes):
@@ -78,8 +81,10 @@ class UpdateStadium(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Updated(self, data=data)
             else:
-                msg = seria.errors
-                return QueryStructure.NotAcceptale(instanse=self, message=msg)
+                print('serializer Errors in UpdateStadium')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
             print('Error in UpdateStadium')
             print(e)
@@ -111,7 +116,10 @@ class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Deleted(self, data=data)
             else:
-                return QueryStructure.NotAcceptale(instanse=self, message=seria.errors)
+                print('serializer Errors in DeleteStadium')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
             print('Error in DeleteStadium')
             print(e)

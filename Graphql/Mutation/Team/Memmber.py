@@ -134,7 +134,7 @@ class MemmberClass():
         seria = serializer.MembersTeamSerializer(data=data)
         if not seria.is_valid():
             print(seria.errors)
-            self.__add_error_message(seria.errors)
+            self.__add_error_message('some things wrong')
             return False
         seria.save()
         return True

@@ -50,7 +50,9 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
                         data = seria.save()
                         return QueryStructure.Created(instanse=self, data=data)
                     else:
-                        return QueryStructure.NotAcceptale(instanse=self, message=seria.errors)
+                        print('serializer Errors in ReserveDuration')
+                        print(seria.errors)
+                        return QueryStructure.NotAcceptale(instanse=self)
 
             else:
                 return QueryStructure.NotAcceptale(instanse=self)

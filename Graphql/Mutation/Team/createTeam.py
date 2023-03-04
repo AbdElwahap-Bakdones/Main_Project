@@ -19,7 +19,9 @@ class CreateTeam(graphene.Mutation, QueryStructure.Attributes):
                 return QueryStructure.NoPermission(self)
             team = CreateTeam.create_team(kwargs['data'])
             if not team['state']:
-                return QueryStructure.BadRequest(self, message=team['errors'])
+                print('Error in CreateTeam.team')
+                print(team['errors'])
+                return QueryStructure.BadRequest(self)
 
             admin_data = {'player_id': models.Player.objects.get(
                 user_id=user).pk, 'team_id': team['team'].pk, 'is_captin': True}
@@ -28,8 +30,9 @@ class CreateTeam(graphene.Mutation, QueryStructure.Attributes):
             if not member['state']:
                 models.Team.objects.filter(
                     pk=team['team'].pk).update(deleted=True)
-
-                return QueryStructure.BadRequest(self, message=member['errors'])
+                print('Error in CreateTeam.member')
+                print(member['errors'])
+                return QueryStructure.BadRequest(self)
 
             return QueryStructure.Created(self, data=team['team'])
 

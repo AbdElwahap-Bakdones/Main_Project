@@ -22,7 +22,9 @@ class AddMember(graphene.Mutation, QueryStructure.Attributes):
             class_obj = MemmberClass(user, team_id, members)
             if class_obj.add_memmber():
                 return QueryStructure.OK(instanse=self, data=class_obj.team.get())
-            return QueryStructure.BadRequest(instanse=self, message=class_obj.errors)
+            print('serilalizer Error in AddMember !')
+            print(class_obj.errors)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
             print('Error AddMember !')
             print(str(e))

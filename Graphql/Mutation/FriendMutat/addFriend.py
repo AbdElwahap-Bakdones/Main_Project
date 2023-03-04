@@ -53,8 +53,6 @@ class addRequestFriend(graphene.Mutation, QueryStructure.Attributes):
             return QueryStructure.InternalServerError(self, message=str(e))
 
     def __create_new_request(self, sender: models.Player, reciver: models.Player):
-        print('new')
-
         data_ser1 = {}
         data_ser2 = {}
         data_ser1['player1'] = sender.pk
@@ -78,9 +76,10 @@ class addRequestFriend(graphene.Mutation, QueryStructure.Attributes):
                 ser2.save()
                 return QueryStructure.Created(instanse=self, data=data)
             else:
-                return QueryStructure.BadRequest(self, message=str(ser1.errors))
+                print('Error in serializer in  addRequestFriend.__create_new_request')
+                return QueryStructure.BadRequest(self)
         except Exception as e:
-            print('Error in __create_new_request')
+            print('Error in addRequestFriend.__create_new_request')
             print(e)
             return QueryStructure.InternalServerError(self, message=str(e))
         return QueryStructure.InternalServerError(self)

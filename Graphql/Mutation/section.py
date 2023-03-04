@@ -39,16 +39,14 @@ class AddSection  (graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Created(instanse=self, data=data)
             else:
-                msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                print('serializer Errors in AddSection')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
-            print('Error in AddSection :')
+            print('Error in AddSection')
             print(e)
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
         # if not models.SubManager.objects.filter(
         #         pk=kwargs['data']['sub_manager_id'],
@@ -81,16 +79,14 @@ class UpdateSection(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Updated(self, data=data)
             else:
-                msg = seria.errors
-                data = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                print('serializer Errors in UpdateSection')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
             print('Error in UpdateSection')
             print(e)
-            msg = str(e)
-            data = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=data, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))
 
 
 class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
@@ -118,13 +114,11 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
                 data = seria.save()
                 return QueryStructure.Deleted(self, data=data)
             else:
-                msg = seria.errors
-                Section = None
-                status = status_code.HTTP_406_NOT_ACCEPTABLE
+                print('serializer Errors in DeleteSection')
+                print(seria.errors)
+                return QueryStructure.NotAcceptale(instanse=self)
+            return QueryStructure.BadRequest(instanse=self)
         except Exception as e:
-            print('Error in deleteSection')
+            print('Error in DeleteSection')
             print(e)
-            msg = str(e)
-            Section = None
-            status = status_code.HTTP_500_INTERNAL_SERVER_ERROR
-        return QueryStructure.MyReturn(instanse=self, data=Section, message=msg, code=status)
+            return QueryStructure.InternalServerError(instanse=self, message=str(e))

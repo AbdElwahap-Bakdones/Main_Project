@@ -53,8 +53,12 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
                 user_error = dict(seria_user.errors)
                 player_error = dict(seria_player.errors)
                 user_error.update(player_error)
+                default_errors = user_error.errors
+                field_names = []
+                for field_name, field_errors in default_errors.items():
+                    field_names.append(field_name)
                 print(user_error)
-                return QueryStructure.NotAcceptale(instanse=self, message=user_error)
+                return QueryStructure.NotAcceptale(instanse=self, message=f'Invalid data in {field_names}')
             return QueryStructure.InternalServerError(instanse=self)
         except Exception as e:
             print('Error in SignUpPlayer ')
@@ -110,7 +114,11 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
                 user_error = dict(seria_user.errors)
                 manager_error = dict(seria_manager.errors)
                 user_error.update(manager_error)
-                return QueryStructure.NotAcceptale(instanse=self, message=user_error)
+                default_errors = user_error.errors
+                field_names = []
+                for field_name, field_errors in default_errors.items():
+                    field_names.append(field_name)
+                return QueryStructure.NotAcceptale(instanse=self, message=f'Invalid data in {field_names}')
         except Exception as e:
             print('Error in SignUpManager')
             print(str(e))
@@ -169,7 +177,11 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
                 user_error = dict(seria_user.errors)
                 subManager_error = dict(seria_subManager.errors)
                 user_error.update(subManager_error)
-                return QueryStructure.NotAcceptale(instanse=self, message=user_error)
+                default_errors = user_error.errors
+                field_names = []
+                for field_name, field_errors in default_errors.items():
+                    field_names.append(field_name)
+                return QueryStructure.NotAcceptale(instanse=self, message=f'Invalid data in {field_names}')
         except Exception as e:
             print('Error in SignUpSubManager')
             print(str(e))
