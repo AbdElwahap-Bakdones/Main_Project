@@ -73,6 +73,10 @@ class Query(ObjectType):
     myReservation = graphene.Field(Reservation.MyAllReservation)
     myRequestFriend = graphene.Field(MyRequestFriend)
     getNotification = graphene.Field(notification_query.GetNotifications)
+    hasNotification = graphene.Field(notification_query.HasNotifications)
+
+    def resolve_hasNotification(root, info, **kwargs):
+        return notification_query.HasNotifications()
 
     def resolve_getNotification(root, info, **kwargs):
         return notification_query.GetNotifications()

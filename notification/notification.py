@@ -2,6 +2,19 @@ from core import models, serializer
 
 
 class Notification():
+    def has_notif(user: models.User) -> int:
+        try:
+            data = models.Notification.objects.filter(
+                reciver_id=user, is_read=False)
+            print(data.values())
+            if data.exists():
+                return True
+            return False
+        except Exception as e:
+            print('Error in Notification.has_notif')
+            print(e)
+            return False
+
     def get_count(user: models.User) -> int:
         try:
             data = models.Notification.objects.filter(
