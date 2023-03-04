@@ -7,7 +7,7 @@ import graphene
 from django.db.models import Q, Value
 from .PlayerClass import Player
 from django.db import models as MODELS
-from Bank import models as MODELSBANK
+from Bank.views import get_balance
 # from django.contrib.gis.geos import GEOSGeometry, Point
 # from django.contrib.gis.measure import D
 
@@ -101,8 +101,8 @@ class me(ObjectType, QueryFields):
             if not QueryFields.user_type(user, models.Player):
                 return QueryFields.NoPermission_403(info)
             player_obj = models.Player.objects.filter(user_id=user)
-            balance = MODELSBANK.Account.objects.get(
-                client_name=""+str(player_obj.first().pk)+"_"+str(1)).client_ammunt
+            balance = get_balance(
+                clint=""+str(player_obj.first().pk)+"_"+str(1))
             player_obj = player_obj.annotate(balance=Value(
                 balance, output_field=MODELS.FloatField()))
             return QueryFields.OK(info=info, data=player_obj)

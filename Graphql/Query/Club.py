@@ -5,7 +5,7 @@ from ..Relay import relays
 import graphene
 from core import models
 from django.db.models import Q, Value
-from Bank import models as MODELSBANK
+from Bank.views import get_balance
 from django.db import models as MODELS
 
 
@@ -57,9 +57,8 @@ class GetClub(ObjectType, QueryFields):
                 manager_id__user_id=user, pk=kwargs['id'], is_deleted=False)
             if not data.exists():
                 return QueryFields.NotFound(info=info)
-            balance = MODELSBANK.Account.objects.get(
-                client_name=""+str(data.first().pk)+"_"+str(2)).client_ammunt
-            print(balance)
+            balance = get_balance(
+                client=""+str(data.first().pk)+"_"+str(2))
             data = data.annotate(balance=Value(
                 balance, output_field=MODELS.FloatField()))
             return QueryFields.OK(info=info, data=data)

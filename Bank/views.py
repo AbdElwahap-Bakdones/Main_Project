@@ -29,3 +29,36 @@ def withdrawal(client, amount):
             return balance.client_ammunt
     except Exception as e:
         return -1
+
+
+def get_balance(clint: str) -> float:
+    try:
+        balance = MODELSBANK.Account.objects.filter(client_ammunt=clint)
+        if balance.exists():
+            return balance.first().client_ammunt
+        return -1
+    except Exception as e:
+        print('Error in Bank get_balance !')
+        print(e)
+        return -1
+
+
+def create_account(client_name: str, client_type: str) -> bool:
+    try:
+        if client_type == 'player':
+            name = ""+str(client_name)+"_"+str(1)
+            account = MODELSBANK.Account(client_name=name,
+                                         client_type=MODELSBANK.ClientType.objects.get(pk=1))
+            account.save()
+            return True
+        if client_type == 'club':
+            name = ""+str(client_name)+"_"+str(2)
+            account = MODELSBANK.Account(client_name=name,
+                                         client_type=MODELSBANK.ClientType.objects.get(pk=2))
+            account.save()
+            return True
+        return False
+    except Exception as e:
+        print('Error in Bank create_account !')
+        print(e)
+        return False
