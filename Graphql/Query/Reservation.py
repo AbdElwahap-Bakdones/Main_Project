@@ -152,12 +152,12 @@ class MyAllReservation(ObjectType, QueryFields):
                 return QueryFields.NoPermission_403(info=info)
             player_reserve = team_reserve = None
             player_reserve = MyAllReservation.get_player_reserve(
-                user=user, kwargs=kwargs)
+                user=user, kwargs=kwargs).order_by('-date')
             team_reserve = MyAllReservation.get_team_reserve(
-                user=user, kwargs=kwargs)
+                user=user, kwargs=kwargs).order_by('-date')
 
-            all_reserve = player_reserve | team_reserve
-            data = all_reserve.order_by('-date')
+            all_reserve = list(chain(team_reserve, player_reserve))
+            data = all_reserve
             return QueryFields.OK(info=info, data=data)
         except Exception as e:
             print('Error in MyAllReservation.resolve_data')
@@ -187,5 +187,6 @@ class MyAllReservation(ObjectType, QueryFields):
                 team_id__in=team_list).values_list('reservation_id', flat=True)
             reserve_obj = Reservation.objects.filter(pk__in=reserver_list, canceled=False).annotate(
                 owner=Subquery(team_OuterRef.values('team_id__name'), output_field=Field()))
+            # print(reserve_obj.values())
             return reserve_obj
         return Reservation.objects.filter(pk=-1)
