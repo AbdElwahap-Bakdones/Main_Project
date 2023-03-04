@@ -155,7 +155,6 @@ class MyAllReservation(ObjectType, QueryFields):
                 user=user, kwargs=kwargs).order_by('-date')
             team_reserve = MyAllReservation.get_team_reserve(
                 user=user, kwargs=kwargs).order_by('-date')
-
             all_reserve = list(chain(team_reserve, player_reserve))
             data = all_reserve
             return QueryFields.OK(info=info, data=data)
@@ -174,7 +173,7 @@ class MyAllReservation(ObjectType, QueryFields):
                 owner=Subquery(player_OuterRef.values('player_id__user_id__username'), output_field=Field()))
 
             return reserve_obj
-        return Player_reservation.objects.filter(pk=-1)
+        return Reservation.objects.filter(pk=-1)
 
     def get_team_reserve(user: User, kwargs: bool) -> Reservation.objects:
         if kwargs['team_reserve']:
@@ -187,6 +186,5 @@ class MyAllReservation(ObjectType, QueryFields):
                 team_id__in=team_list).values_list('reservation_id', flat=True)
             reserve_obj = Reservation.objects.filter(pk__in=reserver_list, canceled=False).annotate(
                 owner=Subquery(team_OuterRef.values('team_id__name'), output_field=Field()))
-            # print(reserve_obj.values())
             return reserve_obj
         return Reservation.objects.filter(pk=-1)
