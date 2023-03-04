@@ -14,7 +14,8 @@ from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium, DeleteStadium
-from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList, TestAddDurationList
+# , TestAddDurationList
+from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager, team, team_members, Reservation
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
@@ -195,7 +196,7 @@ class Mutation (AuthMutation, graphene.ObjectType):
     removeMemmbers = removeMemmber.RemoveMemmber.Field()
     deleteStadium = DeleteStadium.Field()
     reserveDuration = ReserveDuration.Field()
-    testDuration = TestAddDurationList.Field()
+    # testDuration = TestAddDurationList.Field()
     readNotification = notifications_mutate.ReadNotification.Field()
 
 
