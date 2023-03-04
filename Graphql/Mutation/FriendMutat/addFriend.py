@@ -5,6 +5,7 @@ from ...ModelsGraphQL import typeobject, inputtype
 from ...Auth.permission import checkPermission
 from rest_framework import status as status_code
 from ... import QueryStructure
+from notification.notification import Notification
 
 
 class addRequestFriend(graphene.Mutation, QueryStructure.Attributes):
@@ -43,8 +44,12 @@ class addRequestFriend(graphene.Mutation, QueryStructure.Attributes):
         try:
             print('old')
             if request.count() == 2 and request.first().state == 'rejected':
+                reciver = request.first().player1
                 request.update(state='pending', sender=sender)
-                make_notifucation()
+                if sender == request.first().player1:
+                    reciver = request.first().player2
+                Notification.add(sender=sender.user_id.pk, reciver=reciver.user_id.pk, message=f'{sender.user_id.first_name} {sender.user_id.last_name} send to you friend request !',
+                                 sender_kind='user', type='request friend')
                 return QueryStructure.Created(self, data=request.first())
             return QueryStructure.BadRequest(self)
         except Exception as e:
@@ -74,6 +79,8 @@ class addRequestFriend(graphene.Mutation, QueryStructure.Attributes):
                 data = ser1.save()
                 ser2.validated_data
                 ser2.save()
+                Notification.add(sender=sender.user_id.pk, reciver=reciver.user_id.pk,
+                                 message=f'{sender.user_id.first_name} {sender.user_id.last_name} send to you friend request !', sender_kind='user', type='request friend')
                 return QueryStructure.Created(instanse=self, data=data)
             else:
                 print('Error in serializer in  addRequestFriend.__create_new_request')
