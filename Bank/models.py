@@ -10,6 +10,9 @@ class Account(models.Model):
     client_type = models.ForeignKey(ClientType, on_delete=models.CASCADE)
     client_ammunt = models.FloatField(default=0)
 
+    def __str__(self):
+        return self.client_name
+
 
 class Operation(models.Model):
     name = models.CharField(max_length=50)
