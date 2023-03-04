@@ -2,6 +2,15 @@ from core import models, serializer
 
 
 class Notification():
+    def get_count(user: models.User) -> int:
+        try:
+            data = models.Notification.objects.filter(
+                reciver_id=user, is_read=False).count()
+            return data
+        except Exception as e:
+            print('Error in Notification.get_count')
+            print(e)
+            return False
 
     def add(sender: int, reciver: int, message: str, sender_kind: str, type: str) -> bool:
         if sender_kind == "user":
