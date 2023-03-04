@@ -8,19 +8,20 @@ from ..Query.Club import AllClub, GetClub, MyClub, GetClubById
 from ..Query.Duration import GetDuration, AvailableDurationByStadium, AllDurationStadium, IsStadHasDuration
 from ..Query.Section import AllSectionByClub, GetSection
 from ..Query.Stadium import GetStadium, GetStadiumBySection, StadiumFilter
-from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById, GetFriendCanAddToTeam
+from ..Query.Friend import GetFriendByName, AllFriend, GetFriendById, GetFriendCanAddToTeam, MyRequestFriend
 from ..Auth.graphql_auth import AuthMutation
 from ..Mutation.SignUp import signup
 from ..Mutation.club import AddClub, UpdateClub, DeleteClub
 from ..Mutation.section import AddSection, UpdateSection, DeleteSection
 from ..Mutation.stadium import AddStadium, UpdateStadium, DeleteStadium
-from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList
+from ..Mutation.duration import AddDurationList, UpdateDurationList, DeleteDurationList, TestAddDurationList
 from ..Mutation.stadiumService import AddServicesForStadiums, ModificationsToStadiumServices
 from ..Query import Player, Type, sub_manager, team, team_members, Reservation
 from ..Mutation.FriendMutat import addFriend, rejectFriend, acceptFriend
 from ..Mutation.Team import createTeam, deleteTeam, addMember, leaveTeam, removeMemmber
-from ..Mutation import search_on_map
+from ..Mutation import search_on_map, notifications_mutate
 from ..Mutation.reservation import ReserveDuration
+from ..Query import notification_query
 
 
 class User_model(DjangoObjectType):
@@ -69,6 +70,14 @@ class Query(ObjectType):
     allDurationStadium = graphene.Field(AllDurationStadium)
     isStadHasDuration = graphene.Field(IsStadHasDuration)
     myReservation = graphene.Field(Reservation.MyAllReservation)
+    myRequestFriend = graphene.Field(MyRequestFriend)
+    getNotification = graphene.Field(notification_query.GetNotifications)
+
+    def resolve_getNotification(root, info, **kwargs):
+        return notification_query.GetNotifications()
+
+    def resolve_myRequestFriend(root, info, **kwargs):
+        return MyRequestFriend()
 
     def resolve_myReservation(root, info, **kwargs):
         return Reservation.MyAllReservation()
@@ -186,6 +195,8 @@ class Mutation (AuthMutation, graphene.ObjectType):
     removeMemmbers = removeMemmber.RemoveMemmber.Field()
     deleteStadium = DeleteStadium.Field()
     reserveDuration = ReserveDuration.Field()
+    testDuration = TestAddDurationList.Field()
+    readNotification = notifications_mutate.ReadNotification.Field()
 
 
 class Subscription(graphene.ObjectType):

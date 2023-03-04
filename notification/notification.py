@@ -1,29 +1,51 @@
-from core import models
+from core import models, serializer
 
 
-class notification():
+class Notification():
 
     def add(sender: int, reciver: int, message: str, sender_kind: str, type: str) -> bool:
         if sender_kind == "user":
-            note = models.Notification(
-                sender_id=sender, reciver_id=reciver, sender_kind=sender_kind, type=type, content=message)
+
+            data = {'sender_id': sender, 'reciver_id': reciver,
+                    'sender_kind': sender_kind, 'type': type, 'content': message}
+            seria = serializer.NotificationSerializer(data=data)
+            if seria.is_valid():
+                seria.save()
+                return True
+            else:
+                print('Error in Notification.add!')
+                print(seria.errors)
+                return False
         if sender_kind == "team":
-            note = models.Notification(
-                sender_id=sender, team_id=reciver, sender_kind=sender_kind, type=type, content=message)
+            data = {'sender_id': sender, 'reciver_id': reciver,
+                    'sender_kind': sender_kind, 'type': type, 'content': message}
+            seria = serializer.NotificationSerializer(data=data)
+            if seria.is_valid():
+                seria.save()
+                return True
+            else:
+                print('Error in Notification.add!')
+                print(seria.errors)
+                return False
         else:
             return False
-        note.save()
-        return True
 
-    def read(id: list[int]) -> bool:
-        note = models.Notification.objects.filter(id__in=id, status=False)
-        if not note.exists():
+    def read(user: models.User) -> bool:
+        try:
+            models.Notification.objects.filter(
+                reciver_id=user, is_read=False).update(is_read=True)
+            return True
+        except Exception as e:
+            print('Error in Notification.read')
+            print(e)
             return False
-        note.update(status=True)
-        return True
 
-    def get(reciver_id: int) -> list[models.Notification.objects]:
-        note = models.Notification.objects.filter(reciver_id=reciver_id)
-        if not note.exists():
-            return []
-        return note
+    def get(user: models.User) -> list[models.Notification.objects]:
+        try:
+            note = models.Notification.objects.filter(
+                reciver_id=user).order_by('-date')
+            return note
+        except Exception as e:
+            print('Error in Notification.get')
+            print(e)
+            return False

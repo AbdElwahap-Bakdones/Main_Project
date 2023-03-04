@@ -89,3 +89,21 @@ class GetFriendCanAddToTeam(ObjectType, QueryFields):
             print('error in GetFriendCanAddToTeam')
             print(str(e))
             return QueryFields.ServerError(info=info, msg=str(e))
+
+
+class MyRequestFriend(ObjectType, QueryFields):
+    data = relay.ConnectionField(
+        relays.FriendConnection)
+
+    def resolve_data(root, info, **kwargs):
+        try:
+            user = info.context.META['user']
+            if not QueryFields.is_valide(info, user, 'core.view_friend'):
+                return QueryFields.rise_error(user)
+            request_friend = models.Friend.objects.filter(
+                Q(player1__user_id=user) & Q(state='pending') & ~Q(sender__user_id=user))
+            return QueryFields.OK(info=info, data=request_friend)
+        except Exception as e:
+            print('error in MyRequestFriend')
+            print(str(e))
+            return QueryFields.ServerError(info=info, msg=str(e))

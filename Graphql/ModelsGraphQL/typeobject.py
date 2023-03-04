@@ -170,7 +170,7 @@ class ReservationObjectType(DjangoObjectType):
     class Meta:
         model = models.Reservation
         fields = ['id', 'pk', 'duration_id',
-                  'kind', 'count', 'date', 'canceled']
+                  'kind', 'count', 'date', 'canceled', 'owner']
         interfaces = (relay.Node,)
 
 
@@ -251,7 +251,8 @@ class RateTypeObjectType(DjangoObjectType):
 class NotificationObjectType(DjangoObjectType):
     class Meta:
         model = models.Notification
-        fields = "__all__"
+        fields = ['sender_id', 'team_id', 'sender_kind',
+                  'type', 'content', 'date', 'is_read']
         interfaces = (relay.Node,)
 
 

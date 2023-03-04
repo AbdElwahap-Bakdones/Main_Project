@@ -5,6 +5,7 @@ from ...ModelsGraphQL import typeobject, inputtype
 from ...Auth.permission import checkPermission
 from rest_framework import status as status_code
 from ... import QueryStructure
+from notification.notification import Notification
 
 
 class AcceptFriend(graphene.Mutation, QueryStructure.Attributes):
@@ -42,9 +43,24 @@ class AcceptFriend(graphene.Mutation, QueryStructure.Attributes):
             print('old')
             if request.count() == 2 and not request.first().sender == sender and request.first().state == 'pending':
                 request.update(state='accepted')
+                self.__send_notif(self, request)
                 return QueryStructure.OK(self, data=request.first())
             return QueryStructure.BadRequest(self)
         except Exception as e:
             print('Error in __accept_request')
             print(e)
             return QueryStructure.InternalServerError(self, message=str(e))
+
+    def __send_notif(self, request: models.Friend.objects.filter):
+        try:
+            print('__send_notif')
+            sender = request.first().sender
+            reciver = request.first().player2
+            if sender == request.first().player2:
+                reciver = request.first().player1
+            Notification.add(sender=sender.user_id.pk, reciver=reciver.user_id.pk,
+                             message=f'{sender.user_id.first_name} {sender.user_id.last_name}   has Accepted your request friend !', sender_kind='user', type='accept friend')
+
+        except Exception as e:
+            print('Error in AcceptFriend.__send_notif')
+            print(str(e))
