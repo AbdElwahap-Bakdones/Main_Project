@@ -142,7 +142,7 @@ def getteamlist(user):
 
 class MyAllReservation(ObjectType, QueryFields):
     data = relay.ConnectionField(relays.ReservationConnection,
-                                 team_reserve=graphene.Boolean())
+                                 team_reserve=graphene.Boolean(required=True))
 
     def resolve_data(root, info, **kwargs):
         print(kwargs)
@@ -165,17 +165,19 @@ class MyAllReservation(ObjectType, QueryFields):
             return QueryFields.ServerError(info=info, msg=str(e))
 
     def get_player_reserve(user: User, kwargs: bool) -> Reservation.objects:
-        player_OuterRef = Player_reservation.objects.filter(
-            reservation_id=OuterRef('pk'))
-        reserver_list = Player_reservation.objects.filter(
-            player_id__user_id=user).values_list('reservation_id', flat=True)
-        reserve_obj = Reservation.objects.filter(pk__in=reserver_list, canceled=False).annotate(
-            owner=Subquery(player_OuterRef.values('player_id__user_id__username'), output_field=Field()))
+        if not kwargs['team_reserve']:
+            player_OuterRef = Player_reservation.objects.filter(
+                reservation_id=OuterRef('pk'))
+            reserver_list = Player_reservation.objects.filter(
+                player_id__user_id=user).values_list('reservation_id', flat=True)
+            reserve_obj = Reservation.objects.filter(pk__in=reserver_list, canceled=False).annotate(
+                owner=Subquery(player_OuterRef.values('player_id__user_id__username'), output_field=Field()))
 
-        return reserve_obj
+            return reserve_obj
+        return Player_reservation.objects.filter(pk=-1)
 
     def get_team_reserve(user: User, kwargs: bool) -> Reservation.objects:
-        if 'team_reserve' in kwargs and kwargs['team_reserve']:
+        if kwargs['team_reserve']:
             team_OuterRef = Team_resevation.objects.filter(
                 reservation_id=OuterRef('pk'))
 
