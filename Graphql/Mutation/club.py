@@ -7,6 +7,7 @@ from rest_framework import status as status_code
 from .. import QueryStructure
 from abc import ABC, abstractmethod, abstractclassmethod
 from django.http import HttpResponse
+from datetime import datetime
 
 
 class AddClub  (graphene.Mutation, QueryStructure.Attributes):
@@ -95,7 +96,10 @@ class DeleteClub(graphene.Mutation, QueryStructure.Attributes):
                                                      pk=data["id"], is_deleted=False)
             if not club_object.exists():
                 return QueryStructure.BadRequest(self, message='club id not found')
-
+            reservation = models.Reservation.objects.filter(
+                duration_id__stad_id__section_id__club_id=club_object.first(), duration_id__end_time__gt=datetime.now().time(), date__gt=datetime.now().date(), canceled=False)
+            if reservation.exists():
+                return QueryStructure.BadRequest(self, message='You cannot delete existing reservations')
             data.update({"is_deleted": True})
             seria = serializer.ClubSerializer(
                 club_object.first(), data=data, partial=True)

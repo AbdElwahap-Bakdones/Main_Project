@@ -5,6 +5,7 @@ from core import models, serializer
 from ..Auth.permission import checkPermission
 from rest_framework import status as status_code
 from .. import QueryStructure
+from datetime import datetime
 
 
 class AddSection  (graphene.Mutation, QueryStructure.Attributes):
@@ -106,6 +107,10 @@ class DeleteSection(graphene.Mutation, QueryStructure.Attributes):
                                                            club_id__manager_id__user_id=user.pk,  is_deleted=False)
             if not Section_object.exists():
                 return QueryStructure.BadRequest(self, message='section not found')
+            reservation = models.Reservation.objects.filter(
+                duration_id__stad_id__section_id=Section_object.first(), duration_id__end_time__gt=datetime.now().time(), date__gt=datetime.now().date(), canceled=False)
+            if reservation.exists():
+                return QueryStructure.BadRequest(self, message='You cannot delete existing reservations')
             data.update({"is_deleted": True})
             seria = serializer.SectionSerializer(
                 Section_object.first(), data=data, partial=True)
