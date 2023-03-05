@@ -31,9 +31,14 @@ def withdrawal(client, amount):
         return -1
 
 
-def get_balance(clint: str) -> float:
+def get_balance(client_name: str, client_type: str) -> float:
     try:
-        balance = MODELSBANK.Account.objects.filter(client_ammunt=clint)
+        if client_type == 'player':
+            name = ""+str(client_name)+"_"+str(1)
+        if client_type == 'club':
+            name = ""+str(client_name)+"_"+str(2)
+
+        balance = MODELSBANK.Account.objects.filter(client_ammunt=name)
         if balance.exists():
             return balance.first().client_ammunt
         return -1
