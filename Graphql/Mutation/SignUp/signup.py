@@ -44,7 +44,7 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
                     raise_exception='internal servre Error')
                 player = seria_player.save()
                 # server
-                groups = Group.objects.get(id=2)
+                groups = Group.objects.get(id=1)
                 # local
                 # groups = Group.objects.get(id=1)
                 groups.user_set.add(user)
@@ -105,7 +105,7 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
                     raise_exception='internal servre Error')
                 manager = seria_manager.save()
                 # server
-                groups = Group.objects.get(id=1)
+                groups = Group.objects.get(id=2)
                 # local
                 # groups = Group.objects.get(id=3)
                 groups.user_set.add(user)
