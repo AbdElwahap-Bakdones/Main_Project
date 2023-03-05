@@ -110,7 +110,7 @@ class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
             if not sub.exists():
                 return QueryStructure.BadRequest(instanse=self, message='Stadium Id not foun or stadium alrady deleted !')
             reservation = models.Reservation.objects.filter(
-                duration_id__stad_id__section_id=sub.first(), duration_id__end_time__gt=datetime.now().time(), date__gt=datetime.now().date(), canceled=False)
+                duration_id__stad_id=sub.first(), duration_id__end_time__gt=datetime.now().time(), date__gt=datetime.now().date(), canceled=False)
             if reservation.exists():
                 return QueryStructure.BadRequest(self, message='You cannot delete existing reservations')
             data.update({"is_deleted": True})
