@@ -5,6 +5,7 @@ from ..Auth.permission import checkPermission
 from ..ModelsGraphQL import typeobject, inputtype
 from .. import QueryStructure
 import datetime
+from datetime import datetime as DATATIME
 from graphene_django import DjangoObjectType
 from graphene import relay
 from rest_framework import status as status_code
@@ -118,6 +119,10 @@ class DeleteDurationList(graphene.Mutation, QueryStructure.Attributes):
             for i in data['id_list']:
                 duration_object = models.Duration.objects.filter(
                     id=i, is_deleted=False)
+                reservation = models.Reservation.objects.filter(
+                    duration_id=duration_object.first(), duration_id__end_time__gt=DATATIME.now().time(), date__gt=DATATIME.now().date(), canceled=False)
+                if reservation.exists():
+                    return QueryStructure.BadRequest(self, message='You cannot delete existing reservations')
                 seria = serializer.DurationSerializer(
                     duration_object.first(), data={"is_deleted": True}, partial=True)
                 if seria.is_valid():
