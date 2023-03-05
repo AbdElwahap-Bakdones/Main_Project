@@ -69,7 +69,7 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
         if data['kind'] == 'team':
             team = models.Team.objects.get(pk=data['team_id'])
             memmbers = models.Team_members.objects.filter(
-                team_id=team.pk, is_leave=False, is_captin=False).values_list('player_id__user_id__pk', flat=True)
+                team_id=team.pk, is_leave=False).values_list('player_id__user_id__pk', flat=True)
             for memb in memmbers:
                 Notification.add(sender=user.pk,
                                  team=team.pk, reciver=memb, message=f'you have new reservation in {team.name} team !', sender_kind='team', type='group message')
