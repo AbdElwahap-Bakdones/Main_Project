@@ -44,7 +44,7 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
                     raise_exception='internal servre Error')
                 player = seria_player.save()
                 # server
-                groups = Group.objects.get(id=2)
+                groups = Group.objects.get(id=1)
                 # local
                 # groups = Group.objects.get(id=1)
                 groups.user_set.add(user)
@@ -53,7 +53,7 @@ class SignUpPlayer(graphene.Mutation, QueryStructure.Attributes):
                 user_error = dict(seria_user.errors)
                 player_error = dict(seria_player.errors)
                 user_error.update(player_error)
-                default_errors = user_error.errors
+                default_errors = user_error
                 field_names = []
                 for field_name, field_errors in default_errors.items():
                     field_names.append(field_name)
@@ -105,16 +105,17 @@ class SignUpManager(graphene.Mutation, QueryStructure.Attributes):
                     raise_exception='internal servre Error')
                 manager = seria_manager.save()
                 # server
-                groups = Group.objects.get(id=1)
+                groups = Group.objects.get(id=2)
                 # local
                 # groups = Group.objects.get(id=3)
                 groups.user_set.add(user)
                 return QueryStructure.Created(instanse=self, data=manager)
             else:
+                print('222222222222')
                 user_error = dict(seria_user.errors)
                 manager_error = dict(seria_manager.errors)
                 user_error.update(manager_error)
-                default_errors = user_error.errors
+                default_errors = user_error
                 field_names = []
                 for field_name, field_errors in default_errors.items():
                     field_names.append(field_name)
@@ -177,7 +178,7 @@ class SignUpSubManager(graphene.Mutation, QueryStructure.Attributes):
                 user_error = dict(seria_user.errors)
                 subManager_error = dict(seria_subManager.errors)
                 user_error.update(subManager_error)
-                default_errors = user_error.errors
+                default_errors = user_error
                 field_names = []
                 for field_name, field_errors in default_errors.items():
                     field_names.append(field_name)
