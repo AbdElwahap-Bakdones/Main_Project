@@ -37,7 +37,7 @@ def get_balance(client_name: str, client_type: str) -> float:
             name = ""+str(client_name)+"_"+str(1)
         if client_type == 'club':
             name = ""+str(client_name)+"_"+str(2)
-
+        print(name)
         balance = MODELSBANK.Account.objects.filter(client_ammunt=name)
         if balance.exists():
             return balance.first().client_ammunt
