@@ -37,9 +37,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         validated_data = Geo.set_point_field(validated_data)
         player = models.Player(**validated_data)
         player.save()
-        if create_account(player.pk, 'player'):
-            player.delete(self)
-            return None
+        create_account(player.pk, 'player')
         return player
 
     # def get_state(self, validated_data):
