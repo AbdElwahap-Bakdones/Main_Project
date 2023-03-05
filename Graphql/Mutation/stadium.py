@@ -5,6 +5,7 @@ from django.db.models import Q
 from ..Auth.permission import checkPermission
 from .. import QueryStructure
 from rest_framework import status as status_code
+from datetime import datetime
 
 
 class AddStadium(graphene.Mutation, QueryStructure.Attributes):
@@ -108,6 +109,10 @@ class DeleteStadium(graphene.Mutation, QueryStructure.Attributes):
                                                 pk=data["id"], is_deleted=False)
             if not sub.exists():
                 return QueryStructure.BadRequest(instanse=self, message='Stadium Id not foun or stadium alrady deleted !')
+            reservation = models.Reservation.objects.filter(
+                duration_id__stad_id=sub.first(), duration_id__end_time__gt=datetime.now().time(), date__gt=datetime.now().date(), canceled=False)
+            if reservation.exists():
+                return QueryStructure.BadRequest(self, message='You cannot delete existing reservations')
             data.update({"is_deleted": True})
             seria = serializer.StadiumSerializer(
                 sub.first(), data=data, partial=True)
