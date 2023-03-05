@@ -38,7 +38,7 @@ def get_balance(client_name: str, client_type: str) -> float:
         if client_type == 'club':
             name = ""+str(client_name)+"_"+str(2)
         print(name)
-        balance = MODELSBANK.Account.objects.filter(client_ammunt=name)
+        balance = MODELSBANK.Account.objects.filter(client_name=name)
         if balance.exists():
             return balance.first().client_ammunt
         return -1
@@ -52,15 +52,17 @@ def create_account(client_name: str, client_type: str) -> bool:
     try:
         if client_type == 'player':
             name = ""+str(client_name)+"_"+str(1)
-            account = MODELSBANK.Account(client_name=name,
+            account = MODELSBANK.Account(client_name=str(name),
                                          client_type=MODELSBANK.ClientType.objects.get(pk=1))
             account.save()
+            print('account add')
             return True
         if client_type == 'club':
             name = ""+str(client_name)+"_"+str(2)
-            account = MODELSBANK.Account(client_name=name,
+            account = MODELSBANK.Account(client_name=str(name),
                                          client_type=MODELSBANK.ClientType.objects.get(pk=2))
             account.save()
+            print('account add')
             return True
         return False
     except Exception as e:
