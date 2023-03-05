@@ -28,7 +28,7 @@ class AllClub(ObjectType, QueryFields):
 
 
 class MyClub(ObjectType, QueryFields):
-    data = relay.ConnectionField(relays.ClubProfileConnection)
+    data = relay.ConnectionField(relays.ClubConnection)
 
     def resolve_data(root, info, **kwargs):
         try:
@@ -37,10 +37,6 @@ class MyClub(ObjectType, QueryFields):
                 return QueryFields.BadRequest(info=info)
             data = models.Club.objects.filter(
                 manager_id__user_id=user.pk, is_deleted=False)
-            balance = get_balance(
-                client=""+str(data.first().pk)+"_"+str(2))
-            data = data.annotate(balance=Value(
-                balance, output_field=MODELS.FloatField()))
             return QueryFields.OK(info=info, data=data)
         except Exception as e:
             print('error in MyClub')
