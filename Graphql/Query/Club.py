@@ -61,8 +61,7 @@ class GetClub(ObjectType, QueryFields):
                 manager_id__user_id=user, pk=kwargs['id'], is_deleted=False)
             if not data.exists():
                 return QueryFields.NotFound(info=info)
-            balance = get_balance(
-                client=""+str(data.first().pk)+"_"+str(2))
+            balance = get_balance(client_name=kwargs['id'], client_type='club')
             data = data.annotate(balance=Value(
                 balance, output_field=MODELS.FloatField()))
             return QueryFields.OK(info=info, data=data)
