@@ -101,7 +101,8 @@ class me(ObjectType, QueryFields):
             if not QueryFields.user_type(user, models.Player):
                 return QueryFields.NoPermission_403(info)
             player_obj = models.Player.objects.filter(user_id=user)
-            balance = get_balance(player_obj.first().pk)
+            balance = get_balance(
+                client_name=player_obj.first().pk, client_type='player')
             player_obj = player_obj.annotate(balance=Value(
                 balance, output_field=MODELS.FloatField()))
             return QueryFields.OK(info=info, data=player_obj)
