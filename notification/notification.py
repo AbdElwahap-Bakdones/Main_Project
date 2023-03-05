@@ -25,7 +25,7 @@ class Notification():
             print(e)
             return False
 
-    def add(sender: int, reciver: int, message: str, sender_kind: str, type: str) -> bool:
+    def add(sender: int, reciver: int, message: str, sender_kind: str, type: str, team: int = 0) -> bool:
         if sender_kind == "user":
 
             data = {'sender_id': sender, 'reciver_id': reciver,
@@ -39,7 +39,7 @@ class Notification():
                 print(seria.errors)
                 return False
         if sender_kind == "team":
-            data = {'sender_id': sender, 'reciver_id': reciver,
+            data = {'sender_id': sender, 'team_id': team, 'reciver_id': reciver,
                     'sender_kind': sender_kind, 'type': type, 'content': message}
             seria = serializer.NotificationSerializer(data=data)
             if seria.is_valid():

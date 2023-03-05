@@ -7,6 +7,7 @@ from .. import QueryStructure
 import time
 from Bank import models as MODELSBANK
 from Bank import views as Bank
+from notification.notification import Notification
 
 
 class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
@@ -48,6 +49,7 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
                         if not self.withdrawal(duration.get(), player_obj.pk):
                             return QueryStructure.BadRequest(self, message="You do not have enough balance to reserve the stadium")
                         data = seria.save()
+                        self.send_notif(self, user, kwargs['data'])
                         return QueryStructure.Created(instanse=self, data=data)
                     else:
                         print('serializer Errors in ReserveDuration')
@@ -61,6 +63,16 @@ class ReserveDuration  (graphene.Mutation, QueryStructure.Attributes):
             print('Error in ReserveDuration ')
             print(e)
             return QueryStructure.InternalServerError(instanse=self, message=str(e))
+
+    def send_notif(self, user, data):
+
+        if data['kind'] == 'team':
+            team = models.Team.objects.get(pk=data['team_id'])
+            memmbers = models.Team_members.objects.filter(
+                team_id=team.pk, is_leave=False, is_captin=False).values_list('player_id__user_id__pk', flat=True)
+            for memb in memmbers:
+                Notification.add(sender=user.pk,
+                                 team=team.pk, reciver=memb, message=f'you have new reservation in {team.name} team !', sender_kind='team', type='group message')
 
     def is_caption(self, team_id: int, user: models.User) -> bool:
         if models.Team_members.objects.filter(team_id=team_id, team_id__deleted=False,
